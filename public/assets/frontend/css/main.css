@@ -1,0 +1,320 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+body {
+    width: 100%;
+    font-family: SolaimanLipiNormal;
+    font-size: 17px;
+    font-family: 'Roboto', sans-serif;
+    background: #f7f7f7;
+}
+
+a{
+    display: inline-block;
+    text-decoration: none;
+}
+
+
+.main_website {
+    background: #ffffff;
+    border-radius: 2px;
+}
+
+.scrool_1 {
+    padding: 5px;
+    background: #138FDE;
+    background: -webkit-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -o-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -moz-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: linear-gradient(-90deg, #138FDE, #003CA9);
+    color: #fff;
+    font-size: 17px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+/* .catagory_title {
+    padding: 7px;
+    color: #fff;
+    margin-bottom: 10px !important;
+    font-size: 18px;
+    font-weight: 400;
+    margin: 0;
+    overflow: hidden;
+    background: #138FDE;
+    background: -webkit-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -o-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -moz-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: linear-gradient(-90deg, #138FDE, #003CA9);
+} */
+
+.catagory_title_5 {
+    padding: 7px;
+    margin-top: 5px !important;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 400;
+    margin: 0;
+    overflow: hidden;
+    background: #138FDE;
+    background: -webkit-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -o-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -moz-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: linear-gradient(-90deg, #138FDE, #003CA9);
+}
+
+.social-link ul li a i {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 300;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    text-align: center;
+    width: 33px;
+    height: 33px;
+    line-height: 33px;
+    background: #3987E6;
+}
+
+.section_2 {
+    background: #0082CF;
+    padding: 10px;
+}
+
+.root {
+    padding: 10px;
+}
+
+.root_01 {
+    color: #fff;
+    font-size: 16px;
+}
+
+.root_02 {
+    text-align: right;
+    color: #fff;
+    font-size: 17px;
+}
+
+.root_02 a {
+    color: #000;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.root_02 a:hover {
+    color: #fff;
+}
+
+.facebook_title {
+    background: #138FDE;
+    background: -webkit-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -o-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -moz-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: linear-gradient(-90deg, #138FDE, #003CA9);
+    padding: 10px;
+    margin-bottom: 5px;
+}
+
+.fb-root {
+    margin-bottom: 5px;
+}
+
+.facebook_title a {
+    color: #fff;
+    font-size: 16px;
+
+}
+
+.contact_us_hadding {
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+    padding: 7px;
+    background: #138FDE;
+    background: -webkit-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -o-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -moz-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: linear-gradient(-90deg, #138FDE, #003CA9);
+}
+
+/*Widget Title=========*/
+.widget_area {
+    margin: 5px 0px 5px 0px;
+}
+
+.widget_area li {
+    margin: 2px 0px 5px 0px;
+}
+
+.widget_area h3 {
+    padding: 7px;
+    color: #fff;
+    margin-bottom: 10px !important;
+    font-size: 16px;
+    text-align: left;
+    margin: 0;
+    overflow: hidden;
+    background: #138FDE;
+    background: -webkit-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -o-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: -moz-linear-gradient(-90deg, #138FDE, #003CA9);
+    background: linear-gradient(-90deg, #138FDE, #003CA9);
+}
+
+#bs-example-navbar-collapse-1 {
+    background-color: #013C57;
+    font-size: 16px;
+}
+
+#nav .navbar-default .navbar-nav>li>a {
+    color: #FFFFFF;
+    padding: 7px 20px 7px 20px;
+}
+
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:hover,
+.navbar-default .navbar-nav>.active>a:focus {
+    color: #fff !important;
+    margin: 0px;
+    background-color: #74010D;
+}
+
+#nav .navbar-collapse {
+    padding: 0px;
+    border-bottom: 2px solid #74010D;
+}
+
+
+/* Goto Top============================ */
+#myBtn {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Fixed/sticky position */
+    bottom: 20px;
+    /* Place the button at the bottom of the page */
+    right: 30px;
+    /* Place the button 30px from the right */
+    z-index: 99;
+    /* Make sure it does not overlap */
+    border: none;
+    /* Remove borders */
+    outline: none;
+    /* Remove outline */
+    background-color: #013C57;
+    /* Set a background color */
+    color: #fff;
+    /* Text color */
+    cursor: pointer;
+    /* Add a mouse pointer on hover */
+    padding: 15px;
+    /* Some padding */
+    border-radius: 10px;
+    /* Rounded corners */
+}
+
+
+#myBtn:hover {
+    background-color: #013C57;
+    /* Add a dark-grey background on hover */
+    opacity: 0.5;
+}
+
+.navbar{
+    padding: 0;
+}
+
+.navbar-nav{
+    width: 100%;
+    justify-content: space-between;
+}
+
+
+.dropdown-menu{
+    padding: 0;
+}
+
+.dropdown-item{
+    padding: 10px 15px !important;
+}
+
+.navbar-toggler{
+    color: #fff;
+}
+
+
+.top{
+    background: #0082CF;
+    padding: 40px 0;
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    align-items: center;
+}
+
+.header a{
+    color: #fff;
+    text-decoration: none;
+}
+
+.header .brand{
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.header .brand .logo{
+    width: 150px;
+    background: #fff;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.header .brand .text{
+    display: flex;
+    flex-direction: column;
+}
+
+.header .brand .text p, h1{
+    margin: 0;
+}
+
+.header .brand .text h1{
+    font-size: 46px;
+}
+
+.header .info{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 15px;
+}
+
+.header .info .socials{
+    display: flex;
+    align-items: end;
+    gap: 15px;
+}
+
+.header .info .socials a{
+    background: #000;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header .buttons a{
+    background: #ff9100;
+    padding: 6px 15px;
+    border-radius: 20px;
+}
+
+
+/* history */
+
