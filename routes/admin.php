@@ -14,5 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// login
+Route::get('login', [App\Http\Controllers\Backend\Auth\LoginController::class, 'showLoginForm'])->name('login');
+
 // home page
-Route::get('/', [App\Http\Controllers\Backend\HomeController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', [App\Http\Controllers\Backend\HomeController::class, 'index'])->name('dashboard');
+});

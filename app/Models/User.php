@@ -42,4 +42,40 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    public function isStudent()
+    {
+        return is_null($this->role) && !$this->is_parent;
+    }
+
+    public function isParent()
+    {
+        return $this->is_parent;
+    }
+
+    public function isTeacher()
+    {
+        return $this->role === 'teacher';
+    }
+
+    public function isLibrarian()
+    {
+        return $this->role === 'librarian';
+    }
+
+    public function isAccountant()
+    {
+        return $this->role === 'accountant';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin' || $this->is_admin;
+    }
+
+    public function isActive()
+    {
+        return $this->status;
+    }
 }

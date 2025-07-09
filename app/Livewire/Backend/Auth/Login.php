@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Livewire\Backend\Auth;
+
+use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
+
+class Login extends Component
+{
+    public $email = '';
+    public $password = '';
+    public $remember = false; // Add this for the Remember Me checkbox
+
+    protected $rules = [
+        'email' => 'required|email',
+        'password' => 'required|min:6',
+    ];
+
+    public function login()
+    {
+        $this->validate();
+
+        if (Auth::attempt(['email' => $this->email, 'password' => $this->password, 'is_admin' => true], $this->remember)) {
+            // Redirect on successful login
+            return $this->redirect(route('admin.dashboard'), navigate: true);
+        }
+
+        // Display error on failure
+        session()->flash('error', 'Invalid email or password.');
+    }
+
+
+
+    public function render()
+    {
+        return view('livewire.backend.auth.login');
+    }
+}

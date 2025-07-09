@@ -73,7 +73,7 @@
                     <a href="#">
                         <div class="brand">
                             <div class="image">
-                                <img src="assets/images/logo.png" alt="">
+                                <img src="{{ url('assets/frontend/images/logo.png') }}" alt="">
                             </div>
                             <div class="text">
                                 <h4>Khulna Govt. High School</h4>
@@ -352,7 +352,7 @@
                             <div class="item">
                                 <!-- Post Image Code Start-->
 
-                                <img width="1000" height="300" src="assets/images/web.jpg"
+                                <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
                                     class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
                                 <!-- Post Image Code Close-->
                                 <h4 class="centered">মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, যশোর
@@ -363,7 +363,7 @@
                             <div class="item">
                                 <!-- Post Image Code Start-->
 
-                                <img width="1000" height="300" src="assets/images/web.jpg"
+                                <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
                                     class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
                                 <!-- Post Image Code Close-->
                                 <h4 class="centered">হোমপেজ ফটোগ্যালারী তিন</h4>
@@ -371,7 +371,7 @@
                             <div class="item">
                                 <!-- Post Image Code Start-->
 
-                                <img width="1000" height="300" src="assets/images/web.jpg"
+                                <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
                                     class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
                                 <!-- Post Image Code Close-->
                                 <h4 class="centered">হোমপেজ ফটোগ্যালারী দুই</h4>
@@ -379,7 +379,7 @@
                             <div class="item">
                                 <!-- Post Image Code Start-->
 
-                                <img width="1000" height="300" src="assets/images/web.jpg"
+                                <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
                                     class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
                                 <!-- Post Image Code Close-->
                                 <h4 class="centered">হোমপেজ ফটোগ্যালারী এক</h4>
@@ -414,7 +414,7 @@
                             <div class="history row g-3">
                                 <div class="col-lg-5">
                                     <div class="card h-100">
-                                        <img src="assets/images/5.jpg" class="attachment-post-thumbnail" alt="" />
+                                        <img src="{{ url('assets/frontend/images/5.jpg') }}" class="attachment-post-thumbnail" alt="" />
                                     </div>
                                 </div>
                                 <div class="col-lg-7">
@@ -486,7 +486,7 @@
                                         <div class="person">
                                             <div class="image">
 
-                                                <img width="400" height="500" src="assets/images/person.jpg"
+                                                <img width="400" height="500" src="{{ url('assets/frontend/images/person.jpg') }}"
                                                     class="attachment-post-thumbnail size-post-thumbnail" alt="" />
                                             </div>
                                             <div class="text">
@@ -519,7 +519,7 @@
                                         <div class="person">
                                             <div class="image">
 
-                                                <img width="400" height="500" src="assets/images/person.jpg"
+                                                <img width="400" height="500" src="{{ url('assets/frontend/images/person.jpg') }}"
                                                     class="attachment-post-thumbnail size-post-thumbnail" alt="" />
                                             </div>
                                             <div class="text">
@@ -552,7 +552,7 @@
                                         <div class="person">
                                             <div class="image">
 
-                                                <img width="400" height="500" src="assets/images/person.jpg"
+                                                <img width="400" height="500" src="{{ url('assets/frontend/images/person.jpg') }}"
                                                     class="attachment-post-thumbnail size-post-thumbnail" alt="" />
                                             </div>
                                             <div class="text">
@@ -577,7 +577,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <h4 class="catagory_title_1"> ছাত্রছাত্রীদের তথ্য</h4>
                                     <div class="news_information">
-                                        <img src="assets/images/menu01.jpg">
+                                        <img src="{{ url('assets/frontend/images/menu01.jpg') }}">
                                         <div class="menu-student-information-container">
                                             <ul id="menu-student-information" class="menu">
                                                 <li id="menu-item-115"
@@ -619,7 +619,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <h4 class="catagory_title_2"> শিক্ষকদের তথ্য</h4>
                                     <div class="news_information">
-                                        <img src="assets/images/menu01.jpg">
+                                        <img src="{{ url('assets/frontend/images/menu01.jpg') }}">
                                         <div class="menu-teachers-information-container">
                                             <ul id="menu-teachers-information" class="menu">
                                                 <li id="menu-item-120"
@@ -664,7 +664,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <h4 class="catagory_title_3"> ডাউনলোড</h4>
                                     <div class="news_information">
-                                        <img src="assets/images/menu03.jpg">
+                                        <img src="{{ url('assets/frontend/images/menu03.jpg') }}">
                                         <ul>
 
                                             <li><a href="#">১ম
@@ -695,7 +695,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <h4 class="catagory_title_4"> একাডেমীক তথ্য </h4>
                                     <div class="news_information">
-                                        <img src="assets/images/menu04.jpg">
+                                        <img src="{{ url('assets/frontend/images/menu04.jpg')}}">
                                         <div class="menu-academic-information-container">
                                             <ul id="menu-academic-information" class="menu">
                                                 <li id="menu-item-124"
