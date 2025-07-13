@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('code')->unique()->nullable(); // optional code for the subject
-            $table->string('type')->default('theory'); // Theory, Practical, or both
+            $table->string('type')->default('theory'); // Theory, Practical
             $table->timestamps();
         });
     }

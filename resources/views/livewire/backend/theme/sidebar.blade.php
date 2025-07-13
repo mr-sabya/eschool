@@ -14,6 +14,21 @@
                     :label="'Dashboard'"
                     :hasSubMenu="false" />
 
+
+                <livewire:backend.theme.menu-item
+                    :url="''"
+                    :icon="'ri-wallet-line'"
+                    :label="'Academic'"
+                    :hasSubMenu="true"
+                    :subMenuItems="
+                    [
+                        ['url' => 'admin.class.index', 'label' => 'Class'],
+                        ['url' => 'admin.section.index', 'label' => 'Section'],
+                        ['url' => 'admin.shift.index', 'label' => 'Shift'],
+                        ['url' => 'admin.subject.index', 'label' => 'Subject'],
+
+                    ]" />
+
             </ul>
         </div>
         <!-- Sidebar -->

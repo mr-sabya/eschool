@@ -133,7 +133,7 @@
     @livewireScripts
     <script>
         document.addEventListener('livewire:init', () => {
-            Livewire.on('alert', (event) => {
+            Livewire.on('notify', (event) => {
                 // Since the event is an array, access the first item
                 const {
                     type,
