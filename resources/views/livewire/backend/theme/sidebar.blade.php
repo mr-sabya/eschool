@@ -29,6 +29,21 @@
 
                     ]" />
 
+                <livewire:backend.theme.menu-item
+                    :url="''"
+                    :icon="'ri-wallet-line'"
+                    :label="'App Setting'"
+                    :hasSubMenu="true"
+                    :subMenuItems="
+                    [
+                        ['url' => 'admin.designation.index', 'label' => 'Designation'],
+                        ['url' => 'admin.department.index', 'label' => 'Department'],
+                        ['url' => 'admin.gender.index', 'label' => 'Gender'],
+                        ['url' => 'admin.blood.index', 'label' => 'Blood Group'],
+                        ['url' => 'admin.religion.index', 'label' => 'Religions'],
+
+                    ]" />
+
             </ul>
         </div>
         <!-- Sidebar -->

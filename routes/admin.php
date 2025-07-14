@@ -32,4 +32,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // subject management
     Route::get('subjects', [App\Http\Controllers\Backend\SubjectController::class, 'index'])->name('subject.index');
+
+    // designation management
+    Route::get('designations', [App\Http\Controllers\Backend\DesignationController::class, 'index'])->name('designation.index');
+
+    // department management
+    Route::get('departments', [App\Http\Controllers\Backend\DepartmentController::class, 'index'])->name('department.index');
+
+    // gender management
+    Route::get('gender', [App\Http\Controllers\Backend\GenderController::class, 'index'])->name('gender.index');
+
+    // blood group management
+    Route::get('blood-group', [App\Http\Controllers\Backend\BloodController::class, 'index'])->name('blood.index');
+
+    // religion management
+    Route::get('religion', [App\Http\Controllers\Backend\ReligionController::class, 'index'])->name('religion.index');
 });
