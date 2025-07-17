@@ -30,7 +30,7 @@ class Manage extends Component
     public $nationality, $language, $health_status, $rank_in_family, $number_of_siblings;
     public $profile_picture, $new_profile_picture;
     public $emergency_contact_name, $emergency_contact_phone;
-    public $previous_school_attended = false, $previous_school, $previous_school_document;
+    public $previous_school_attended = 0, $previous_school, $previous_school_document;
     public $is_active = true, $notes;
 
     protected $listeners = ['edit' => 'edit'];
