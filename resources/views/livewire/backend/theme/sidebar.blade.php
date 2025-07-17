@@ -44,6 +44,21 @@
 
                     ]" />
 
+                <livewire:backend.theme.menu-item
+                    :url="''"
+                    :icon="'ri-wallet-line'"
+                    :label="'Students'"
+                    :hasSubMenu="true"
+                    :subMenuItems="
+                    [
+                        ['url' => 'admin.student.index', 'label' => 'Students List'],
+                        ['url' => 'admin.student.create', 'label' => 'Add New Student'],
+                        ['url' => 'admin.gender.index', 'label' => 'Gender'],
+                        ['url' => 'admin.blood.index', 'label' => 'Blood Group'],
+                        ['url' => 'admin.religion.index', 'label' => 'Religions'],
+
+                    ]" />
+
             </ul>
         </div>
         <!-- Sidebar -->

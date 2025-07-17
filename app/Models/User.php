@@ -78,4 +78,9 @@ class User extends Authenticatable
     {
         return $this->status;
     }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
 }

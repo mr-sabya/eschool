@@ -47,4 +47,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // religion management
     Route::get('religion', [App\Http\Controllers\Backend\ReligionController::class, 'index'])->name('religion.index');
+
+    // student management
+    Route::get('students', [App\Http\Controllers\Backend\StudentController::class, 'index'])->name('student.index');
+    Route::get('students/create', [App\Http\Controllers\Backend\StudentController::class, 'create'])->name('student.create');
 });
