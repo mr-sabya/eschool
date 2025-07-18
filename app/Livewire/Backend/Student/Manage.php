@@ -15,7 +15,6 @@ use Livewire\WithFileUploads;
 
 class Manage extends Component
 {
-
     use WithFileUploads;
 
     public $student_id, $user_id;
@@ -30,7 +29,7 @@ class Manage extends Component
     public $nationality, $language, $health_status, $rank_in_family, $number_of_siblings;
     public $profile_picture, $new_profile_picture;
     public $emergency_contact_name, $emergency_contact_phone;
-    public $previous_school_attended = 0, $previous_school, $previous_school_document;
+    public $previous_school_attended = false, $previous_school, $previous_school_document, $new_previous_school_document;
     public $is_active = true, $notes;
 
     protected $listeners = ['edit' => 'edit'];
@@ -67,12 +66,12 @@ class Manage extends Component
             'health_status' => 'nullable|string',
             'rank_in_family' => 'nullable|integer',
             'number_of_siblings' => 'nullable|integer',
-            'new_profile_picture' => 'nullable|image|max:2048', // max 2MB
+            'new_profile_picture' => 'nullable|image|max:2048', // 2MB max
+            'new_previous_school_document' => 'nullable|file|max:4096', // 4MB max
             'emergency_contact_name' => 'nullable|string|max:255',
             'emergency_contact_phone' => 'nullable|string|max:20',
             'previous_school_attended' => 'boolean',
             'previous_school' => 'nullable|string|max:255',
-            'previous_school_document' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'notes' => 'nullable|string',
         ];
@@ -127,27 +126,32 @@ class Manage extends Component
 
     public function save()
     {
-        $validated = $this->validate();
+        $this->validate();
 
-        // Create or update User
-        $user = User::updateOrCreate(
-            ['id' => $this->user_id],
-            [
-                'name' => $this->name,
-                'email' => $this->email,
-                'password' => $this->user_id
-                    ? User::find($this->user_id)->password
-                    : bcrypt($this->password),
-            ]
-        );
+        // ✅ Create or update User
+        $userData = [
+            'name' => $this->name,
+            'email' => $this->email,
+        ];
+        if (!$this->user_id || $this->password) {
+            $userData['password'] = bcrypt($this->password);
+        }
 
-        // Handle profile picture upload
+        $user = User::updateOrCreate(['id' => $this->user_id], $userData);
+
+        // ✅ Handle Profile Picture
         $profilePath = $this->profile_picture;
         if ($this->new_profile_picture) {
             $profilePath = $this->new_profile_picture->store('students/profile', 'public');
         }
 
-        // Create or update Student
+        // ✅ Handle Previous School Document
+        $previousSchoolDocPath = $this->previous_school_document;
+        if ($this->previous_school_attended && $this->new_previous_school_document) {
+            $previousSchoolDocPath = $this->new_previous_school_document->store('students/previous_school', 'public');
+        }
+
+        // ✅ Create or Update Student
         Student::updateOrCreate(
             ['id' => $this->student_id],
             [
@@ -178,10 +182,10 @@ class Manage extends Component
                 'profile_picture' => $profilePath,
                 'emergency_contact_name' => $this->emergency_contact_name,
                 'emergency_contact_phone' => $this->emergency_contact_phone,
-                'previous_school_attended' => $this->previous_school_attended,
+                'previous_school_attended' => (bool) $this->previous_school_attended,
                 'previous_school' => $this->previous_school,
-                'previous_school_document' => $this->previous_school_document,
-                'is_active' => $this->is_active,
+                'previous_school_document' => $previousSchoolDocPath,
+                'is_active' => (bool) $this->is_active,
                 'notes' => $this->notes,
             ]
         );
@@ -191,92 +195,11 @@ class Manage extends Component
         $this->dispatch('student-saved');
     }
 
-    public function edit($studentId)
-    {
-        $student = Student::with('user')->findOrFail($studentId);
-
-        // User
-        $this->user_id = $student->user_id;
-        $this->name = $student->user->name;
-        $this->email = $student->user->email;
-
-        // Student
-        $this->student_id = $student->id;
-        $this->first_name = $student->first_name;
-        $this->last_name = $student->last_name;
-        $this->roll_number = $student->roll_number;
-        $this->school_class_id = $student->school_class_id;
-        $this->class_section_id = $student->class_section_id;
-        $this->shift_id = $student->shift_id;
-        $this->guardian_id = $student->guardian_id;
-        $this->phone = $student->phone;
-        $this->address = $student->address;
-        $this->date_of_birth = $student->date_of_birth?->format('Y-m-d');
-        $this->admission_date = $student->admission_date?->format('Y-m-d');
-        $this->admission_number = $student->admission_number;
-        $this->category = $student->category;
-        $this->gender_id = $student->gender_id;
-        $this->blood_id = $student->blood_id;
-        $this->religion_id = $student->religion_id;
-        $this->national_id = $student->national_id;
-        $this->place_of_birth = $student->place_of_birth;
-        $this->nationality = $student->nationality;
-        $this->language = $student->language;
-        $this->health_status = $student->health_status;
-        $this->rank_in_family = $student->rank_in_family;
-        $this->number_of_siblings = $student->number_of_siblings;
-        $this->profile_picture = $student->profile_picture;
-        $this->emergency_contact_name = $student->emergency_contact_name;
-        $this->emergency_contact_phone = $student->emergency_contact_phone;
-        $this->previous_school_attended = $student->previous_school_attended;
-        $this->previous_school = $student->previous_school;
-        $this->previous_school_document = $student->previous_school_document;
-        $this->is_active = $student->is_active;
-        $this->notes = $student->notes;
-    }
-
     public function resetForm()
     {
-        $this->reset([
-            'student_id',
-            'user_id',
-            'name',
-            'email',
-            'password',
-            'first_name',
-            'last_name',
-            'roll_number',
-            'school_class_id',
-            'class_section_id',
-            'shift_id',
-            'guardian_id',
-            'phone',
-            'address',
-            'date_of_birth',
-            'admission_date',
-            'admission_number',
-            'category',
-            'gender_id',
-            'blood_id',
-            'religion_id',
-            'national_id',
-            'place_of_birth',
-            'nationality',
-            'language',
-            'health_status',
-            'rank_in_family',
-            'number_of_siblings',
-            'profile_picture',
-            'new_profile_picture',
-            'emergency_contact_name',
-            'emergency_contact_phone',
-            'previous_school_attended',
-            'previous_school',
-            'previous_school_document',
-            'is_active',
-            'notes'
-        ]);
+        $this->reset();
         $this->is_active = true;
+        $this->previous_school_attended = false;
     }
 
     public function render()
@@ -288,7 +211,7 @@ class Manage extends Component
             'genders' => Gender::all(),
             'bloods' => Blood::all(),
             'religions' => Religion::all(),
-            'guardians' => User::where('is_parent', true)->get(), // example for guardians
+            'guardians' => User::where('is_parent', true)->get(),
         ]);
     }
 }
