@@ -58,6 +58,17 @@
                         ['url' => 'admin.religion.index', 'label' => 'Religions'],
 
                     ]" />
+                <livewire:backend.theme.menu-item
+                    :url="''"
+                    :icon="'ri-wallet-line'"
+                    :label="'Guardians'"
+                    :hasSubMenu="true"
+                    :subMenuItems="
+                    [
+                        ['url' => 'admin.guardian.index', 'label' => 'Guardians List'],
+                        ['url' => 'admin.guardian.create', 'label' => 'Add New Guardian'],
+
+                    ]" />
 
             </ul>
         </div>

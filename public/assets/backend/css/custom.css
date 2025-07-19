@@ -210,3 +210,7 @@ ul {
 .ql-editor {
     min-height: 300px; /* or use height: 300px */
 }
+
+.card-header.top{
+    border-bottom: #00d9ff 5px solid;
+}
