@@ -26,6 +26,7 @@
                         ['url' => 'admin.section.index', 'label' => 'Section'],
                         ['url' => 'admin.shift.index', 'label' => 'Shift'],
                         ['url' => 'admin.subject.index', 'label' => 'Subject'],
+                        ['url' => 'admin.classroom.index', 'label' => 'Classroom'],
 
                     ]" />
 
@@ -53,9 +54,6 @@
                     [
                         ['url' => 'admin.student.index', 'label' => 'Students List'],
                         ['url' => 'admin.student.create', 'label' => 'Add New Student'],
-                        ['url' => 'admin.gender.index', 'label' => 'Gender'],
-                        ['url' => 'admin.blood.index', 'label' => 'Blood Group'],
-                        ['url' => 'admin.religion.index', 'label' => 'Religions'],
 
                     ]" />
                 <livewire:backend.theme.menu-item

@@ -24,6 +24,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // class management
     Route::get('classes', [App\Http\Controllers\Backend\SchoolClassController::class, 'index'])->name('class.index');
 
+    // classroom management
+    Route::get('classrooms', [App\Http\Controllers\Backend\ClassRoomController::class, 'index'])->name('classroom.index');
+
     // section management
     Route::get('sections', [App\Http\Controllers\Backend\ClassSectionController::class, 'index'])->name('section.index');
 
