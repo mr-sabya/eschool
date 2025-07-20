@@ -69,6 +69,17 @@
                         ['url' => 'admin.guardian.create', 'label' => 'Add New Guardian'],
 
                     ]" />
+                <livewire:backend.theme.menu-item
+                    :url="''"
+                    :icon="'ri-wallet-line'"
+                    :label="'Staffs'"
+                    :hasSubMenu="true"
+                    :subMenuItems="
+                    [
+                        ['url' => 'admin.staff.index', 'label' => 'Staff List'],
+                        ['url' => 'admin.staff.create', 'label' => 'Add New Staff'],
+
+                    ]" />
 
             </ul>
         </div>

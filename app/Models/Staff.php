@@ -11,25 +11,50 @@ class Staff extends Model
 
     protected $fillable = [
         'user_id',
+        'staff_id',
+        'department_id',
         'first_name',
         'last_name',
-        'email',
+        'father_name',
+        'mother_name',
         'phone',
-        'address',
-        'designation_id',
-        'date_of_joining',
-        'date_of_birth',
         'nid',
+        'date_of_birth',
+        'current_address',
+        'permanent_address',
+        'designation_id',
+        'gender_id',
+        'marital_status',
+        'basic_salary',
+        'date_of_joining',
         'profile_picture',
     ];
+
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'date_of_joining' => 'date',
+        'basic_salary' => 'decimal:2',
+    ];
+
+    // Relations
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
     public function designation()
     {
         return $this->belongsTo(Designation::class);
+    }
+
+    public function gender()
+    {
+        return $this->belongsTo(Gender::class);
     }
 }

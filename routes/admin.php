@@ -56,4 +56,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('guardians', [App\Http\Controllers\Backend\GuardianController::class, 'index'])->name('guardian.index');
     Route::get('guardians/create', [App\Http\Controllers\Backend\GuardianController::class, 'create'])->name('guardian.create');
     Route::get('guardians/{id}/edit', [App\Http\Controllers\Backend\GuardianController::class, 'edit'])->name('guardian.edit');
+
+    // staff management
+    Route::get('staff', [App\Http\Controllers\Backend\StaffController::class, 'index'])->name('staff.index');
+    Route::get('staff/create', [App\Http\Controllers\Backend\StaffController::class, 'create'])->name('staff.create');
+    Route::get('staff/{id}/edit', [App\Http\Controllers\Backend\StaffController::class, 'edit'])->name('staff.edit');
 });
