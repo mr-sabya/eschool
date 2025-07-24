@@ -71,4 +71,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // exam category management
     Route::get('exam-categories', [App\Http\Controllers\Backend\ExamCategoryController::class, 'index'])->name('exam-category.index');
+
+    // exam management
+    Route::get('exams', [App\Http\Controllers\Backend\ExamController::class, 'index'])->name('exam.index');
 });
