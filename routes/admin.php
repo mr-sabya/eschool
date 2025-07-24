@@ -33,6 +33,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // shift management
     Route::get('shifts', [App\Http\Controllers\Backend\ShiftController::class, 'index'])->name('shift.index');
 
+    // academic session management
+    Route::get('academic-sessions', [App\Http\Controllers\Backend\AcademicSessionController::class, 'index'])->name('academic-session.index');
+
     // subject management
     Route::get('subjects', [App\Http\Controllers\Backend\SubjectController::class, 'index'])->name('subject.index');
 
@@ -64,4 +67,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('staff', [App\Http\Controllers\Backend\StaffController::class, 'index'])->name('staff.index');
     Route::get('staff/create', [App\Http\Controllers\Backend\StaffController::class, 'create'])->name('staff.create');
     Route::get('staff/{id}/edit', [App\Http\Controllers\Backend\StaffController::class, 'edit'])->name('staff.edit');
+
+
+    // exam category management
+    Route::get('exam-categories', [App\Http\Controllers\Backend\ExamCategoryController::class, 'index'])->name('exam-category.index');
 });

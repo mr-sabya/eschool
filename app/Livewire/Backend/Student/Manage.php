@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Backend\Student;
 
+use App\Models\AcademicSession;
 use App\Models\Blood;
 use App\Models\ClassSection;
 use App\Models\Gender;
@@ -31,6 +32,9 @@ class Manage extends Component
     public $emergency_contact_name, $emergency_contact_phone;
     public $previous_school_attended = false, $previous_school, $previous_school_document, $new_previous_school_document;
     public $is_active = true, $notes;
+
+    // academic session current year
+    public $academic_session_id;
 
     protected $listeners = ['edit' => 'edit'];
 
@@ -90,6 +94,7 @@ class Manage extends Component
             $this->email = $student->user->email;
 
             // Student data
+            $this->academic_session_id = $student->academic_session_id;
             $this->first_name = $student->first_name;
             $this->last_name = $student->last_name;
             $this->roll_number = $student->roll_number;
@@ -122,6 +127,9 @@ class Manage extends Component
             $this->is_active = $student->is_active;
             $this->notes = $student->notes;
         }
+
+        // academic session current year
+        $this->academic_session_id = AcademicSession::current()->id ?? null;
     }
 
     public function save()
@@ -156,6 +164,7 @@ class Manage extends Component
             ['id' => $this->student_id],
             [
                 'user_id' => $user->id,
+                'academic_session_id' => $this->academic_session_id,
                 'first_name' => $this->first_name,
                 'last_name' => $this->last_name,
                 'roll_number' => $this->roll_number,
@@ -212,6 +221,7 @@ class Manage extends Component
             'bloods' => Blood::all(),
             'religions' => Religion::all(),
             'guardians' => User::where('is_parent', true)->get(),
+            'academic_sessions' => AcademicSession::all(),
         ]);
     }
 }

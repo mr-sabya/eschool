@@ -10,6 +10,7 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
+        'academic_session_id',
         'user_id',
         'first_name',
         'last_name',

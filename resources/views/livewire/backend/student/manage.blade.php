@@ -94,6 +94,18 @@
                     @error('last_name')<small class="text-danger">{{ $message }}</small>@enderror
                 </div>
 
+                <!-- academic session select option-->
+                <div class="col-md-3 mb-3">
+                    <label>Academic Session <span class="text-danger">*</span></label>
+                    <select class="form-select" wire:model="academic_session_id">
+                        <option value="">Select Academic Session</option>
+                        @foreach($academic_sessions as $session)
+                        <option value="{{ $session->id }}">{{ $session->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('academic_session_id')<small class="text-danger">{{ $message }}</small>@enderror
+                </div>
+
 
                 <div class="col-md-3 mb-3">
                     <label>Class <span class="text-danger">*</span></label>
