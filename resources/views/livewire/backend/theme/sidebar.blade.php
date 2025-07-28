@@ -87,7 +87,9 @@
                     :subMenuItems="
                     [
                         ['url' => 'admin.exam-category.index', 'label' => 'Exam Categories'],
-                        ['url' => 'admin.staff.create', 'label' => 'Add New Staff'],
+                        ['url' => 'admin.exam.index', 'label' => 'Exams'],
+                        ['url' => 'admin.mark-distribution.index', 'label' => 'Mark Distribution'],
+                        ['url' => 'admin.subject-mark-distribution.index', 'label' => 'Suject Mark Distribution'],
 
                     ]" />
 

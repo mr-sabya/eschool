@@ -74,4 +74,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // exam management
     Route::get('exams', [App\Http\Controllers\Backend\ExamController::class, 'index'])->name('exam.index');
+
+    // mark distribution management
+    Route::get('mark-distributions', [App\Http\Controllers\Backend\MarkDistributionController::class, 'index'])->name('mark-distribution.index');
+
+    // subject mark distribution management
+    Route::get('subject-mark-distributions', [App\Http\Controllers\Backend\SubjectMarkDistributionController::class, 'index'])->name('subject-mark-distribution.index');
 });
