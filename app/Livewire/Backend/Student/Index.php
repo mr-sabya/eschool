@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Backend\Student;
 
-use App\Models\Student;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -55,6 +54,7 @@ class Index extends Component
             $this->deleteId = null;
         }
     }
+
 
     public function render()
     {
