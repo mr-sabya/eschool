@@ -1,8 +1,7 @@
 <div class="card">
 
-    
     <div class="card-header bg-primary">
-        <div class="card-title m-0 text-white">Subject Mark Distributions</div>
+        <div class="card-title m-0 text-white">Final Mark Configurations</div>
     </div>
 
     <div class="card-body">
@@ -10,7 +9,7 @@
             <div class="d-flex gap-2 align-items-center">
                 <select wire:model="perPage" class="form-select form-select-sm w-auto">
                     <option value="5">5</option>
-                    <option value="10">10</option>
+                    <option value="10" selected>10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
@@ -18,7 +17,7 @@
                 <span>Records per page</span>
             </div>
             <div class="w-25">
-                <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search...">
+                <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search by Class or Subject...">
             </div>
         </div>
 
@@ -27,33 +26,31 @@
                 <tr>
                     <th wire:click="sortBy('id')" style="cursor: pointer">#</th>
                     <th wire:click="sortBy('school_class_id')" style="cursor: pointer">Class</th>
-                    <th wire:click="sortBy('class_section_id')" style="cursor: pointer">Section</th>
                     <th wire:click="sortBy('subject_id')" style="cursor: pointer">Subject</th>
-                    <th wire:click="sortBy('mark_distribution_id')" style="cursor: pointer">Mark Type</th>
-                    <th wire:click="sortBy('mark')" style="cursor: pointer">Mark</th>
-                    <th wire:click="sortBy('pass_mark')" style="cursor: pointer">Pass <Mark></Mark></th>
+                    <th wire:click="sortBy('class_test_total')" style="cursor: pointer">Class Test Total</th>
+                    <th wire:click="sortBy('other_parts_total')" style="cursor: pointer">Other Parts Total</th>
+                    <th wire:click="sortBy('final_result_weight_percentage')" style="cursor: pointer">Final Result Weight (%)</th>
                     <th>Action</th>
                 </tr>
             </thead>
 
             <tbody>
-                @forelse($distributions as $dist)
+                @forelse($configs as $config)
                 <tr>
-                    <td>{{ $dist->id }}</td>
-                    <td>{{ $dist->schoolClass->name ?? '-' }}</td>
-                    <td>{{ $dist->classSection->name ?? '-' }}</td>
-                    <td>{{ $dist->subject->name ?? '-' }}</td>
-                    <td>{{ $dist->markDistribution->name ?? '-' }}</td>
-                    <td>{{ $dist->mark }}</td>
-                    <td>{{ $dist->pass_mark }}</td>
+                    <td>{{ $config->id }}</td>
+                    <td>{{ $config->schoolClass->name ?? '-' }}</td>
+                    <td>{{ $config->subject->name ?? '-' }}</td>
+                    <td>{{ $config->class_test_total }}</td>
+                    <td>{{ $config->other_parts_total }}</td>
+                    <td>{{ $config->final_result_weight_percentage }}</td>
                     <td>
-                        <a href="{{ route('admin.subject-mark-distribution.edit', $dist->id) }}" wire:navigate class="btn btn-sm btn-primary">Edit</a>
-                        <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $dist->id }})">Delete</button>
+                        <a href="{{ route('admin.final-mark-configuration.edit', $config->id) }}" wire:navigate class="btn btn-sm btn-primary">Edit</a>
+                        <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $config->id }})">Delete</button>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center text-muted">No records found.</td>
+                    <td colspan="7" class="text-center text-muted">No records found.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -62,13 +59,13 @@
 
     <div class="card-footer d-flex justify-content-between">
         <small>
-            Showing {{ $distributions->firstItem() ?? 0 }} to {{ $distributions->lastItem() ?? 0 }} of {{ $distributions->total() }} entries
+            Showing {{ $configs->firstItem() ?? 0 }} to {{ $configs->lastItem() ?? 0 }} of {{ $configs->total() }} entries
         </small>
-        {{ $distributions->links() }}
+        {{ $configs->links() }}
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal fade @if($confirmingDeleteId) show d-block @endif" tabindex="-1" style="@if($confirmingDeleteId) display:block; background:rgba(0,0,0,0.5); @endif">
+    <div class="modal fade @if($confirmingDeleteId) show d-block @endif" tabindex="-1" style="@if($confirmingDeleteId) display:block; background:rgba(0,0,0,0.5); @endif" aria-modal="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">

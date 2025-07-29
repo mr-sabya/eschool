@@ -80,4 +80,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // subject mark distribution management
     Route::get('subject-mark-distributions', [App\Http\Controllers\Backend\SubjectMarkDistributionController::class, 'index'])->name('subject-mark-distribution.index');
+
+    // subject mark distribution create
+    Route::get('subject-mark-distributions/create', [App\Http\Controllers\Backend\SubjectMarkDistributionController::class, 'create'])->name('subject-mark-distribution.create');
+
+    // subject mark distribution edit
+    Route::get('subject-mark-distributions/{id}/edit', [App\Http\Controllers\Backend\SubjectMarkDistributionController::class, 'edit'])->name('subject-mark-distribution.edit');
+
+
+    // final mark configuration
+    Route::get('final-mark-configuration', [App\Http\Controllers\Backend\FinalMarkConfigurationController::class, 'index'])->name('final-mark-configuration.index');
+
+    // final mark configuration create
+    Route::get('final-mark-configuration/create', [App\Http\Controllers\Backend\FinalMarkConfigurationController::class, 'create'])->name('final-mark-configuration.create');
+
+    // final mark configuration edit
+    Route::get('final-mark-configuration/{id}/edit', [App\Http\Controllers\Backend\FinalMarkConfigurationController::class, 'edit'])->name('final-mark-configuration.edit');
 });

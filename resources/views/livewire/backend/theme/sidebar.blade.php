@@ -90,6 +90,7 @@
                         ['url' => 'admin.exam.index', 'label' => 'Exams'],
                         ['url' => 'admin.mark-distribution.index', 'label' => 'Mark Distribution'],
                         ['url' => 'admin.subject-mark-distribution.index', 'label' => 'Suject Mark Distribution'],
+                        ['url' => 'admin.final-mark-configuration.index', 'label' => 'Final Mark Configuration'],
 
                     ]" />
 

@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subject_mark_distributions', function (Blueprint $table) {
+        Schema::create('final_mark_configurations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('school_class_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('class_section_id')->constrained()->cascadeOnDelete();
             $table->foreignId('subject_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('mark_distribution_id')->constrained()->cascadeOnDelete();
 
-            $table->integer('mark'); // e.g., 20 for CT, 100 for exam
-            $table->integer('pass_mark'); // e.g. 80 for 80%
+            $table->unsignedInteger('class_test_total')->default(20); // out of 20
+            $table->unsignedInteger('other_parts_total')->default(100); // like written, mcq, practical
+            $table->unsignedInteger('final_result_weight_percentage')->default(80); // how much from 100
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subject_mark_distributions');
+        Schema::dropIfExists('final_mark_configurations');
     }
 };
