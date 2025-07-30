@@ -74,6 +74,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('staff/create', [App\Http\Controllers\Backend\StaffController::class, 'create'])->name('staff.create');
     Route::get('staff/{id}/edit', [App\Http\Controllers\Backend\StaffController::class, 'edit'])->name('staff.edit');
 
+    // import staff
+    Route::get('staff/import', [App\Http\Controllers\Backend\StaffController::class, 'import'])->name('staff.import');
+
+    // download staff import template
+    Route::get('staff/download-template', [App\Http\Controllers\Backend\StaffController::class, 'download'])->name('staff.download.template');
 
     // exam category management
     Route::get('exam-categories', [App\Http\Controllers\Backend\ExamCategoryController::class, 'index'])->name('exam-category.index');
@@ -109,4 +114,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // student mark management
     Route::get('student-marks', [App\Http\Controllers\Backend\StudentMarkController::class, 'index'])->name('student-mark.index');
     Route::get('student-marks/create', [App\Http\Controllers\Backend\StudentMarkController::class, 'create'])->name('student-mark.create');
+
+    // download pdf
+    Route::get('student-marks/download', [App\Http\Controllers\Backend\ResultController::class, 'downloadPdf'])->name('student-mark.download');
+
 });

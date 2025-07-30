@@ -24,4 +24,23 @@ class StaffController extends Controller
         $user = User::findOrFail($id);
         return view('backend.staff.edit', compact('user'));
     }
+
+    // import staff
+    public function import()
+    {
+        return view('backend.staff.import');
+    }
+
+    public function download()
+    {
+        $path = storage_path('app/public/staff_template.xlsx');
+
+        if (!file_exists($path)) {
+            abort(404, 'Template not found');
+        }
+
+        return response()->download($path, 'staff_template.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
 }
