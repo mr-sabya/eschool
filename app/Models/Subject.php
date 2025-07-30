@@ -14,4 +14,10 @@ class Subject extends Model
         'code',
         'type',
     ];
+
+
+    public function subjectMarkDistributions()
+    {
+        return $this->hasMany(SubjectMarkDistribution::class);
+    }
 }

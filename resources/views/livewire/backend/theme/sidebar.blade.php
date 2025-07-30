@@ -91,7 +91,21 @@
                         ['url' => 'admin.mark-distribution.index', 'label' => 'Mark Distribution'],
                         ['url' => 'admin.subject-mark-distribution.index', 'label' => 'Suject Mark Distribution'],
                         ['url' => 'admin.final-mark-configuration.index', 'label' => 'Final Mark Configuration'],
+                        ['url' => 'admin.grade.index', 'label' => 'Grades'],
 
+                    ]" />
+
+                    <!-- for mark -->
+                <livewire:backend.theme.menu-item
+                    :url="''"
+                    :icon="'ri-wallet-line'"
+                    :label="'Marks'"
+                    :hasSubMenu="true"
+                    :subMenuItems="
+                    [
+                        
+                        ['url' => 'admin.student-mark.create', 'label' => 'Add Student Marks'],
+                        ['url' => 'admin.subject-mark-distribution.create', 'label' => 'Subject Mark Distribution'],
                     ]" />
 
             </ul>

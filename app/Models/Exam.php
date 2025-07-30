@@ -25,4 +25,9 @@ class Exam extends Model
     {
         return $this->belongsTo(ExamCategory::class);
     }
+
+    public function schoolClass()
+    {
+        return $this->belongsTo(SchoolClass::class);
+    }
 }

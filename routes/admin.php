@@ -102,4 +102,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // final mark configuration edit
     Route::get('final-mark-configuration/{id}/edit', [App\Http\Controllers\Backend\FinalMarkConfigurationController::class, 'edit'])->name('final-mark-configuration.edit');
+
+    // grade management
+    Route::get('grades', [App\Http\Controllers\Backend\GradeController::class, 'index'])->name('grade.index');
+
+    // student mark management
+    Route::get('student-marks', [App\Http\Controllers\Backend\StudentMarkController::class, 'index'])->name('student-mark.index');
+    Route::get('student-marks/create', [App\Http\Controllers\Backend\StudentMarkController::class, 'create'])->name('student-mark.create');
 });
