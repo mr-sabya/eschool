@@ -4,8 +4,8 @@
 
         <div class="form-group mb-3">
             <div class="col-12">
-                <input class="form-control" type="email" name="email" wire:model="email" placeholder="Email">
-                @error('email') <span class="text-danger">{{ $message }}</span> @enderror
+                <input class="form-control" type="text" name="username" wire:model="username" placeholder="Username">
+                @error('username') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
         </div>
 

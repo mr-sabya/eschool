@@ -25,6 +25,7 @@
                 <tr>
                     <th wire:click="sortBy('id')" style="cursor:pointer">#</th>
                     <th wire:click="sortBy('name')" style="cursor:pointer">Name</th>
+                    <th>Staff ID</th>
                     <th>Email</th>
                     <th>Designation</th>
                     <th>Profile</th>
@@ -34,9 +35,10 @@
             <tbody>
                 @forelse($staffUsers as $user)
                 <tr>
-                    <td>{{ $user->id }}</td>
+                    <td>{{ ($staffUsers->currentPage() - 1) * $staffUsers->perPage() + $loop->iteration }}</td>
                     <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
+                    <td>{{ $user->staff->staff_id ?? 'N/A' }}</td>
+                    <td>{{ $user->staff->email ?? 'N/A' }}</td>
                     <td>{{ $user->staff->designation->name ?? '-' }}</td>
                     <td>
                         @if($user->staff && $user->staff->profile_picture)

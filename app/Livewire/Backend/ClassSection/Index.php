@@ -15,7 +15,7 @@ class Index extends Component
     public $school_class_id, $name, $numeric_name, $classSectionId;
     public $search = '';
     public $sortField = 'id';
-    public $sortDirection = 'asc';
+    public $sortDirection = 'desc';
     public $perPage = 10;
     public $confirmingDeleteId = null;
 
@@ -25,7 +25,7 @@ class Index extends Component
 
         return [
             'school_class_id' => 'required|exists:school_classes,id',
-            'name' => 'required|string|unique:class_sections,name,' . $id,
+            'name' => 'required|string|max:255',
             'numeric_name' => 'nullable|integer',
         ];
     }
@@ -100,7 +100,7 @@ class Index extends Component
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
 
-        $schoolClasses = SchoolClass::orderBy('name')->get();
+        $schoolClasses = SchoolClass::orderBy('id')->get();
 
         return view('livewire.backend.class-section.index', [
             'sections' => $sections,

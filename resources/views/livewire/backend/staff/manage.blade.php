@@ -26,10 +26,11 @@
                                 @error('name') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
+                            <!-- username -->
                             <div class="col-md-6 mb-3">
-                                <label>Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" wire:model="email" />
-                                @error('email') <small class="text-danger">{{ $message }}</small> @enderror
+                                <label>Username <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" wire:model="username" />
+                                @error('username') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -146,6 +147,12 @@
                         <label>Mother's Name</label>
                         <input type="text" class="form-control" wire:model="mother_name" />
                         @error('mother_name') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <label>Email </label>
+                        <input type="email" class="form-control" wire:model="email" />
+                        @error('email') <small class="text-danger">{{ $message }}</small> @enderror
                     </div>
 
                     <div class="col-md-3 mb-3">

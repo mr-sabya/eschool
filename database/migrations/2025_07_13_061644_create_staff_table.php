@@ -39,6 +39,7 @@ return new class extends Migration
             // mother name
             $table->string('mother_name')->nullable(); // Optional mother name
 
+            $table->string('email')->unique()->nullable(); // Optional email, can be null if not provided
             $table->string('phone')->nullable(); // Optional phone number
             // nid is optional, can be null if not applicable
             $table->string('nid')->nullable()->unique();

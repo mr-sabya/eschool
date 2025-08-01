@@ -7,12 +7,12 @@ use Livewire\Component;
 
 class Login extends Component
 {
-    public $email = '';
+    public $username = '';
     public $password = '';
     public $remember = false; // Add this for the Remember Me checkbox
 
     protected $rules = [
-        'email' => 'required|email',
+        'username' => 'required|string',
         'password' => 'required|min:6',
     ];
 
@@ -20,13 +20,13 @@ class Login extends Component
     {
         $this->validate();
 
-        if (Auth::attempt(['email' => $this->email, 'password' => $this->password, 'is_admin' => true], $this->remember)) {
+        if (Auth::attempt(['username' => $this->username, 'password' => $this->password, 'is_admin' => true], $this->remember)) {
             // Redirect on successful login
             return $this->redirect(route('admin.dashboard'), navigate: true);
         }
 
         // Display error on failure
-        session()->flash('error', 'Invalid email or password.');
+        session()->flash('error', 'Invalid username or password.');
     }
 
 

@@ -14,7 +14,7 @@ class Index extends Component
     public $name, $code, $type = 'theory', $subjectId;
     public $search = '';
     public $sortField = 'id';
-    public $sortDirection = 'asc';
+    public $sortDirection = 'desc';
     public $perPage = 10;
     public $confirmingDeleteId = null;
 

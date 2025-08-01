@@ -20,10 +20,10 @@ class Manage extends Component
     public $staff_id, $user_id;
 
     // User fields (keep your original naming)
-    public $name, $email, $password, $password_confirmation, $status = true, $role;
+    public $name, $username, $password, $password_confirmation, $status = true, $role;
 
     // Staff fields
-    public $staffUID, $department_id, $first_name, $last_name, $father_name, $mother_name,
+    public $staffUID, $department_id, $first_name, $last_name, $father_name, $mother_name, $email,
         $phone, $nid, $date_of_birth, $current_address, $permanent_address,
         $designation_id, $gender_id, $marital_status = 'single', $basic_salary,
         $date_of_joining, $profile_picture, $new_profile_picture;
@@ -32,13 +32,13 @@ class Manage extends Component
 
     protected function rules()
     {
-        $staffId = $this->staff_id ?: 'NULL';
-        $userId = $this->user_id ?: 'NULL';
+        $staffId = $this->staff_id ?? 'NULL';
+        $userId = $this->user_id ?? 'NULL';
 
         return [
             // User validations
             'name' => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
+            'username' => ['required', 'string', Rule::unique('users', 'username')->ignore($userId)],
             'password' => $this->user_id ? 'nullable|confirmed|min:6' : 'required|confirmed|min:6',
             'status' => 'boolean',
             'role' => ['required', Rule::in(['admin', 'teacher', 'librarian', 'accountant'])],
@@ -49,6 +49,7 @@ class Manage extends Component
             'last_name' => 'required|string|max:255',
             'father_name' => 'nullable|string|max:255',
             'mother_name' => 'nullable|string|max:255',
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('staff', 'email')->ignore($staffId)],
             'phone' => 'nullable|string|max:20',
             'nid' => ['nullable', 'string', 'max:50', Rule::unique('staff', 'nid')->ignore($staffId)],
             'date_of_birth' => 'nullable|date',
@@ -80,21 +81,22 @@ class Manage extends Component
 
             $this->user_id = $user->id;
             $this->name = $user->name;
-            $this->email = $user->email;
+            $this->username = $user->username;
             $this->role = $user->role;
             $this->status = $user->status;
 
             $staff = Staff::where('user_id', $userId)->first();
             if ($staff) {
                 $this->staff_id = $staff->id;
-
+                // dd($this->staff_id);
+                $this->staffUID = $staff->staff_id;
                 $this->fill($staff->only([
-                    'staff_id',
                     'department_id',
                     'first_name',
                     'last_name',
                     'father_name',
                     'mother_name',
+                    'email',
                     'phone',
                     'nid',
                     'date_of_birth',
@@ -119,7 +121,7 @@ class Manage extends Component
         // Save or update User
         $userData = [
             'name' => $this->name,
-            'email' => $this->email,
+            'username' => $this->username,
             'role' => $this->role,
             'status' => $this->status,
             'is_admin' => true, // Mark staff user as admin
@@ -148,6 +150,7 @@ class Manage extends Component
                 'last_name' => $this->last_name,
                 'father_name' => $this->father_name,
                 'mother_name' => $this->mother_name,
+                'email' => $this->email,
                 'phone' => $this->phone,
                 'nid' => $this->nid,
                 'date_of_birth' => $this->date_of_birth,
@@ -168,7 +171,8 @@ class Manage extends Component
         ]);
 
         $this->resetForm();
-        $this->emit('staffSaved');
+        $this->dispatch('staffSaved');
+        return $this->redirect(route('admin.staff.index'), navigate: true);
     }
 
     public function resetForm()
