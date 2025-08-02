@@ -14,6 +14,7 @@ class Import extends Component
 {
     use WithFileUploads;
 
+    public $sections = [];
     public $import_file;
     public $import_class_id;
     public $import_section_id;
@@ -39,11 +40,16 @@ class Import extends Component
         $this->dispatch('student-saved');
     }
 
+    public function getSections($value)
+    {
+        $this->sections = ClassSection::where('school_class_id', $value)->get();
+        $this->import_section_id = null; // reset selected section
+    }
+
     public function render()
     {
         return view('livewire.backend.student.import', [
             'classes' => SchoolClass::all(),
-            'sections' => ClassSection::all(),
         ]);
     }
 }

@@ -28,12 +28,16 @@ class StudentsImport implements ToModel, WithHeadingRow
             return null;
         }
 
-        $fullName = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+        $name = $row['name'] ?? 'Unknown';
+        $baseUsername = strtolower(str_replace(' ', '', explode(' ', $name)[0])); // first part of name, lowercase
+
+        // Generate a unique username if not provided
+        $username = $row['username'] ?? $this->generateUniqueUsername($baseUsername);
 
         $user = User::firstOrCreate(
-            ['email' => $row['email']],
+            ['username' => $username],
             [
-                'name' => $fullName,
+                'name' => $name,
                 'password' => Hash::make($row['password'] ?? '12345678'),
             ]
         );
@@ -41,17 +45,24 @@ class StudentsImport implements ToModel, WithHeadingRow
         return Student::updateOrCreate(
             ['user_id' => $user->id, 'academic_session_id' => $this->sessionId],
             [
-                'first_name' => $row['first_name'],
-                'last_name' => $row['last_name'],
                 'roll_number' => $row['roll_number'] ?? null,
                 'school_class_id' => $this->classId,
                 'class_section_id' => $this->sectionId,
-                'phone' => $row['phone'] ?? null,
-                'address' => $row['address'] ?? null,
-                'admission_date' => $row['admission_date'] ?? null,
-                'admission_number' => $row['admission_number'] ?? null,
                 'is_active' => true,
             ]
         );
+    }
+
+    protected function generateUniqueUsername($base)
+    {
+        $username = $base;
+        $counter = 1;
+
+        while (User::where('username', $username)->exists()) {
+            $username = $base . $counter;
+            $counter++;
+        }
+
+        return $username;
     }
 }

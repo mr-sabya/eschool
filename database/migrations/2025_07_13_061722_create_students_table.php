@@ -25,9 +25,6 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade');
 
-            // Additional fields for student details
-            $table->string('first_name');
-            $table->string('last_name');
             
             // roll number
             $table->string('roll_number')->unique()->nullable(); // Unique roll number, can

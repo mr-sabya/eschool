@@ -24,7 +24,7 @@ class Manage extends Component
     public $name, $email, $password;
 
     // Student fields
-    public $first_name, $last_name, $roll_number, $school_class_id, $class_section_id, $shift_id;
+    public $roll_number, $school_class_id, $class_section_id, $shift_id;
     public $guardian_id, $phone, $address, $date_of_birth, $admission_date, $admission_number;
     public $category, $gender_id, $blood_id, $religion_id, $national_id, $place_of_birth;
     public $nationality, $language, $health_status, $rank_in_family, $number_of_siblings;
@@ -47,8 +47,6 @@ class Manage extends Component
             'password' => $this->user_id ? 'nullable|min:6' : 'required|min:6',
 
             // Student validations
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
             'roll_number' => 'nullable|unique:students,roll_number,' . ($this->student_id ?? 'NULL') . ',id',
             'school_class_id' => 'required|exists:school_classes,id',
             'class_section_id' => 'nullable|exists:class_sections,id',
@@ -95,8 +93,6 @@ class Manage extends Component
 
             // Student data
             $this->academic_session_id = $student->academic_session_id;
-            $this->first_name = $student->first_name;
-            $this->last_name = $student->last_name;
             $this->roll_number = $student->roll_number;
             $this->school_class_id = $student->school_class_id;
             $this->class_section_id = $student->class_section_id;
@@ -165,8 +161,6 @@ class Manage extends Component
             [
                 'user_id' => $user->id,
                 'academic_session_id' => $this->academic_session_id,
-                'first_name' => $this->first_name,
-                'last_name' => $this->last_name,
                 'roll_number' => $this->roll_number,
                 'school_class_id' => $this->school_class_id,
                 'class_section_id' => $this->class_section_id,

@@ -83,16 +83,6 @@
                     @error('admission_date')<small class="text-danger">{{ $message }}</small>@enderror
                 </div>
 
-                <div class="col-md-3 mb-3">
-                    <label>First Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" wire:model="first_name">
-                    @error('first_name')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label>Last Name <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" wire:model="last_name">
-                    @error('last_name')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
 
                 <!-- academic session select option-->
                 <div class="col-md-3 mb-3">

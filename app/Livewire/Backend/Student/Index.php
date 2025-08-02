@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Backend\Student;
 
+use App\Models\ClassSection;
+use App\Models\SchoolClass;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -14,9 +16,12 @@ class Index extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'desc';
-    public $perPage = 10;
+    public $perPage = 25;
     public $confirmingDelete = false;
     public $deleteId = null;
+
+    public $filter_class_id = null;
+    public $filter_section_id = null;
 
     protected $listeners = ['student-saved' => '$refresh'];
 
@@ -55,21 +60,35 @@ class Index extends Component
         }
     }
 
+    public function getFilteredSectionsProperty()
+    {
+        if ($this->filter_class_id) {
+            return ClassSection::where('school_class_id', $this->filter_class_id)->get();
+        }
+        return collect(); // return empty collection if no class selected
+    }
+
 
     public function render()
     {
         $students = User::with('student.schoolClass')
-            ->whereHas('student') // ✅ Only users who are students
+            ->whereHas('student', function ($query) {
+                $query->when($this->filter_class_id, fn($q) => $q->where('school_class_id', $this->filter_class_id))
+                    ->when($this->filter_section_id, fn($q) => $q->where('class_section_id', $this->filter_section_id));
+            })
             ->where(function ($q) {
                 $q->where('name', 'like', "%{$this->search}%")
-                    ->orWhereHas('student', function ($q2) {
-                        $q2->where('first_name', 'like', "%{$this->search}%")
-                            ->orWhere('last_name', 'like', "%{$this->search}%");
+                    ->orWhereHas('student', function ($query) {
+                        $query->where('roll_number', 'like', "%{$this->search}%")
+                            ->orWhere('phone', 'like', "%{$this->search}%");
                     });
             })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
 
-        return view('livewire.backend.student.index', compact('students'));
+        return view('livewire.backend.student.index', [
+            'students' => $students,
+            'allClasses' => SchoolClass::all(),
+        ]);
     }
 }

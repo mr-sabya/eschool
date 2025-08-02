@@ -20,7 +20,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label>Class</label>
-                            <select wire:model="import_class_id" class="form-control">
+                            <select wire:model="import_class_id" class="form-control" wire:change="getSections($event.target.value)">
                                 <option value="">-- Select Class --</option>
                                 @foreach($classes as $class)
                                 <option value="{{ $class->id }}">{{ $class->name }}</option>

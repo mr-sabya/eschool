@@ -4,6 +4,32 @@
     </div>
 
     <div class="card-body">
+
+        <div class="row mb-3 border-bottom pb-3">
+            <div class="col-md-3">
+                <select wire:model="filter_class_id" class="form-select" wire:change="getFilteredSectionsProperty">
+                    <option value="">All Classes</option>
+                    @foreach($allClasses as $class)
+                    <option value="{{ $class->id }}">{{ $class->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <select wire:model="filter_section_id" class="form-select" {{ $filter_class_id ? '' : 'disabled' }}>
+                    <option value="">All Sections</option>
+                    @foreach($this->filteredSections as $section)
+                    <option value="{{ $section->id }}">{{ $section->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-lg-6">
+                <button class="btn btn-secondary" wire:click="$set('filter_class_id', null); $set('filter_section_id', null);">Reset Filters</button>
+
+            </div>
+        </div>
+
         <div class="table-action d-flex justify-content-between mb-3">
             <div class="d-flex gap-2 align-items-center">
                 <select wire:model="perPage" class="form-select form-select-sm w-auto">
