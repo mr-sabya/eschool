@@ -3,5 +3,7 @@
 @section('title', 'Create Student Marks')
 
 @section('content')
-<livewire:backend.student-mark.create />
+<div class="container-fluid">
+    <livewire:backend.student-mark.create />
+</div>
 @endsection

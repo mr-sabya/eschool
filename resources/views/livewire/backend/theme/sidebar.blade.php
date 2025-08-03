@@ -26,6 +26,7 @@
                         ['url' => 'admin.section.index', 'label' => 'Section'],
                         ['url' => 'admin.shift.index', 'label' => 'Shift'],
                         ['url' => 'admin.subject.index', 'label' => 'Subject'],
+                        ['url' => 'admin.subject-assign.index', 'label' => 'Subject Assignments'],
                         ['url' => 'admin.classroom.index', 'label' => 'Classroom'],
                         ['url' => 'admin.academic-session.index', 'label' => 'Academic Session'],
 
@@ -105,7 +106,8 @@
                     [
                         
                         ['url' => 'admin.student-mark.create', 'label' => 'Add Student Marks'],
-                        ['url' => 'admin.subject-mark-distribution.create', 'label' => 'Subject Mark Distribution'],
+                        ['url' => 'admin.result.index', 'label' => 'Student Results'],
+                        ['url' => 'admin.result.generate.pdf', 'label' => 'Generate PDF'],
                     ]" />
 
             </ul>

@@ -9,7 +9,7 @@
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <label class="form-label">Class</label>
-                        <select class="form-select" wire:model="school_class_id">
+                        <select class="form-select" wire:model="school_class_id" wire:change="onClassChange">
                             <option value="">Select Class</option>
                             @foreach ($classes as $class)
                             <option value="{{ $class->id }}">{{ $class->name }}</option>
@@ -29,6 +29,8 @@
                         @error('class_section_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
+
+                <!-- The rest of your form remains unchanged -->
 
                 <table class="table table-bordered align-middle">
                     <thead class="table-light">

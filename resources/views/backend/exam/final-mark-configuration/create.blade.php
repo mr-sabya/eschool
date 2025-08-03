@@ -3,5 +3,7 @@
 @section('title', 'Final Mark Configuration')
 
 @section('content')
-<livewire:backend.final-mark-configuration.create />
+<div class="container-fluid">
+    <livewire:backend.final-mark-configuration.create />
+</div>
 @endsection

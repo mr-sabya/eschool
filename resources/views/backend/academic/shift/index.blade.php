@@ -3,5 +3,7 @@
 @section('title', 'Shift')
 
 @section('content')
-<livewire:backend.shift.index />
+<div class="container-fluid">
+    <livewire:backend.shift.index />
+</div>
 @endsection

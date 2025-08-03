@@ -3,5 +3,7 @@
 @section('title', 'Blood Group')
 
 @section('content')
-<livewire:backend.blood.index />
+    <div class="container-fluid">
+        <livewire:backend.blood.index />
+    </div>
 @endsection

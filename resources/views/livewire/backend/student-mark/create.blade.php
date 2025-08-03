@@ -76,7 +76,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $student->roll_number }}</td>
-                            <td>{{ $student->first_name }} {{ $student->last_name }}</td>
+                            <td>{{ $student->user->name }}</td>
                             @foreach ($markDistributions as $md)
                             <td style="width: 120px;">
                                 <input

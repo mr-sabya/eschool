@@ -39,6 +39,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // subject management
     Route::get('subjects', [App\Http\Controllers\Backend\SubjectController::class, 'index'])->name('subject.index');
 
+    // subject assign management
+    Route::get('subject-assigns', [App\Http\Controllers\Backend\SubjectAssignController::class, 'index'])->name('subject-assign.index');
+
+    // subject assign create
+    Route::get('subject-assigns/create', [App\Http\Controllers\Backend\SubjectAssignController::class, 'create'])->name('subject-assign.create');
+
+    // subject assign edit
+    Route::get('subject-assigns/{subjectAssignId}/edit', [App\Http\Controllers\Backend\SubjectAssignController::class, 'edit'])->name('subject-assign.edit');
+
     // designation management
     Route::get('designations', [App\Http\Controllers\Backend\DesignationController::class, 'index'])->name('designation.index');
 
@@ -115,7 +124,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('student-marks', [App\Http\Controllers\Backend\StudentMarkController::class, 'index'])->name('student-mark.index');
     Route::get('student-marks/create', [App\Http\Controllers\Backend\StudentMarkController::class, 'create'])->name('student-mark.create');
 
-    // download pdf
-    Route::get('student-marks/download', [App\Http\Controllers\Backend\ResultController::class, 'downloadPdf'])->name('student-mark.download');
+    // result management
+    Route::get('results', [App\Http\Controllers\Backend\ResultController::class, 'index'])->name('result.index');
 
+    // show result
+    Route::get('results/{studentId}/{examId}/{classId}/{sectionId}/{sessionId}', [App\Http\Controllers\Backend\ResultController::class, 'show'])
+        ->name('result.show');
+
+        // generate PDF
+    Route::get('results/generate-pdf', [App\Http\Controllers\Backend\ResultController::class, 'generatePdf'])
+        ->name('result.generate.pdf');
 });

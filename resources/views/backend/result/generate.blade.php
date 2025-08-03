@@ -1,9 +1,9 @@
 @extends('backend.layouts.app')
 
-@section('title', 'Class')
+@section('title', 'Exam Results')
 
 @section('content')
 <div class="container-fluid">
-    <livewire:backend.academic-session.index />
+    <livewire:backend.result.generate-pdf />
 </div>
 @endsection

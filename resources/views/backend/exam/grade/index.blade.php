@@ -3,5 +3,7 @@
 @section('title', 'Grade Management')
 
 @section('content')
-<livewire:backend.grade.index />
+<div class="container-fluid">
+    <livewire:backend.grade.index />
+</div>
 @endsection

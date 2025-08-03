@@ -3,5 +3,7 @@
 @section('title', 'Gender')
 
 @section('content')
-<livewire:backend.gender.index />
+<div class="container-fluid">
+    <livewire:backend.gender.index />
+</div>
 @endsection

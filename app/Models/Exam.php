@@ -16,6 +16,11 @@ class Exam extends Model
         'end_at',
     ];
 
+    protected $casts = [
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
+    ];
+
     public function academicSession()
     {
         return $this->belongsTo(AcademicSession::class);

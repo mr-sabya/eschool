@@ -20,6 +20,8 @@ class Edit extends Component
     public $mark;
     public $pass_mark;
 
+    public $sections = [];  // filtered sections for selected class
+
     public function mount($id)
     {
         $distribution = SubjectMarkDistribution::findOrFail($id);
@@ -31,6 +33,15 @@ class Edit extends Component
         $this->mark_distribution_id = $distribution->mark_distribution_id;
         $this->mark = $distribution->mark;
         $this->pass_mark = $distribution->pass_mark;
+
+        // Load sections for the initial class
+        $this->sections = ClassSection::where('school_class_id', $this->school_class_id)->get();
+    }
+
+    public function updatedSchoolClassId($value)
+    {
+        $this->class_section_id = null; // reset selected section
+        $this->sections = ClassSection::where('school_class_id', $value)->get();
     }
 
     public function update()
@@ -62,9 +73,9 @@ class Edit extends Component
     {
         return view('livewire.backend.subject-mark-distribution.edit', [
             'classes' => SchoolClass::all(),
-            'sections' => ClassSection::all(),
             'subjects' => Subject::all(),
             'distributions' => MarkDistribution::all(),
+            // don't send all sections anymore, use filtered sections property instead
         ]);
     }
 }

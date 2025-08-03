@@ -1,5 +1,7 @@
 @extends('backend.layouts.guest')
 
 @section('content')
-<livewire:backend.auth.login />
+<div class="container-fluid">
+    <livewire:backend.auth.login />
+</div>
 @endsection

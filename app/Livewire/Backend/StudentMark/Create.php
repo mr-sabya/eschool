@@ -112,7 +112,7 @@ class Create extends Component
         if ($this->schoolClassId && $this->classSectionId) {
             $this->students = Student::where('school_class_id', $this->schoolClassId)
                 ->where('class_section_id', $this->classSectionId)
-                ->orderBy('first_name')
+                ->orderBy('roll_number')
                 ->get();
         } else {
             $this->students = collect();

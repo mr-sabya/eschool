@@ -3,5 +3,7 @@
 @section('title', 'Subject Mark Distribution')
 
 @section('content')
-<livewire:backend.subject-mark-distribution.create />
+<div class="container-fluid">
+    <livewire:backend.subject-mark-distribution.create />
+</div>
 @endsection

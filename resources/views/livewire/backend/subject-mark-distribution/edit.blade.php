@@ -9,6 +9,7 @@
                 <div class="card-body">
                     <form wire:submit.prevent="update">
                         <div class="row mb-3">
+
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">Class</label>
                                 <select class="form-select" wire:model="school_class_id">
@@ -74,5 +75,4 @@
             </div>
         </div>
     </div>
-
 </div>

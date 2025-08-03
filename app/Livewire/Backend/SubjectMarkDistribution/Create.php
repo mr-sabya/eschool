@@ -15,10 +15,17 @@ class Create extends Component
     public $class_section_id;
 
     public $rows = [];
+    public $sections = [];  // This will hold filtered sections
 
     public function mount()
     {
         $this->addRow();
+    }
+
+    public function onClassChange()
+    {
+        $this->class_section_id = null;
+        $this->sections = ClassSection::where('school_class_id', $this->school_class_id)->get();
     }
 
     public function addRow()
@@ -61,7 +68,7 @@ class Create extends Component
 
         $this->dispatch('notify', ['type' => 'success', 'message' => 'Subject mark distributions saved successfully.']);
 
-        $this->reset(['school_class_id', 'class_section_id', 'rows']);
+        $this->reset(['school_class_id', 'class_section_id', 'rows', 'sections']);
         $this->addRow();
     }
 
@@ -69,7 +76,6 @@ class Create extends Component
     {
         return view('livewire.backend.subject-mark-distribution.create', [
             'classes' => SchoolClass::all(),
-            'sections' => ClassSection::all(),
             'subjects' => Subject::all(),
             'distributions' => MarkDistribution::all(),
         ]);
