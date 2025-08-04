@@ -10,6 +10,7 @@
     <table class="info-table">
         <tr>
             <td><strong>Name:</strong> {{ $student->user['name'] }}</td>
+            <td><strong>Student's ID:</strong> {{ $data['student']['id'] }}</td>
             <td><strong>Class:</strong> {{ $student->schoolClass['name'] }}</td>
             <td><strong>Section:</strong> {{ $student->classSection['name'] }}</td>
             <td><strong>Roll No:</strong> {{ $student['roll_number'] }}</td>

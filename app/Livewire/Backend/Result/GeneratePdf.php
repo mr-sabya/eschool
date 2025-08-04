@@ -15,7 +15,6 @@ use App\Models\{
     FinalMarkConfiguration
 };
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
-use PDF;
 
 class GeneratePdf extends Component
 {
@@ -67,6 +66,113 @@ class GeneratePdf extends Component
 
         $results = [];
 
+        // First calculate totals and fail flags for all students (for position calculation)
+        $studentTotals = [];
+
+        foreach ($students as $student) {
+            $totalMarksObtained = 0;
+            $totalGradePoints = 0;
+            $subjectCount = 0;
+            $failFlag = false;
+
+            foreach ($subjectAssign->items as $item) {
+                $subject = $item->subject;
+
+                $finalConfig = FinalMarkConfiguration::where('school_class_id', $this->school_class_id)
+                    ->where('subject_id', $subject->id)
+                    ->first();
+
+                $distributions = SubjectMarkDistribution::where('school_class_id', $this->school_class_id)
+                    ->where('class_section_id', $this->class_section_id)
+                    ->where('subject_id', $subject->id)
+                    ->get();
+
+                $ctMark = 0;
+                $annualMark = 0;
+                $isFailInAnyDistribution = false;
+
+                foreach ($distributions as $dist) {
+                    $mark = StudentMark::where([
+                        'student_id' => $student->id,
+                        'exam_id' => $this->exam_id,
+                        'school_class_id' => $this->school_class_id,
+                        'class_section_id' => $this->class_section_id,
+                        'subject_id' => $subject->id,
+                        'mark_distribution_id' => $dist->mark_distribution_id,
+                    ])->value('marks_obtained') ?? 0;
+
+                    $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
+                    if ($isCT) {
+                        $ctMark += $mark;
+                    } else {
+                        $annualMark += $mark;
+                    }
+
+                    if ($mark < $dist->pass_mark) {
+                        $isFailInAnyDistribution = true;
+                    }
+                }
+
+                $annualMarkWeighted = $finalConfig
+                    ? $annualMark * ($finalConfig->final_result_weight_percentage / 100)
+                    : $annualMark;
+
+                $total = $ctMark + $annualMarkWeighted;
+
+                $gradeData = Grade::where('start_marks', '<=', $total)
+                    ->where('end_marks', '>=', $total)
+                    ->first();
+
+                $gradePoint = $gradeData->grade_point ?? 0;
+
+                if ($isFailInAnyDistribution) {
+                    $failFlag = true;
+                }
+
+                // Exclude Art from GPA for class 3,4,5
+                $excludedFromGPA = in_array((int) $this->school_class_id, [3, 4, 5]) &&
+                    strtolower($subject->name) === 'art';
+
+                if (!$excludedFromGPA) {
+                    $totalGradePoints += $isFailInAnyDistribution ? 0 : $gradePoint;
+                    $subjectCount++;
+                }
+
+                $totalMarksObtained += $total;
+            }
+
+            $averageGPA = $failFlag ? 0.00 : ($subjectCount > 0 ? round($totalGradePoints / $subjectCount, 2) : 0.00);
+
+            $studentTotals[] = [
+                'student_id' => $student->id,
+                'total' => $totalMarksObtained,
+                'fail' => $failFlag,
+                'gpa' => $averageGPA,
+            ];
+        }
+
+        // Sort students descending by total marks for position calculation
+        usort($studentTotals, fn($a, $b) => $b['total'] <=> $a['total']);
+
+        // Assign positions with tie handling
+        $positions = [];
+        $lastTotal = null;
+        $rank = 0;
+        $sameRankCount = 0;
+
+        foreach ($studentTotals as $index => $data) {
+            if ($lastTotal === null || $data['total'] != $lastTotal) {
+                $rank = $index + 1;
+                $sameRankCount = 1;
+            } else {
+                $sameRankCount++;
+            }
+
+            $positions[$data['student_id']] = $rank;
+            $lastTotal = $data['total'];
+        }
+
+        // Now prepare detailed results with subjects and summary including position
         foreach ($students as $student) {
             $subjects = [];
             $totalMarksObtained = 0;
@@ -87,11 +193,9 @@ class GeneratePdf extends Component
                     ->where('subject_id', $subject->id)
                     ->get();
 
-                $fullMark = $finalConfig ? $finalConfig->other_parts_total : $distributions->sum('mark');
-                $passMark = $distributions->min('pass_mark');
-
                 $ctMark = 0;
                 $annualMark = 0;
+                $isFailInAnyDistribution = false;
 
                 foreach ($distributions as $dist) {
                     $mark = StudentMark::where([
@@ -109,6 +213,10 @@ class GeneratePdf extends Component
                     } else {
                         $annualMark += $mark;
                     }
+
+                    if ($mark < $dist->pass_mark) {
+                        $isFailInAnyDistribution = true;
+                    }
                 }
 
                 $annualMarkWeighted = $finalConfig
@@ -125,14 +233,15 @@ class GeneratePdf extends Component
                 $gradePoint = $gradeData->grade_point ?? 0;
                 $remarks = $gradeData->remarks ?? '';
 
-                if ($total < $passMark) {
+                if ($isFailInAnyDistribution) {
                     $failFlag = true;
                 }
 
-                // Calculate highest mark for this subject across all students
+                // Calculate highest mark among all students for this subject
                 $studentsTotalMarks = [];
+                foreach ($studentTotals as $studTotal) {
+                    $studId = $studTotal['student_id'];
 
-                foreach ($studentIds as $studId) {
                     $studCT = 0;
                     $studAnnual = 0;
 
@@ -167,37 +276,44 @@ class GeneratePdf extends Component
                     ->where('end_marks', '>=', $highest)
                     ->first();
 
-                $highestGradeName = $highestGradeData->grade_name ?? $this->getLetterGrade($highestGradeData->grade_point ?? 0);
+                $highestGPA = $highestGradeData->grade_point ?? 0;
+                $highestGradeName = $this->getLetterGrade($highestGPA);
 
                 $subjects[] = [
                     'name' => $subject->name,
-                    'full_mark' => $fullMark,
+                    'full_mark' => $finalConfig ? $finalConfig->other_parts_total : $distributions->sum('mark'),
                     'ct' => $ctMark,
                     'annual' => $annualMark,
                     'cal_ct' => $ctMark,
                     'cal_annual' => round($annualMarkWeighted, 2),
                     'total' => round($total, 2),
-                    'gpa' => $gradePoint,
-                    'grade' => $gradeName,
-                    'result' => $total >= $passMark ? 'Pass' : 'Fail',
+                    'gpa' => $isFailInAnyDistribution ? number_format(0, 2) : number_format($gradePoint, 2),
+                    'grade' => $isFailInAnyDistribution ? 'F' : $gradeName,
+                    'result' => $isFailInAnyDistribution ? 'Fail' : 'Pass',
                     'remarks' => $remarks,
                     'highest' => round($highest, 2),
                     'highest_grade' => $highestGradeName,
                 ];
 
                 $totalMarksObtained += $total;
-                $totalGradePoints += $gradePoint;
-                $subjectCount++;
+
+                $excludedFromGPA = in_array((int) $this->school_class_id, [3, 4, 5]) &&
+                    strtolower($subject->name) === 'art';
+
+                if (!$excludedFromGPA) {
+                    $totalGradePoints += $isFailInAnyDistribution ? 0 : $gradePoint;
+                    $subjectCount++;
+                }
             }
 
-            $averageGPA = $subjectCount > 0 ? round($totalGradePoints / $subjectCount, 2) : 0;
+            $averageGPA = $failFlag ? 0.00 : ($subjectCount > 0 ? round($totalGradePoints / $subjectCount, 2) : 0.00);
 
             $summary = [
                 'total' => round($totalMarksObtained, 2),
                 'grade' => $failFlag ? 'F' : $this->getLetterGrade($averageGPA),
-                'gpa' => $averageGPA,
+                'gpa' => $failFlag ? number_format(0, 2) : number_format($averageGPA, 2),
                 'result' => $failFlag ? 'Fail' : 'Pass',
-                'position' => 0,
+                'position' => $positions[$student->id] ?? 0,
                 'comment' => '',
             ];
 
