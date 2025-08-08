@@ -7,6 +7,7 @@ use App\Models\SchoolClass;
 use App\Models\ClassSection;
 use App\Models\Subject;
 use App\Models\MarkDistribution;
+use App\Models\Department;
 use Livewire\Component;
 
 class Edit extends Component
@@ -15,12 +16,15 @@ class Edit extends Component
 
     public $school_class_id;
     public $class_section_id;
+    public $department_id;  // added department_id
+
     public $subject_id;
     public $mark_distribution_id;
     public $mark;
     public $pass_mark;
 
     public $sections = [];  // filtered sections for selected class
+    public $departments = []; // departments list
 
     public function mount($id)
     {
@@ -29,10 +33,13 @@ class Edit extends Component
         $this->subjectMarkDistributionId = $id;
         $this->school_class_id = $distribution->school_class_id;
         $this->class_section_id = $distribution->class_section_id;
+        $this->department_id = $distribution->department_id;  // load department_id
         $this->subject_id = $distribution->subject_id;
         $this->mark_distribution_id = $distribution->mark_distribution_id;
         $this->mark = $distribution->mark;
         $this->pass_mark = $distribution->pass_mark;
+
+        $this->departments = Department::all();
 
         // Load sections for the initial class
         $this->sections = ClassSection::where('school_class_id', $this->school_class_id)->get();
@@ -49,6 +56,7 @@ class Edit extends Component
         $this->validate([
             'school_class_id' => 'required|exists:school_classes,id',
             'class_section_id' => 'required|exists:class_sections,id',
+            'department_id' => 'nullable|exists:departments,id',  // department validation
             'subject_id' => 'required|exists:subjects,id',
             'mark_distribution_id' => 'required|exists:mark_distributions,id',
             'mark' => 'required|numeric|min:0',
@@ -60,6 +68,7 @@ class Edit extends Component
         $distribution->update([
             'school_class_id' => $this->school_class_id,
             'class_section_id' => $this->class_section_id,
+            'department_id' => $this->department_id,  // update department_id
             'subject_id' => $this->subject_id,
             'mark_distribution_id' => $this->mark_distribution_id,
             'mark' => $this->mark,
@@ -75,7 +84,7 @@ class Edit extends Component
             'classes' => SchoolClass::all(),
             'subjects' => Subject::all(),
             'distributions' => MarkDistribution::all(),
-            // don't send all sections anymore, use filtered sections property instead
+            'departments' => $this->departments,
         ]);
     }
 }

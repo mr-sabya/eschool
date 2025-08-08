@@ -15,12 +15,6 @@
                         </div>
 
                         <div class="mb-3">
-                            <label>Code</label>
-                            <input type="text" class="form-control" wire:model="code">
-                            @error('code') <span class="text-danger">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="mb-3">
                             <label>Description</label>
                             <textarea class="form-control" wire:model="description"></textarea>
                         </div>
@@ -66,9 +60,6 @@
                                     <th wire:click="sortBy('name')" style="cursor: pointer;">
                                         Name @if($sortField === 'name') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
                                     </th>
-                                    <th wire:click="sortBy('code')" style="cursor: pointer;">
-                                        Code @if($sortField === 'code') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
-                                    </th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -78,7 +69,6 @@
                                 <tr>
                                     <td>{{ ($departments->currentPage() - 1) * $departments->perPage() + $loop->iteration }}</td>
                                     <td>{{ $department->name }}</td>
-                                    <td>{{ $department->code }}</td>
                                     <td>
                                         <button class="btn btn-sm btn-primary" wire:click="edit({{ $department->id }})"><i class="ri-edit-line"></i></button>
                                         <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $department->id }})" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="ri-delete-bin-line"></i></button>

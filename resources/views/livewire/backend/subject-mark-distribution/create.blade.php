@@ -1,7 +1,7 @@
 <div>
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h5 class="card-title m-0">Create Subject Mark Distribution</h5>
+            <h5 class="card-title m-0 text-white">Create Subject Mark Distribution</h5>
         </div>
 
         <div class="card-body">
@@ -27,6 +27,17 @@
                             @endforeach
                         </select>
                         @error('class_section_id') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" wire:model="department_id">
+                            <option value="">Select Department</option>
+                            @foreach ($departments as $dept)
+                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('department_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
 

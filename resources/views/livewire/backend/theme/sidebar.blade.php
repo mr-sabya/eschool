@@ -1,117 +1,114 @@
 <div class="vertical-menu">
-
     <div data-simplebar class="h-100">
-
-        <!--- Sidemenu -->
         <div id="sidebar-menu">
-            <!-- Left Menu Start -->
             <ul class="metismenu list-unstyled" id="side-menu">
                 <li class="menu-title">Menu</li>
 
-                <livewire:backend.theme.menu-item
-                    :url="'admin.dashboard'"
-                    :icon="'ri-dashboard-line'"
-                    :label="'Dashboard'"
-                    :hasSubMenu="false" />
+                <!-- Single Menu Item -->
+                <li>
+                    <a href="{{ route('admin.dashboard') }}" class="waves-effect {{ Route::is('admin.dashboard') ? 'active' : '' }}">
+                        <i class="ri-dashboard-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
 
+                <!-- Dropdown Menu: Academic -->
+                <li class="{{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.index', 'admin.classroom.index', 'admin.academic-session.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.index', 'admin.classroom.index', 'admin.academic-session.index') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Academic</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin.class.index') }}" class="{{ Route::is('admin.class.index') ? 'active' : '' }}">Class</a></li>
+                        <li><a href="{{ route('admin.section.index') }}" class="{{ Route::is('admin.section.index') ? 'active' : '' }}">Section</a></li>
+                        <li><a href="{{ route('admin.shift.index') }}" class="{{ Route::is('admin.shift.index') ? 'active' : '' }}">Shift</a></li>
+                        <li><a href="{{ route('admin.subject.index') }}" class="{{ Route::is('admin.subject.index') ? 'active' : '' }}">Subject</a></li>
+                        <li><a href="{{ route('admin.subject-assign.index') }}" class="{{ Route::is('admin.subject-assign.index') ? 'active' : '' }}">Subject Assignments</a></li>
+                        <li><a href="{{ route('admin.classroom.index') }}" class="{{ Route::is('admin.classroom.index') ? 'active' : '' }}">Classroom</a></li>
+                        <li><a href="{{ route('admin.academic-session.index') }}" class="{{ Route::is('admin.academic-session.index') ? 'active' : '' }}">Academic Session</a></li>
+                    </ul>
+                </li>
 
-                <livewire:backend.theme.menu-item
-                    :url="''"
-                    :icon="'ri-wallet-line'"
-                    :label="'Academic'"
-                    :hasSubMenu="true"
-                    :subMenuItems="
-                    [
-                        ['url' => 'admin.class.index', 'label' => 'Class'],
-                        ['url' => 'admin.section.index', 'label' => 'Section'],
-                        ['url' => 'admin.shift.index', 'label' => 'Shift'],
-                        ['url' => 'admin.subject.index', 'label' => 'Subject'],
-                        ['url' => 'admin.subject-assign.index', 'label' => 'Subject Assignments'],
-                        ['url' => 'admin.classroom.index', 'label' => 'Classroom'],
-                        ['url' => 'admin.academic-session.index', 'label' => 'Academic Session'],
+                <!-- Dropdown Menu: App Setting -->
+                <li class="{{ Route::is('admin.designation.index', 'admin.department.index', 'admin.gender.index', 'admin.blood.index', 'admin.religion.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.designation.index', 'admin.department.index', 'admin.gender.index', 'admin.blood.index', 'admin.religion.index') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>App Setting</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin.designation.index') }}" class="{{ Route::is('admin.designation.index') ? 'active' : '' }}">Designation</a></li>
+                        <li><a href="{{ route('admin.department.index') }}" class="{{ Route::is('admin.department.index') ? 'active' : '' }}">Department</a></li>
+                        <li><a href="{{ route('admin.gender.index') }}" class="{{ Route::is('admin.gender.index') ? 'active' : '' }}">Gender</a></li>
+                        <li><a href="{{ route('admin.blood.index') }}" class="{{ Route::is('admin.blood.index') ? 'active' : '' }}">Blood Group</a></li>
+                        <li><a href="{{ route('admin.religion.index') }}" class="{{ Route::is('admin.religion.index') ? 'active' : '' }}">Religions</a></li>
+                    </ul>
+                </li>
 
-                    ]" />
+                <!-- Dropdown Menu: Students -->
+                <li class="{{ Route::is('admin.student.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.student.*') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Students</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin.student.index') }}" class="{{ Route::is('admin.student.index') ? 'active' : '' }}">Students List</a></li>
+                        <li><a href="{{ route('admin.student.create') }}" class="{{ Route::is('admin.student.create') ? 'active' : '' }}">Add New Student</a></li>
+                    </ul>
+                </li>
 
-                <livewire:backend.theme.menu-item
-                    :url="''"
-                    :icon="'ri-wallet-line'"
-                    :label="'App Setting'"
-                    :hasSubMenu="true"
-                    :subMenuItems="
-                    [
-                        ['url' => 'admin.designation.index', 'label' => 'Designation'],
-                        ['url' => 'admin.department.index', 'label' => 'Department'],
-                        ['url' => 'admin.gender.index', 'label' => 'Gender'],
-                        ['url' => 'admin.blood.index', 'label' => 'Blood Group'],
-                        ['url' => 'admin.religion.index', 'label' => 'Religions'],
+                <!-- Dropdown Menu: Guardians -->
+                <li class="{{ Route::is('admin.guardian.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.guardian.*') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Guardians</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin.guardian.index') }}" class="{{ Route::is('admin.guardian.index') ? 'active' : '' }}">Guardians List</a></li>
+                        <li><a href="{{ route('admin.guardian.create') }}" class="{{ Route::is('admin.guardian.create') ? 'active' : '' }}">Add New Guardian</a></li>
+                    </ul>
+                </li>
 
-                    ]" />
+                <!-- Dropdown Menu: Staffs -->
+                <li class="{{ Route::is('admin.staff.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.staff.*') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Staffs</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin.staff.index') }}" class="{{ Route::is('admin.staff.index') ? 'active' : '' }}">Staff List</a></li>
+                        <li><a href="{{ route('admin.staff.create') }}" class="{{ Route::is('admin.staff.create') ? 'active' : '' }}">Add New Staff</a></li>
+                    </ul>
+                </li>
 
-                <livewire:backend.theme.menu-item
-                    :url="''"
-                    :icon="'ri-wallet-line'"
-                    :label="'Students'"
-                    :hasSubMenu="true"
-                    :subMenuItems="
-                    [
-                        ['url' => 'admin.student.index', 'label' => 'Students List'],
-                        ['url' => 'admin.student.create', 'label' => 'Add New Student'],
+                <!-- Dropdown Menu: Exams -->
+                <li class="{{ Route::is('admin.exam-category.index', 'admin.exam.index', 'admin.mark-distribution.index', 'admin.subject-mark-distribution.*', 'admin.final-mark-configuration.*', 'admin.grade.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.exam-category.index', 'admin.exam.index', 'admin.mark-distribution.index', 'admin.subject-mark-distribution.index', 'admin.final-mark-configuration.index', 'admin.grade.index') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Exams</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin.exam-category.index') }}" class="{{ Route::is('admin.exam-category.index') ? 'active' : '' }}">Exam Categories</a></li>
+                        <li><a href="{{ route('admin.exam.index') }}" class="{{ Route::is('admin.exam.index') ? 'active' : '' }}">Exams</a></li>
+                        <li><a href="{{ route('admin.mark-distribution.index') }}" class="{{ Route::is('admin.mark-distribution.index') ? 'active' : '' }}">Mark Distribution</a></li>
+                        <li><a href="{{ route('admin.subject-mark-distribution.index') }}" class="{{ Route::is('admin.subject-mark-distribution.index') ? 'active' : '' }}">Subject Mark Distribution</a></li>
+                        <li><a href="{{ route('admin.final-mark-configuration.index') }}" class="{{ Route::is('admin.final-mark-configuration.index') ? 'active' : '' }}">Final Mark Configuration</a></li>
+                        <li><a href="{{ route('admin.grade.index') }}" class="{{ Route::is('admin.grade.index') ? 'active' : '' }}">Grades</a></li>
+                    </ul>
+                </li>
 
-                    ]" />
-                <livewire:backend.theme.menu-item
-                    :url="''"
-                    :icon="'ri-wallet-line'"
-                    :label="'Guardians'"
-                    :hasSubMenu="true"
-                    :subMenuItems="
-                    [
-                        ['url' => 'admin.guardian.index', 'label' => 'Guardians List'],
-                        ['url' => 'admin.guardian.create', 'label' => 'Add New Guardian'],
-
-                    ]" />
-                <livewire:backend.theme.menu-item
-                    :url="''"
-                    :icon="'ri-wallet-line'"
-                    :label="'Staffs'"
-                    :hasSubMenu="true"
-                    :subMenuItems="
-                    [
-                        ['url' => 'admin.staff.index', 'label' => 'Staff List'],
-                        ['url' => 'admin.staff.create', 'label' => 'Add New Staff'],
-
-                    ]" />
-                <livewire:backend.theme.menu-item
-                    :url="''"
-                    :icon="'ri-wallet-line'"
-                    :label="'Exams'"
-                    :hasSubMenu="true"
-                    :subMenuItems="
-                    [
-                        ['url' => 'admin.exam-category.index', 'label' => 'Exam Categories'],
-                        ['url' => 'admin.exam.index', 'label' => 'Exams'],
-                        ['url' => 'admin.mark-distribution.index', 'label' => 'Mark Distribution'],
-                        ['url' => 'admin.subject-mark-distribution.index', 'label' => 'Suject Mark Distribution'],
-                        ['url' => 'admin.final-mark-configuration.index', 'label' => 'Final Mark Configuration'],
-                        ['url' => 'admin.grade.index', 'label' => 'Grades'],
-
-                    ]" />
-
-                    <!-- for mark -->
-                <livewire:backend.theme.menu-item
-                    :url="''"
-                    :icon="'ri-wallet-line'"
-                    :label="'Marks'"
-                    :hasSubMenu="true"
-                    :subMenuItems="
-                    [
-                        
-                        ['url' => 'admin.student-mark.create', 'label' => 'Add Student Marks'],
-                        ['url' => 'admin.result.index', 'label' => 'Student Results'],
-                        ['url' => 'admin.result.generate.pdf', 'label' => 'Generate PDF'],
-                    ]" />
-
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.student-mark.create', 'admin.result.index', 'admin.result.generate.pdf') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.student-mark.create', 'admin.result.index', 'admin.result.generate.pdf') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Marks</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('admin.student-mark.create') }}" class="{{ Route::is('admin.student-mark.create') ? 'active' : '' }}">Add Student Marks</a></li>
+                        <li><a href="{{ route('admin.result.index') }}" class="{{ Route::is('admin.result.index') ? 'active' : '' }}">Student Results</a></li>
+                        <li><a href="{{ route('admin.result.generate.pdf') }}" class="{{ Route::is('admin.result.generate.pdf') ? 'active' : '' }}">Generate PDF</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
-        <!-- Sidebar -->
     </div>
 </div>

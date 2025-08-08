@@ -13,6 +13,7 @@ class SubjectAssign extends Model
         'school_class_id',
         'class_section_id',
         'shift_id',
+        'department_id', // Added department_id for optional department association
         'status',
     ];
 
@@ -36,5 +37,10 @@ class SubjectAssign extends Model
     public function items()
     {
         return $this->hasMany(SubjectAssignItem::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

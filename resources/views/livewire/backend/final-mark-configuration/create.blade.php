@@ -8,7 +8,7 @@
             <div class="row">
                 <div class="col-lg-4">
                     <div class="mb-3">
-                        <label class="form-label">Select Class</label>
+                        <label class="form-label">Select Class<span class="text-danger">*</span> </label>
                         <select class="form-select" wire:model="school_class_id">
                             <option value="">-- Select Class --</option>
                             @foreach($classes as $class)
@@ -16,6 +16,19 @@
                             @endforeach
                         </select>
                         @error('school_class_id') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="mb-3">
+                        <label class="form-label">Select Department</label>
+                        <select class="form-select" wire:model="department_id">
+                            <option value="">-- Select Department --</option>
+                            @foreach($departments as $department)
+                            <option value="{{ $department->id }}">{{ $department->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('department_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
             </div>

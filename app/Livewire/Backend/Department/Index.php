@@ -11,7 +11,7 @@ class Index extends Component
 {
     use WithPagination, WithoutUrlPagination;
 
-    public $name, $code, $description, $departmentId;
+    public $name, $description, $departmentId;
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
@@ -24,7 +24,6 @@ class Index extends Component
 
         return [
             'name' => 'required|unique:departments,name,' . $id,
-            'code' => 'required|unique:departments,code,' . $id,
             'description' => 'nullable|string',
         ];
     }
@@ -55,7 +54,6 @@ class Index extends Component
         $department = Department::findOrFail($id);
         $this->departmentId = $department->id;
         $this->name = $department->name;
-        $this->code = $department->code;
         $this->description = $department->description;
     }
 
@@ -74,7 +72,7 @@ class Index extends Component
 
     public function resetForm()
     {
-        $this->reset(['name', 'code', 'description', 'departmentId']);
+        $this->reset(['name', 'description', 'departmentId']);
     }
 
     public function sortBy($field)
@@ -90,7 +88,6 @@ class Index extends Component
     public function render()
     {
         $departments = Department::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('code', 'like', '%' . $this->search . '%')
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
 

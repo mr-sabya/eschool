@@ -12,6 +12,7 @@ class SubjectMarkDistribution extends Model
     protected $fillable = [
         'school_class_id',
         'class_section_id',
+        'department_id',
         'subject_id',
         'mark_distribution_id',
         'mark',
@@ -36,5 +37,10 @@ class SubjectMarkDistribution extends Model
     public function markDistribution()
     {
         return $this->belongsTo(MarkDistribution::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

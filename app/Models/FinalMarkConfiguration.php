@@ -11,6 +11,7 @@ class FinalMarkConfiguration extends Model
 
     protected $fillable = [
         'school_class_id',
+        'department_id',
         'subject_id',
         'class_test_total',
         'other_parts_total',
@@ -25,5 +26,10 @@ class FinalMarkConfiguration extends Model
     public function subject()
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

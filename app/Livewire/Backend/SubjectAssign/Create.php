@@ -9,6 +9,7 @@ use App\Models\Subject;
 use App\Models\SubjectAssign;
 use App\Models\SubjectAssignItem;
 use App\Models\User;
+use App\Models\Department;
 use Livewire\Component;
 
 class Create extends Component
@@ -16,10 +17,12 @@ class Create extends Component
     public $school_class_id;
     public $class_section_id;
     public $shift_id;
+    public $department_id; // ✅ Added department
 
     public $classes = [];
     public $sections;
     public $shifts = [];
+    public $departments = []; // ✅ Added for dropdown
     public $subjects = [];
 
     public $rows = [];
@@ -28,6 +31,7 @@ class Create extends Component
         'school_class_id' => 'required|exists:school_classes,id',
         'class_section_id' => 'required|exists:class_sections,id',
         'shift_id' => 'nullable|exists:shifts,id',
+        'department_id' => 'nullable|exists:departments,id', // ✅ Rule for department
         'rows' => 'required|array|min:1',
         'rows.*.subject_id' => 'required|exists:subjects,id',
         'rows.*.teacher_id' => 'nullable|exists:users,id',
@@ -37,6 +41,7 @@ class Create extends Component
     {
         $this->classes = SchoolClass::orderBy('id')->get();
         $this->shifts = Shift::orderBy('id')->get();
+        $this->departments = Department::orderBy('id')->get(); // ✅ Load departments
         $this->rows = [
             ['subject_id' => '', 'teacher_id' => ''],
         ];
@@ -57,17 +62,18 @@ class Create extends Component
     public function removeRow($index)
     {
         unset($this->rows[$index]);
-        $this->rows = array_values($this->rows); // reindex array
+        $this->rows = array_values($this->rows);
     }
 
     public function save()
     {
         $this->validate();
 
-        // Delete existing assignments for this class-section-shift
+        // Delete existing assignments for this class-section-shift-department
         SubjectAssign::where('school_class_id', $this->school_class_id)
             ->where('class_section_id', $this->class_section_id)
             ->where('shift_id', $this->shift_id)
+            ->where('department_id', $this->department_id) // ✅ Filter by department too
             ->delete();
 
         // Create new SubjectAssign
@@ -75,6 +81,7 @@ class Create extends Component
             'school_class_id' => $this->school_class_id,
             'class_section_id' => $this->class_section_id,
             'shift_id' => $this->shift_id,
+            'department_id' => $this->department_id, // ✅ Save department
             'status' => 1,
         ]);
 
@@ -87,11 +94,10 @@ class Create extends Component
             ]);
         }
 
-
         $this->dispatch('notify', ['type' => 'success', 'message' => 'Subjects assigned successfully.']);
 
         // Reset form
-        $this->reset(['school_class_id', 'class_section_id', 'shift_id', 'rows']);
+        $this->reset(['school_class_id', 'class_section_id', 'shift_id', 'department_id', 'rows']);
         $this->rows = [['subject_id' => '', 'teacher_id' => '']];
         $this->sections = [];
 
@@ -100,7 +106,6 @@ class Create extends Component
 
     public function render()
     {
-        // Load subjects and teachers for dropdowns
         $this->subjects = Subject::orderBy('name')->get();
         $teachers = User::all()
             ->filter(fn($user) => $user->isTeacher() || $user->isAdmin())
@@ -108,6 +113,7 @@ class Create extends Component
 
         return view('livewire.backend.subject-assign.create', [
             'teachers' => $teachers,
+            'departments' => $this->departments, // ✅ Pass to view
         ]);
     }
 }

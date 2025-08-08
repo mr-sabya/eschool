@@ -5,20 +5,25 @@ namespace App\Livewire\Backend\FinalMarkConfiguration;
 use App\Models\FinalMarkConfiguration;
 use App\Models\SchoolClass;
 use App\Models\Subject;
+use App\Models\Department;  // Import Department model
 use Livewire\Component;
 
 class Create extends Component
 {
     public $school_class_id;
+    public $department_id; // add department_id property (nullable)
+
     public $rows = [];
 
     public $classes;
     public $subjects;
+    public $departments; // to load departments list
 
     public function mount()
     {
         $this->classes = SchoolClass::all();
         $this->subjects = Subject::all();
+        $this->departments = Department::all(); // load departments for dropdown
 
         $this->addRow(); // initialize one row
     }
@@ -43,6 +48,7 @@ class Create extends Component
     {
         $this->validate([
             'school_class_id' => 'required|exists:school_classes,id',
+            'department_id' => 'nullable|exists:departments,id',  // department validation nullable
             'rows.*.subject_id' => 'required|exists:subjects,id',
             'rows.*.class_test_total' => 'required|integer|min:0',
             'rows.*.other_parts_total' => 'required|integer|min:0',
@@ -56,6 +62,7 @@ class Create extends Component
                     'subject_id' => $row['subject_id'],
                 ],
                 [
+                    'department_id' => $this->department_id,  // save department_id
                     'class_test_total' => $row['class_test_total'],
                     'other_parts_total' => $row['other_parts_total'],
                     'final_result_weight_percentage' => $row['final_result_weight_percentage'],
@@ -64,12 +71,16 @@ class Create extends Component
         }
 
         $this->dispatch('notify', ['type' => 'success', 'message' => 'Final mark configurations saved successfully.']);
-        $this->reset(['school_class_id', 'rows']);
+        $this->reset(['school_class_id', 'department_id', 'rows']);
         $this->addRow();
     }
 
     public function render()
     {
-        return view('livewire.backend.final-mark-configuration.create');
+        return view('livewire.backend.final-mark-configuration.create', [
+            'classes' => $this->classes,
+            'subjects' => $this->subjects,
+            'departments' => $this->departments,
+        ]);
     }
 }

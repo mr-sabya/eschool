@@ -21,6 +21,17 @@
                             </div>
 
                             <div class="col-md-12 mb-3">
+                                <label class="form-label">Department (Optional)</label>
+                                <select class="form-select" wire:model="department_id">
+                                    <option value="">Select Department</option>
+                                    @foreach ($departments as $department)
+                                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('department_id') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div class="col-md-12 mb-3">
                                 <label class="form-label">Subject</label>
                                 <select class="form-select" wire:model="subject_id">
                                     <option value="">Select Subject</option>

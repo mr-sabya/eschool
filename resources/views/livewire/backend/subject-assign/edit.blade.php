@@ -5,8 +5,9 @@
         </div>
 
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-4">
+            <div class="row g-3">
+                <!-- Class -->
+                <div class="col-md-3">
                     <label class="form-label">Class</label>
                     <select class="form-select" wire:model="school_class_id" wire:change="updatedSchoolClassIdManually">
                         <option value="">-- Select Class --</option>
@@ -17,7 +18,8 @@
                     @error('school_class_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
-                <div class="col-md-4">
+                <!-- Section -->
+                <div class="col-md-3">
                     <label class="form-label">Section</label>
                     <select class="form-select" wire:model="class_section_id" {{ $sections->isEmpty() ? 'disabled' : '' }}>
                         <option value="">-- Select Section --</option>
@@ -27,8 +29,33 @@
                     </select>
                     @error('class_section_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
+
+                <!-- Shift -->
+                <div class="col-md-3">
+                    <label class="form-label">Shift</label>
+                    <select class="form-select" wire:model="shift_id">
+                        <option value="">-- Select Shift --</option>
+                        @foreach($shifts as $shift)
+                        <option value="{{ $shift->id }}">{{ $shift->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('shift_id') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+
+                <!-- Department -->
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select class="form-select" wire:model="department_id">
+                        <option value="">-- Select Department --</option>
+                        @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('department_id') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
             </div>
 
+            <!-- Subjects Table -->
             <table class="table table-bordered mt-4">
                 <thead class="table-light">
                     <tr>
@@ -70,6 +97,7 @@
                 </tbody>
             </table>
 
+            <!-- Buttons -->
             <div class="d-flex justify-content-between mt-3">
                 <button class="btn btn-sm btn-secondary" wire:click.prevent="addRow">+ Add Row</button>
                 <button class="btn btn-sm btn-primary" wire:click.prevent="save">

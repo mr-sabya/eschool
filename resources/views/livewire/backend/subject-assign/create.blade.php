@@ -6,7 +6,7 @@
 
         <div class="card-body">
             <div class="row mb-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Select Class</label>
                     <select class="form-select" wire:model="school_class_id" wire:change="onClassChange($event.target.value)">
                         <option value="">-- Select Class --</option>
@@ -17,7 +17,7 @@
                     @error('school_class_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Select Section</label>
                     <select class="form-select" wire:model="class_section_id" {{ $sections->isEmpty() ? 'disabled' : '' }}>
                         <option value="">-- Select Section --</option>
@@ -28,7 +28,7 @@
                     @error('class_section_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">Select Shift (Optional)</label>
                     <select class="form-select" wire:model="shift_id">
                         <option value="">-- Select Shift --</option>
@@ -38,6 +38,18 @@
                     </select>
                     @error('shift_id') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select wire:model="department_id" class="form-select">
+                        <option value="">-- Select Department --</option>
+                        @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('department_id') <span class="text-danger">{{ $message }}</span> @enderror
+                </div>
+
             </div>
 
             <table class="table table-bordered align-middle">
