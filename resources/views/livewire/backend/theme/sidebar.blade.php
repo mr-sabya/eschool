@@ -12,8 +12,9 @@
                     </a>
                 </li>
 
+                @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Academic -->
-                <li class="{{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.index', 'admin.classroom.index', 'admin.academic-session.index') ? 'mm-active' : '' }}">
+                <li class="{{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.*', 'admin.classroom.index', 'admin.academic-session.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.index', 'admin.classroom.index', 'admin.academic-session.index') ? 'active' : '' }}">
                         <i class="ri-wallet-line"></i>
                         <span>Academic</span>
@@ -28,8 +29,10 @@
                         <li><a href="{{ route('admin.academic-session.index') }}" class="{{ Route::is('admin.academic-session.index') ? 'active' : '' }}">Academic Session</a></li>
                     </ul>
                 </li>
+                @endif
 
                 <!-- Dropdown Menu: App Setting -->
+                @if(Auth::check() && Auth::user()->isAdmin())
                 <li class="{{ Route::is('admin.designation.index', 'admin.department.index', 'admin.gender.index', 'admin.blood.index', 'admin.religion.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.designation.index', 'admin.department.index', 'admin.gender.index', 'admin.blood.index', 'admin.religion.index') ? 'active' : '' }}">
                         <i class="ri-wallet-line"></i>
@@ -43,7 +46,9 @@
                         <li><a href="{{ route('admin.religion.index') }}" class="{{ Route::is('admin.religion.index') ? 'active' : '' }}">Religions</a></li>
                     </ul>
                 </li>
+                @endif
 
+                @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Students -->
                 <li class="{{ Route::is('admin.student.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.student.*') ? 'active' : '' }}">
@@ -55,7 +60,9 @@
                         <li><a href="{{ route('admin.student.create') }}" class="{{ Route::is('admin.student.create') ? 'active' : '' }}">Add New Student</a></li>
                     </ul>
                 </li>
+                @endif
 
+                @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Guardians -->
                 <li class="{{ Route::is('admin.guardian.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.guardian.*') ? 'active' : '' }}">
@@ -67,7 +74,9 @@
                         <li><a href="{{ route('admin.guardian.create') }}" class="{{ Route::is('admin.guardian.create') ? 'active' : '' }}">Add New Guardian</a></li>
                     </ul>
                 </li>
+                @endif
 
+                @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Staffs -->
                 <li class="{{ Route::is('admin.staff.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.staff.*') ? 'active' : '' }}">
@@ -79,7 +88,9 @@
                         <li><a href="{{ route('admin.staff.create') }}" class="{{ Route::is('admin.staff.create') ? 'active' : '' }}">Add New Staff</a></li>
                     </ul>
                 </li>
+                @endif
 
+                @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Exams -->
                 <li class="{{ Route::is('admin.exam-category.index', 'admin.exam.index', 'admin.mark-distribution.index', 'admin.subject-mark-distribution.*', 'admin.final-mark-configuration.*', 'admin.grade.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.exam-category.index', 'admin.exam.index', 'admin.mark-distribution.index', 'admin.subject-mark-distribution.index', 'admin.final-mark-configuration.index', 'admin.grade.index') ? 'active' : '' }}">
@@ -95,7 +106,9 @@
                         <li><a href="{{ route('admin.grade.index') }}" class="{{ Route::is('admin.grade.index') ? 'active' : '' }}">Grades</a></li>
                     </ul>
                 </li>
+                @endif
 
+                @if(Auth::check() && Auth::user()->isAdmin() || Auth::user()->isTeacher())
                 <!-- Dropdown Menu: Marks -->
                 <li class="{{ Route::is('admin.student-mark.create', 'admin.result.index', 'admin.result.generate.pdf') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.student-mark.create', 'admin.result.index', 'admin.result.generate.pdf') ? 'active' : '' }}">
@@ -108,6 +121,7 @@
                         <li><a href="{{ route('admin.result.generate.pdf') }}" class="{{ Route::is('admin.result.generate.pdf') ? 'active' : '' }}">Generate PDF</a></li>
                     </ul>
                 </li>
+                @endif
             </ul>
         </div>
     </div>

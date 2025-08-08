@@ -117,6 +117,19 @@
                     </select>
                     @error('class_section_id')<small class="text-danger">{{ $message }}</small>@enderror
                 </div>
+
+                <!-- department_id -->
+                <div class="col-md-3 mb-3">
+                    <label>Department</label>
+                    <select class="form-select" wire:model="department_id">
+                        <option value="">Select Department</option>
+                        @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('department_id')<small class="text-danger">{{ $message }}</small>@enderror
+                </div>
+
                 <div class="col-md-3 mb-3">
                     <label>Shift</label>
                     <select class="form-select" wire:model="shift_id">

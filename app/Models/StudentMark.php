@@ -13,6 +13,7 @@ class StudentMark extends Model
         'student_id',
         'school_class_id',
         'class_section_id',
+        'department_id', // Added department_id field
         'subject_id',
         'exam_id',
         'mark_distribution_id',

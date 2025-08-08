@@ -10,16 +10,19 @@ use App\Models\Student;
 use App\Models\SubjectMarkDistribution;
 use App\Models\StudentMark;
 use App\Models\Exam;
+use App\Models\Department; // Add this
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class Create extends Component
 {
+    public $departmentId;  // new property for department filter
     public $schoolClassId;
     public $classSectionId;
     public $subjectId;
     public $examId;
 
+    public Collection $departments;  // load all departments
     public Collection $sections;
     public Collection $students;
     public Collection $markDistributions;
@@ -28,6 +31,7 @@ class Create extends Component
     public $marks = [];
 
     protected $rules = [
+        'departmentId' => 'nullable|exists:departments,id',  // department is nullable
         'schoolClassId' => 'required|exists:school_classes,id',
         'classSectionId' => 'required|exists:class_sections,id',
         'subjectId' => 'required|exists:subjects,id',
@@ -36,10 +40,24 @@ class Create extends Component
 
     public function mount()
     {
+        $this->departments = Department::all();  // load all departments
         $this->sections = collect();
         $this->students = collect();
         $this->markDistributions = collect();
         $this->marks = [];
+    }
+
+    public function onDepartmentChange()
+    {
+        // Reset dependent selects and data
+        $this->subjectId = null;
+        $this->examId = null;
+        $this->markDistributions = collect();
+        $this->students = collect();
+        $this->marks = [];
+
+        // Reload students filtered by department
+        $this->loadStudents();
     }
 
     public function onClassChange()
@@ -101,12 +119,21 @@ class Create extends Component
 
     public function loadStudents()
     {
-        $this->students = ($this->schoolClassId && $this->classSectionId)
-            ? Student::where('school_class_id', $this->schoolClassId)
+        if (!$this->schoolClassId || !$this->classSectionId) {
+            $this->students = collect();
+            return;
+        }
+
+        // Filter by department if selected
+        $query = Student::where('school_class_id', $this->schoolClassId)
             ->where('class_section_id', $this->classSectionId)
-            ->orderBy('roll_number')
-            ->get()
-            : collect();
+            ->orderBy('roll_number');
+
+        if ($this->departmentId) {
+            $query->where('department_id', $this->departmentId);
+        }
+
+        $this->students = $query->get();
     }
 
     public function loadExistingMarks()
@@ -174,6 +201,7 @@ class Create extends Component
     public function render()
     {
         return view('livewire.backend.student-mark.create', [
+            'departments' => $this->departments,
             'classes' => SchoolClass::where('is_active', true)->get(),
             'sections' => $this->sections ?? collect(),
             'students' => $this->students ?? collect(),

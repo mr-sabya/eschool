@@ -3,6 +3,7 @@
 namespace App\Livewire\Backend\Student;
 
 use App\Models\ClassSection;
+use App\Models\Department;
 use App\Models\SchoolClass;
 use App\Models\User;
 use Livewire\Component;
@@ -22,6 +23,7 @@ class Index extends Component
 
     public $filter_class_id = null;
     public $filter_section_id = null;
+    public $filter_department_id = null;
 
     protected $listeners = ['student-saved' => '$refresh'];
 
@@ -74,7 +76,8 @@ class Index extends Component
         $students = User::with('student.schoolClass')
             ->whereHas('student', function ($query) {
                 $query->when($this->filter_class_id, fn($q) => $q->where('school_class_id', $this->filter_class_id))
-                    ->when($this->filter_section_id, fn($q) => $q->where('class_section_id', $this->filter_section_id));
+                    ->when($this->filter_section_id, fn($q) => $q->where('class_section_id', $this->filter_section_id))
+                    ->when($this->filter_department_id, fn($q) => $q->where('department_id', $this->filter_department_id));
             })
             ->where(function ($q) {
                 $q->where('name', 'like', "%{$this->search}%")
@@ -89,6 +92,7 @@ class Index extends Component
         return view('livewire.backend.student.index', [
             'students' => $students,
             'allClasses' => SchoolClass::all(),
+            'departments' => Department::all(),  // pass departments for filter dropdown
         ]);
     }
 }

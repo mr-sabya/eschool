@@ -5,6 +5,7 @@ namespace App\Livewire\Backend\Student;
 use App\Models\AcademicSession;
 use App\Models\Blood;
 use App\Models\ClassSection;
+use App\Models\Department; // <-- add this
 use App\Models\Gender;
 use App\Models\Religion;
 use App\Models\SchoolClass;
@@ -25,6 +26,7 @@ class Manage extends Component
 
     // Student fields
     public $roll_number, $school_class_id, $class_section_id, $shift_id;
+    public $department_id; // <-- add this here
     public $guardian_id, $phone, $address, $date_of_birth, $admission_date, $admission_number;
     public $category, $gender_id, $blood_id, $religion_id, $national_id, $place_of_birth;
     public $nationality, $language, $health_status, $rank_in_family, $number_of_siblings;
@@ -51,6 +53,7 @@ class Manage extends Component
             'school_class_id' => 'required|exists:school_classes,id',
             'class_section_id' => 'nullable|exists:class_sections,id',
             'shift_id' => 'nullable|exists:shifts,id',
+            'department_id' => 'nullable|exists:departments,id', // <-- validation for department_id
             'guardian_id' => 'nullable|exists:users,id',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
@@ -97,6 +100,7 @@ class Manage extends Component
             $this->school_class_id = $student->school_class_id;
             $this->class_section_id = $student->class_section_id;
             $this->shift_id = $student->shift_id;
+            $this->department_id = $student->department_id; // <-- add here
             $this->guardian_id = $student->guardian_id;
             $this->phone = $student->phone;
             $this->address = $student->address;
@@ -165,6 +169,7 @@ class Manage extends Component
                 'school_class_id' => $this->school_class_id,
                 'class_section_id' => $this->class_section_id,
                 'shift_id' => $this->shift_id,
+                'department_id' => $this->department_id, // <-- add here
                 'guardian_id' => $this->guardian_id,
                 'phone' => $this->phone,
                 'address' => $this->address,
@@ -211,6 +216,7 @@ class Manage extends Component
             'classes' => SchoolClass::all(),
             'sections' => ClassSection::all(),
             'shifts' => Shift::all(),
+            'departments' => Department::all(), // <-- add this to send departments to view
             'genders' => Gender::all(),
             'bloods' => Blood::all(),
             'religions' => Religion::all(),

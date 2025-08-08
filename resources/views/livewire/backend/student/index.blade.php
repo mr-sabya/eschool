@@ -24,7 +24,16 @@
                 </select>
             </div>
 
-            <div class="col-lg-6">
+            <div class="col-md-3">
+                <select wire:model="filter_department_id" class="form-select" {{ $filter_department_id === null ? '' : '' }}>
+                    <option value="">All Departments</option>
+                    @foreach($departments as $department)
+                    <option value="{{ $department->id }}">{{ $department->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-lg-3">
                 <button class="btn btn-secondary" wire:click="$set('filter_class_id', null); $set('filter_section_id', null);">Reset Filters</button>
 
             </div>

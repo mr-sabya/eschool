@@ -15,6 +15,7 @@ class Student extends Model
         'roll_number',
         'school_class_id',
         'class_section_id',
+        'department_id', // Added department_id field
         'shift_id',
         'guardian_id',
         'email',
@@ -92,5 +93,10 @@ class Student extends Model
     public function religion()
     {
         return $this->belongsTo(Religion::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

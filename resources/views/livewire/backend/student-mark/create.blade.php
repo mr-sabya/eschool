@@ -32,6 +32,18 @@
                 </div>
 
                 <div class="col-md-3">
+                    <label class="form-label">Department</label>
+                    <select wire:model="departmentId" wire:change="onDepartmentChange" class="form-select">
+                        <option value="">Select Department (optional)</option>
+                        @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('departmentId') <span class="text-danger">{{ $message }}</span> @enderror
+                </div>
+
+
+                <div class="col-md-3">
                     <label for="subjectSelect" class="form-label">Subject</label>
                     <select id="subjectSelect" wire:model="subjectId" wire:change="onSubjectChange" class="form-select" {{ $subjects->isEmpty() ? 'disabled' : '' }}>
                         <option value="">-- Select Subject --</option>
