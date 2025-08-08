@@ -98,8 +98,7 @@
                                         max="{{ $md->mark }}"
                                         step="0.01"
                                         wire:model.defer="marks.{{ $student->id }}.{{ $md->mark_distribution_id }}.marks_obtained"
-                                        class="form-control form-control-sm"
-                                        :disabled="$wire.marks[{{ $student->id }}][{{ $md->mark_distribution_id }}]?.is_absent">
+                                        class="form-control form-control-sm">
 
                                     <div class="form-check ms-1">
                                         <input
