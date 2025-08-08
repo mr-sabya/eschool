@@ -131,7 +131,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('results/{studentId}/{examId}/{classId}/{sectionId}/{sessionId}', [App\Http\Controllers\Backend\ResultController::class, 'show'])
         ->name('result.show');
 
-        // generate PDF
+    // generate PDF
     Route::get('results/generate-pdf', [App\Http\Controllers\Backend\ResultController::class, 'generatePdf'])
         ->name('result.generate.pdf');
+
+    // setting
+    Route::get('settings', [App\Http\Controllers\Backend\SettingController::class, 'index'])
+        ->name('setting.index');
 });

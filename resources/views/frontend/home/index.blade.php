@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="http://themesbazar.com/">
-    <title>Home | Educational | A Premium WordPress Theme</title>
+    <title>Home | Khalishpur Collegiate Girls' School</title>
 
 
     <link rel="icon" href="wp-content/themes/educationaltheme/images/favicon.png" type="image/x-icon" />
@@ -73,11 +73,11 @@
                     <a href="#">
                         <div class="brand">
                             <div class="image">
-                                <img src="{{ url('assets/frontend/images/logo.png') }}" alt="">
+                                <img src="{{ url('assets/frontend/images/kcgs-logo.png') }}" alt="">
                             </div>
                             <div class="text">
-                                <h4>Khulna Govt. High School</h4>
-                                <p>Sibbari More, Khulna</p>
+                                <h4>Khalishpur Collegiate Girls' School</h4>
+                                <p>Khalishpur, Khulna</p>
                             </div>
                         </div>
                     </a>
