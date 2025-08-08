@@ -20,9 +20,9 @@
                             @error('name')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         <div class="col-md-12 mb-3">
-                            <label>Email</label>
-                            <input type="email" class="form-control" wire:model="email">
-                            @error('email')<small class="text-danger">{{ $message }}</small>@enderror
+                            <label>Username</label>
+                            <input type="text" class="form-control" wire:model="username">
+                            @error('username')<small class="text-danger">{{ $message }}</small>@enderror
                         </div>
                         @if(!$student_id)
                         <div class="col-md-12 mb-3">
@@ -99,9 +99,9 @@
 
                 <div class="col-md-3 mb-3">
                     <label>Class <span class="text-danger">*</span></label>
-                    <select class="form-select" wire:model="school_class_id">
+                    <select wire:model="school_class_id" wire:change="loadSections($event.target.value)" class="form-control">
                         <option value="">Select Class</option>
-                        @foreach($classes as $class)
+                        @foreach ($classes as $class)
                         <option value="{{ $class->id }}">{{ $class->name }}</option>
                         @endforeach
                     </select>

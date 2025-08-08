@@ -66,6 +66,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // student management
     Route::get('students', [App\Http\Controllers\Backend\StudentController::class, 'index'])->name('student.index');
     Route::get('students/create', [App\Http\Controllers\Backend\StudentController::class, 'create'])->name('student.create');
+    Route::get('students/edit/{id}', [App\Http\Controllers\Backend\StudentController::class, 'edit'])->name('student.edit');
+
 
     // import students
     Route::get('students/import', [App\Http\Controllers\Backend\StudentController::class, 'import'])->name('student.import');

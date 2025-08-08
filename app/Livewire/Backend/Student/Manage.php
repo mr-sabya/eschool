@@ -5,7 +5,7 @@ namespace App\Livewire\Backend\Student;
 use App\Models\AcademicSession;
 use App\Models\Blood;
 use App\Models\ClassSection;
-use App\Models\Department; // <-- add this
+use App\Models\Department;
 use App\Models\Gender;
 use App\Models\Religion;
 use App\Models\SchoolClass;
@@ -22,11 +22,11 @@ class Manage extends Component
     public $student_id, $user_id;
 
     // User fields
-    public $name, $email, $password;
+    public $name, $username, $password;
 
     // Student fields
     public $roll_number, $school_class_id, $class_section_id, $shift_id;
-    public $department_id; // <-- add this here
+    public $department_id;
     public $guardian_id, $phone, $address, $date_of_birth, $admission_date, $admission_number;
     public $category, $gender_id, $blood_id, $religion_id, $national_id, $place_of_birth;
     public $nationality, $language, $health_status, $rank_in_family, $number_of_siblings;
@@ -35,25 +35,23 @@ class Manage extends Component
     public $previous_school_attended = false, $previous_school, $previous_school_document, $new_previous_school_document;
     public $is_active = true, $notes;
 
-    // academic session current year
     public $academic_session_id;
+    public $sections = [];
 
     protected $listeners = ['edit' => 'edit'];
 
     protected function rules()
     {
         return [
-            // User validations
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:users,email,' . ($this->user_id ?? 'NULL') . ',id',
+            'username' => 'required|string|max:255|unique:users,username,' . ($this->user_id ?? 'NULL') . ',id',
             'password' => $this->user_id ? 'nullable|min:6' : 'required|min:6',
 
-            // Student validations
             'roll_number' => 'nullable|unique:students,roll_number,' . ($this->student_id ?? 'NULL') . ',id',
             'school_class_id' => 'required|exists:school_classes,id',
             'class_section_id' => 'nullable|exists:class_sections,id',
             'shift_id' => 'nullable|exists:shifts,id',
-            'department_id' => 'nullable|exists:departments,id', // <-- validation for department_id
+            'department_id' => 'nullable|exists:departments,id',
             'guardian_id' => 'nullable|exists:users,id',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
@@ -71,8 +69,8 @@ class Manage extends Component
             'health_status' => 'nullable|string',
             'rank_in_family' => 'nullable|integer',
             'number_of_siblings' => 'nullable|integer',
-            'new_profile_picture' => 'nullable|image|max:2048', // 2MB max
-            'new_previous_school_document' => 'nullable|file|max:4096', // 4MB max
+            'new_profile_picture' => 'nullable|image|max:2048',
+            'new_previous_school_document' => 'nullable|file|max:4096',
             'emergency_contact_name' => 'nullable|string|max:255',
             'emergency_contact_phone' => 'nullable|string|max:20',
             'previous_school_attended' => 'boolean',
@@ -90,17 +88,15 @@ class Manage extends Component
             $this->student_id = $student->id;
             $this->user_id = $student->user_id;
 
-            // User data
             $this->name = $student->user->name;
-            $this->email = $student->user->email;
+            $this->username = $student->user->username;
 
-            // Student data
             $this->academic_session_id = $student->academic_session_id;
             $this->roll_number = $student->roll_number;
             $this->school_class_id = $student->school_class_id;
             $this->class_section_id = $student->class_section_id;
             $this->shift_id = $student->shift_id;
-            $this->department_id = $student->department_id; // <-- add here
+            $this->department_id = $student->department_id;
             $this->guardian_id = $student->guardian_id;
             $this->phone = $student->phone;
             $this->address = $student->address;
@@ -126,20 +122,26 @@ class Manage extends Component
             $this->previous_school_document = $student->previous_school_document;
             $this->is_active = $student->is_active;
             $this->notes = $student->notes;
+
+            $this->sections = ClassSection::where('school_class_id', $this->school_class_id)->get();
         }
 
-        // academic session current year
         $this->academic_session_id = AcademicSession::current()->id ?? null;
+    }
+
+    public function loadSections($classId)
+    {
+        $this->sections = ClassSection::where('school_class_id', $classId)->get();
+        $this->class_section_id = null;
     }
 
     public function save()
     {
         $this->validate();
 
-        // ✅ Create or update User
         $userData = [
             'name' => $this->name,
-            'email' => $this->email,
+            'username' => $this->username,
         ];
         if (!$this->user_id || $this->password) {
             $userData['password'] = bcrypt($this->password);
@@ -147,19 +149,16 @@ class Manage extends Component
 
         $user = User::updateOrCreate(['id' => $this->user_id], $userData);
 
-        // ✅ Handle Profile Picture
         $profilePath = $this->profile_picture;
         if ($this->new_profile_picture) {
             $profilePath = $this->new_profile_picture->store('students/profile', 'public');
         }
 
-        // ✅ Handle Previous School Document
         $previousSchoolDocPath = $this->previous_school_document;
         if ($this->previous_school_attended && $this->new_previous_school_document) {
             $previousSchoolDocPath = $this->new_previous_school_document->store('students/previous_school', 'public');
         }
 
-        // ✅ Create or Update Student
         Student::updateOrCreate(
             ['id' => $this->student_id],
             [
@@ -169,7 +168,7 @@ class Manage extends Component
                 'school_class_id' => $this->school_class_id,
                 'class_section_id' => $this->class_section_id,
                 'shift_id' => $this->shift_id,
-                'department_id' => $this->department_id, // <-- add here
+                'department_id' => $this->department_id,
                 'guardian_id' => $this->guardian_id,
                 'phone' => $this->phone,
                 'address' => $this->address,
@@ -198,7 +197,7 @@ class Manage extends Component
             ]
         );
 
-        $this->dispatch('notify', $this->student_id ? 'Student updated successfully!' : 'Student added successfully!');
+        $this->dispatch('notify', ['type' => 'success', 'message' => $this->student_id ? 'Student updated successfully!' : 'Student added successfully!']);
         $this->resetForm();
         $this->dispatch('student-saved');
     }
@@ -208,15 +207,15 @@ class Manage extends Component
         $this->reset();
         $this->is_active = true;
         $this->previous_school_attended = false;
+        $this->sections = [];
     }
 
     public function render()
     {
         return view('livewire.backend.student.manage', [
             'classes' => SchoolClass::all(),
-            'sections' => ClassSection::all(),
             'shifts' => Shift::all(),
-            'departments' => Department::all(), // <-- add this to send departments to view
+            'departments' => Department::all(),
             'genders' => Gender::all(),
             'bloods' => Blood::all(),
             'religions' => Religion::all(),

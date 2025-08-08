@@ -70,6 +70,11 @@ class Index extends Component
         return collect(); // return empty collection if no class selected
     }
 
+    public function departmentFilter()
+    {
+        $this->resetPage();
+    }
+
 
     public function render()
     {

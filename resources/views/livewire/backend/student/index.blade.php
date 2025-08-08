@@ -25,7 +25,7 @@
             </div>
 
             <div class="col-md-3">
-                <select wire:model="filter_department_id" class="form-select" {{ $filter_department_id === null ? '' : '' }}>
+                <select wire:model="filter_department_id" wire:change="departmentFilter" class="form-select">
                     <option value="">All Departments</option>
                     @foreach($departments as $department)
                     <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -79,10 +79,9 @@
                         @endif
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-primary"
-                            wire:click="$emit('edit', {{ $user->student->id }})">
+                        <a class="btn btn-sm btn-primary" href="{{ route('admin.student.edit', $user->student->id) }}" wire:navigate>
                             Edit
-                        </button>
+                        </a>
                         <button class="btn btn-sm btn-danger"
                             wire:click="confirmDelete({{ $user->id }})">
                             Delete

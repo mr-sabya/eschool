@@ -30,6 +30,13 @@ class StudentController extends Controller
         return view('backend.student.create');
     }
 
+    // edit
+    public function edit($id)
+    {
+        $student = Student::findOrFail(intval($id));
+        return view('backend.student.edit', compact('student'));
+    }
+
 
     // import students
     public function import()
