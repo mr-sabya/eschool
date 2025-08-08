@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Aug 02, 2025 at 04:49 PM
--- Server version: 8.0.30
--- PHP Version: 8.1.10
+-- Generation Time: Aug 03, 2025 at 11:52 AM
+-- Server version: 10.11.13-MariaDB
+-- PHP Version: 8.3.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `eschool`
+-- Database: `kcgsedub_app`
 --
 
 -- --------------------------------------------------------
@@ -28,11 +28,11 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `academic_sessions` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -51,11 +51,25 @@ INSERT INTO `academic_sessions` (`id`, `name`, `start_date`, `end_date`, `is_act
 --
 
 CREATE TABLE `bloods` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `bloods`
+--
+
+INSERT INTO `bloods` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'A+', '2025-08-02 21:02:45', '2025-08-02 21:02:45'),
+(2, 'A-', '2025-08-02 21:02:51', '2025-08-02 21:02:51'),
+(3, 'B+', '2025-08-02 21:02:57', '2025-08-02 21:02:57'),
+(4, 'B-', '2025-08-02 21:03:03', '2025-08-02 21:03:03'),
+(5, 'O+', '2025-08-02 21:03:09', '2025-08-02 21:03:09'),
+(6, 'O-', '2025-08-02 21:03:20', '2025-08-02 21:03:20'),
+(7, 'AB+', '2025-08-02 21:03:27', '2025-08-02 21:03:27'),
+(8, 'AB-', '2025-08-02 21:03:34', '2025-08-02 21:03:34');
 
 -- --------------------------------------------------------
 
@@ -64,13 +78,13 @@ CREATE TABLE `bloods` (
 --
 
 CREATE TABLE `class_rooms` (
-  `id` bigint UNSIGNED NOT NULL,
-  `room_number` int NOT NULL,
-  `room_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `room_type` enum('Lecture','Laboratory','Seminar','Conference') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Lecture',
-  `capacity` int NOT NULL DEFAULT '30',
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `room_number` int(11) NOT NULL,
+  `room_name` varchar(255) DEFAULT NULL,
+  `room_type` enum('Lecture','Laboratory','Seminar','Conference') NOT NULL DEFAULT 'Lecture',
+  `capacity` int(11) NOT NULL DEFAULT 30,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `location` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -82,10 +96,10 @@ CREATE TABLE `class_rooms` (
 --
 
 CREATE TABLE `class_sections` (
-  `id` bigint UNSIGNED NOT NULL,
-  `school_class_id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `numeric_name` int DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `school_class_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `numeric_name` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -111,10 +125,10 @@ INSERT INTO `class_sections` (`id`, `school_class_id`, `name`, `numeric_name`, `
 --
 
 CREATE TABLE `departments` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `code` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -126,11 +140,11 @@ CREATE TABLE `departments` (
 --
 
 CREATE TABLE `designations` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `order` int NOT NULL DEFAULT '0',
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -142,14 +156,21 @@ CREATE TABLE `designations` (
 --
 
 CREATE TABLE `exams` (
-  `id` bigint UNSIGNED NOT NULL,
-  `academic_session_id` bigint UNSIGNED NOT NULL,
-  `exam_category_id` bigint UNSIGNED NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `academic_session_id` bigint(20) UNSIGNED NOT NULL,
+  `exam_category_id` bigint(20) UNSIGNED NOT NULL,
   `start_at` date NOT NULL,
   `end_at` date NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `exams`
+--
+
+INSERT INTO `exams` (`id`, `academic_session_id`, `exam_category_id`, `start_at`, `end_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '2025-06-24', '2025-06-30', '2025-08-03 10:32:42', '2025-08-03 10:32:42');
 
 -- --------------------------------------------------------
 
@@ -158,12 +179,20 @@ CREATE TABLE `exams` (
 --
 
 CREATE TABLE `exam_categories` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `exam_categories`
+--
+
+INSERT INTO `exam_categories` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES
+(1, 'Half yearly', 'half-yearly', '2025-08-02 21:22:41', '2025-08-02 21:22:41'),
+(2, 'Annual', 'annual', '2025-08-02 21:22:47', '2025-08-02 21:22:47');
 
 -- --------------------------------------------------------
 
@@ -172,13 +201,13 @@ CREATE TABLE `exam_categories` (
 --
 
 CREATE TABLE `failed_jobs` (
-  `id` bigint UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -188,12 +217,12 @@ CREATE TABLE `failed_jobs` (
 --
 
 CREATE TABLE `final_mark_configurations` (
-  `id` bigint UNSIGNED NOT NULL,
-  `school_class_id` bigint UNSIGNED NOT NULL,
-  `subject_id` bigint UNSIGNED NOT NULL,
-  `class_test_total` int UNSIGNED NOT NULL DEFAULT '20',
-  `other_parts_total` int UNSIGNED NOT NULL DEFAULT '100',
-  `final_result_weight_percentage` int UNSIGNED NOT NULL DEFAULT '80',
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `school_class_id` bigint(20) UNSIGNED NOT NULL,
+  `subject_id` bigint(20) UNSIGNED NOT NULL,
+  `class_test_total` int(10) UNSIGNED NOT NULL DEFAULT 20,
+  `other_parts_total` int(10) UNSIGNED NOT NULL DEFAULT 100,
+  `final_result_weight_percentage` int(10) UNSIGNED NOT NULL DEFAULT 80,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -205,11 +234,50 @@ CREATE TABLE `final_mark_configurations` (
 --
 
 CREATE TABLE `genders` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `genders`
+--
+
+INSERT INTO `genders` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'Male', '2025-08-02 21:02:17', '2025-08-02 21:02:17'),
+(2, 'Female', '2025-08-02 21:02:20', '2025-08-02 21:02:20'),
+(3, 'Other', '2025-08-02 21:02:24', '2025-08-02 21:02:24');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `grades`
+--
+
+CREATE TABLE `grades` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `grade_name` varchar(255) NOT NULL,
+  `grade_point` decimal(4,2) NOT NULL,
+  `start_marks` int(11) NOT NULL,
+  `end_marks` int(11) NOT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `grades`
+--
+
+INSERT INTO `grades` (`id`, `grade_name`, `grade_point`, `start_marks`, `end_marks`, `remarks`, `created_at`, `updated_at`) VALUES
+(1, 'A+', 5.00, 80, 100, NULL, '2025-08-03 15:46:31', '2025-08-03 15:46:31'),
+(2, 'A', 4.00, 70, 79, NULL, '2025-08-03 15:46:54', '2025-08-03 15:46:54'),
+(3, 'A-', 3.50, 60, 69, NULL, '2025-08-03 15:47:12', '2025-08-03 15:47:12'),
+(4, 'B', 3.00, 50, 59, NULL, '2025-08-03 15:47:27', '2025-08-03 15:47:27'),
+(5, 'C', 2.00, 40, 49, NULL, '2025-08-03 15:47:45', '2025-08-03 15:47:45'),
+(6, 'D', 1.00, 33, 39, NULL, '2025-08-03 15:48:03', '2025-08-03 15:48:03'),
+(7, 'F', 0.00, 0, 32, NULL, '2025-08-03 15:48:15', '2025-08-03 15:48:15');
 
 -- --------------------------------------------------------
 
@@ -218,19 +286,19 @@ CREATE TABLE `genders` (
 --
 
 CREATE TABLE `guardians` (
-  `id` bigint UNSIGNED NOT NULL,
-  `user_id` bigint UNSIGNED NOT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
-  `occupation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `national_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `place_of_birth` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nationality` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `notes` text COLLATE utf8mb4_unicode_ci,
+  `occupation` varchar(255) DEFAULT NULL,
+  `national_id` varchar(255) DEFAULT NULL,
+  `place_of_birth` varchar(255) DEFAULT NULL,
+  `nationality` varchar(255) DEFAULT NULL,
+  `language` varchar(255) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -249,11 +317,21 @@ INSERT INTO `guardians` (`id`, `user_id`, `phone`, `address`, `date_of_birth`, `
 --
 
 CREATE TABLE `mark_distributions` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `mark_distributions`
+--
+
+INSERT INTO `mark_distributions` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'Class Test', '2025-08-02 20:59:59', '2025-08-02 20:59:59'),
+(2, 'Written', '2025-08-02 21:00:37', '2025-08-02 21:00:37'),
+(3, 'MCQ', '2025-08-02 21:00:40', '2025-08-02 21:00:40'),
+(4, 'Practical', '2025-08-02 21:00:45', '2025-08-02 21:00:45');
 
 -- --------------------------------------------------------
 
@@ -262,9 +340,9 @@ CREATE TABLE `mark_distributions` (
 --
 
 CREATE TABLE `migrations` (
-  `id` int UNSIGNED NOT NULL,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `batch` int NOT NULL
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -297,7 +375,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (26, '2025_07_24_090411_create_exams_table', 6),
 (27, '2025_07_28_053829_create_mark_distributions_table', 7),
 (28, '2025_07_28_053839_create_subject_mark_distributions_table', 7),
-(29, '2025_07_29_060015_create_final_mark_configurations_table', 7);
+(29, '2025_07_29_060015_create_final_mark_configurations_table', 7),
+(30, '2025_07_30_061235_create_grades_table', 8),
+(31, '2025_07_30_062918_create_student_marks_table', 8);
 
 -- --------------------------------------------------------
 
@@ -306,8 +386,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -318,12 +398,12 @@ CREATE TABLE `password_reset_tokens` (
 --
 
 CREATE TABLE `personal_access_tokens` (
-  `id` bigint UNSIGNED NOT NULL,
-  `tokenable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tokenable_id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abilities` text COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tokenable_type` varchar(255) NOT NULL,
+  `tokenable_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -337,8 +417,8 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 CREATE TABLE `religions` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -350,12 +430,12 @@ CREATE TABLE `religions` (
 --
 
 CREATE TABLE `school_classes` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `numeric_name` int NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `order` int NOT NULL DEFAULT '0',
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `numeric_name` int(11) NOT NULL,
+  `description` text DEFAULT NULL,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -381,8 +461,8 @@ INSERT INTO `school_classes` (`id`, `name`, `numeric_name`, `description`, `orde
 --
 
 CREATE TABLE `shifts` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -394,26 +474,26 @@ CREATE TABLE `shifts` (
 --
 
 CREATE TABLE `staff` (
-  `id` bigint UNSIGNED NOT NULL,
-  `user_id` bigint UNSIGNED DEFAULT NULL,
-  `staff_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `department_id` bigint UNSIGNED DEFAULT NULL,
-  `first_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `last_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `father_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mother_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `staff_id` varchar(255) NOT NULL,
+  `department_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `father_name` varchar(255) DEFAULT NULL,
+  `mother_name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `nid` varchar(255) DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
-  `current_address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `permanent_address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `designation_id` bigint UNSIGNED DEFAULT NULL,
-  `gender_id` bigint UNSIGNED DEFAULT NULL,
-  `marital_status` enum('single','married','divorced','widowed') COLLATE utf8mb4_unicode_ci DEFAULT 'single',
+  `current_address` varchar(255) DEFAULT NULL,
+  `permanent_address` varchar(255) DEFAULT NULL,
+  `designation_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `gender_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `marital_status` enum('single','married','divorced','widowed') DEFAULT 'single',
   `basic_salary` decimal(10,2) DEFAULT NULL,
   `date_of_joining` date DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -447,41 +527,41 @@ INSERT INTO `staff` (`id`, `user_id`, `staff_id`, `department_id`, `first_name`,
 --
 
 CREATE TABLE `students` (
-  `id` bigint UNSIGNED NOT NULL,
-  `user_id` bigint UNSIGNED NOT NULL,
-  `roll_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `school_class_id` bigint UNSIGNED NOT NULL,
-  `class_section_id` bigint UNSIGNED DEFAULT NULL,
-  `shift_id` bigint UNSIGNED DEFAULT NULL,
-  `guardian_id` bigint UNSIGNED DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `roll_number` varchar(255) DEFAULT NULL,
+  `school_class_id` bigint(20) UNSIGNED NOT NULL,
+  `class_section_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `shift_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `guardian_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
   `admission_date` date DEFAULT NULL,
-  `admission_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `category` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gender_id` bigint UNSIGNED DEFAULT NULL,
-  `blood_id` bigint UNSIGNED DEFAULT NULL,
-  `religion_id` bigint UNSIGNED DEFAULT NULL,
-  `national_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `place_of_birth` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nationality` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `language` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `health_status` text COLLATE utf8mb4_unicode_ci,
-  `rank_in_family` int DEFAULT NULL,
-  `number_of_siblings` int DEFAULT NULL,
-  `profile_picture` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `emergency_contact_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `emergency_contact_phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `previous_school_attended` tinyint(1) NOT NULL DEFAULT '0',
-  `previous_school` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `previous_school_document` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `notes` text COLLATE utf8mb4_unicode_ci,
+  `admission_number` varchar(255) DEFAULT NULL,
+  `category` varchar(255) DEFAULT NULL,
+  `gender_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `blood_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `religion_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `national_id` varchar(255) DEFAULT NULL,
+  `place_of_birth` varchar(255) DEFAULT NULL,
+  `nationality` varchar(255) DEFAULT NULL,
+  `language` varchar(255) DEFAULT NULL,
+  `health_status` text DEFAULT NULL,
+  `rank_in_family` int(11) DEFAULT NULL,
+  `number_of_siblings` int(11) DEFAULT NULL,
+  `profile_picture` varchar(255) DEFAULT NULL,
+  `emergency_contact_name` varchar(255) DEFAULT NULL,
+  `emergency_contact_phone` varchar(255) DEFAULT NULL,
+  `previous_school_attended` tinyint(1) NOT NULL DEFAULT 0,
+  `previous_school` varchar(255) DEFAULT NULL,
+  `previous_school_document` varchar(255) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `academic_session_id` bigint UNSIGNED DEFAULT NULL
+  `academic_session_id` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -992,14 +1072,67 @@ INSERT INTO `students` (`id`, `user_id`, `roll_number`, `school_class_id`, `clas
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `student_marks`
+--
+
+CREATE TABLE `student_marks` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `student_id` bigint(20) UNSIGNED NOT NULL,
+  `school_class_id` bigint(20) UNSIGNED NOT NULL,
+  `class_section_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `subject_id` bigint(20) UNSIGNED NOT NULL,
+  `exam_id` bigint(20) UNSIGNED NOT NULL,
+  `mark_distribution_id` bigint(20) UNSIGNED NOT NULL,
+  `marks_obtained` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `student_marks`
+--
+
+INSERT INTO `student_marks` (`id`, `student_id`, `school_class_id`, `class_section_id`, `subject_id`, `exam_id`, `mark_distribution_id`, `marks_obtained`, `created_at`, `updated_at`) VALUES
+(1, 33, 2, 2, 1, 1, 1, 20, '2025-08-03 15:19:56', '2025-08-03 15:19:56'),
+(2, 33, 2, 2, 1, 1, 2, 60, '2025-08-03 15:19:56', '2025-08-03 15:19:56'),
+(3, 34, 2, 2, 1, 1, 1, 14, '2025-08-03 15:19:56', '2025-08-03 15:19:56'),
+(4, 34, 2, 2, 1, 1, 2, 30, '2025-08-03 15:19:56', '2025-08-03 15:19:56'),
+(5, 33, 2, 2, 2, 1, 1, 15, '2025-08-03 15:20:22', '2025-08-03 15:20:22'),
+(6, 33, 2, 2, 2, 1, 2, 50, '2025-08-03 15:20:22', '2025-08-03 15:20:22'),
+(7, 34, 2, 2, 2, 1, 1, 17, '2025-08-03 15:20:22', '2025-08-03 15:20:22'),
+(8, 34, 2, 2, 2, 1, 2, 60, '2025-08-03 15:20:22', '2025-08-03 15:20:22'),
+(9, 33, 2, 2, 3, 1, 1, 10, '2025-08-03 15:20:42', '2025-08-03 15:20:42'),
+(10, 33, 2, 2, 3, 1, 2, 50, '2025-08-03 15:20:42', '2025-08-03 15:20:42'),
+(11, 34, 2, 2, 3, 1, 1, 7, '2025-08-03 15:20:42', '2025-08-03 15:20:42'),
+(12, 34, 2, 2, 3, 1, 2, 56, '2025-08-03 15:20:42', '2025-08-03 15:20:42'),
+(13, 33, 2, 2, 4, 1, 1, 15, '2025-08-03 15:21:01', '2025-08-03 15:21:01'),
+(14, 33, 2, 2, 4, 1, 2, 30, '2025-08-03 15:21:01', '2025-08-03 15:21:01'),
+(15, 34, 2, 2, 4, 1, 1, 20, '2025-08-03 15:21:01', '2025-08-03 15:21:01'),
+(16, 34, 2, 2, 4, 1, 2, 80, '2025-08-03 15:21:01', '2025-08-03 15:21:01'),
+(17, 33, 2, 2, 5, 1, 1, 20, '2025-08-03 15:21:15', '2025-08-03 15:21:15'),
+(18, 33, 2, 2, 5, 1, 2, 50, '2025-08-03 15:21:15', '2025-08-03 15:21:15'),
+(19, 34, 2, 2, 5, 1, 1, 15, '2025-08-03 15:21:15', '2025-08-03 15:21:15'),
+(20, 34, 2, 2, 5, 1, 2, 59, '2025-08-03 15:21:15', '2025-08-03 15:21:15'),
+(21, 33, 2, 2, 6, 1, 1, 20, '2025-08-03 15:21:31', '2025-08-03 15:21:31'),
+(22, 33, 2, 2, 6, 1, 2, 80, '2025-08-03 15:21:31', '2025-08-03 15:21:31'),
+(23, 34, 2, 2, 6, 1, 1, 15, '2025-08-03 15:21:31', '2025-08-03 15:21:31'),
+(24, 34, 2, 2, 6, 1, 2, 86, '2025-08-03 15:21:31', '2025-08-03 15:21:31'),
+(25, 33, 2, 2, 7, 1, 1, 40, '2025-08-03 15:21:49', '2025-08-03 15:21:49'),
+(26, 33, 2, 2, 7, 1, 2, 40, '2025-08-03 15:21:49', '2025-08-03 15:21:49'),
+(27, 34, 2, 2, 7, 1, 1, 15, '2025-08-03 15:21:49', '2025-08-03 15:21:49'),
+(28, 34, 2, 2, 7, 1, 2, 15, '2025-08-03 15:21:49', '2025-08-03 15:21:49');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `subjects`
 --
 
 CREATE TABLE `subjects` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'theory',
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `code` varchar(255) DEFAULT NULL,
+  `type` varchar(255) NOT NULL DEFAULT 'theory',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1049,11 +1182,11 @@ INSERT INTO `subjects` (`id`, `name`, `code`, `type`, `created_at`, `updated_at`
 --
 
 CREATE TABLE `subject_assigns` (
-  `id` bigint UNSIGNED NOT NULL,
-  `school_class_id` bigint UNSIGNED NOT NULL,
-  `class_section_id` bigint UNSIGNED NOT NULL,
-  `shift_id` bigint UNSIGNED DEFAULT NULL,
-  `status` int NOT NULL DEFAULT '1',
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `school_class_id` bigint(20) UNSIGNED NOT NULL,
+  `class_section_id` bigint(20) UNSIGNED NOT NULL,
+  `shift_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `status` int(11) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1065,10 +1198,10 @@ CREATE TABLE `subject_assigns` (
 --
 
 CREATE TABLE `subject_assign_items` (
-  `id` bigint UNSIGNED NOT NULL,
-  `subject_assign_id` bigint UNSIGNED NOT NULL,
-  `subject_id` bigint UNSIGNED NOT NULL,
-  `teacher_id` bigint UNSIGNED DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `subject_assign_id` bigint(20) UNSIGNED NOT NULL,
+  `subject_id` bigint(20) UNSIGNED NOT NULL,
+  `teacher_id` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1080,16 +1213,35 @@ CREATE TABLE `subject_assign_items` (
 --
 
 CREATE TABLE `subject_mark_distributions` (
-  `id` bigint UNSIGNED NOT NULL,
-  `school_class_id` bigint UNSIGNED NOT NULL,
-  `class_section_id` bigint UNSIGNED NOT NULL,
-  `subject_id` bigint UNSIGNED NOT NULL,
-  `mark_distribution_id` bigint UNSIGNED NOT NULL,
-  `mark` int NOT NULL,
-  `pass_mark` int NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `school_class_id` bigint(20) UNSIGNED NOT NULL,
+  `class_section_id` bigint(20) UNSIGNED NOT NULL,
+  `subject_id` bigint(20) UNSIGNED NOT NULL,
+  `mark_distribution_id` bigint(20) UNSIGNED NOT NULL,
+  `mark` int(11) NOT NULL,
+  `pass_mark` int(11) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `subject_mark_distributions`
+--
+
+INSERT INTO `subject_mark_distributions` (`id`, `school_class_id`, `class_section_id`, `subject_id`, `mark_distribution_id`, `mark`, `pass_mark`, `created_at`, `updated_at`) VALUES
+(1, 2, 1, 1, 1, 20, 0, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(2, 2, 1, 1, 2, 100, 33, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(3, 2, 1, 2, 1, 20, 0, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(4, 2, 1, 2, 2, 100, 33, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(5, 2, 1, 3, 1, 20, 0, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(6, 2, 1, 3, 2, 100, 33, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(7, 2, 1, 4, 1, 20, 0, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(8, 2, 1, 4, 2, 100, 33, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(9, 2, 1, 5, 1, 20, 0, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(10, 2, 1, 5, 2, 100, 33, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(11, 2, 1, 6, 1, 20, 0, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(12, 2, 1, 6, 2, 100, 33, '2025-08-03 10:38:43', '2025-08-03 10:38:43'),
+(13, 2, 1, 7, 2, 50, 0, '2025-08-03 10:38:43', '2025-08-03 10:38:43');
 
 -- --------------------------------------------------------
 
@@ -1098,15 +1250,15 @@ CREATE TABLE `subject_mark_distributions` (
 --
 
 CREATE TABLE `users` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` enum('admin','teacher','librarian','accountant') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1',
-  `is_admin` tinyint(1) NOT NULL DEFAULT '0',
-  `is_parent` tinyint(1) NOT NULL DEFAULT '0',
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','teacher','librarian','accountant') DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `is_admin` tinyint(1) NOT NULL DEFAULT 0,
+  `is_parent` tinyint(1) NOT NULL DEFAULT 0,
+  `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1116,7 +1268,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `password`, `role`, `status`, `is_admin`, `is_parent`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin User', 'admin', '$2y$12$cLpUhBsBLXVuaRzqP/9wYuQPcTewid9alDJl2RqXw058LooT/spyW', 'admin', 1, 1, 0, '59IS11bJdkJcdgFt5DRBVvoBYZDYjNWqlZZ68vQMp2ap8obJqLHd5uw1lSlf', '2025-07-09 11:17:17', '2025-07-09 11:17:17'),
+(1, 'Admin User', 'admin', '$2y$12$cLpUhBsBLXVuaRzqP/9wYuQPcTewid9alDJl2RqXw058LooT/spyW', 'admin', 1, 1, 0, 'lirV3lGz1aWq0QHUQHb10sXzVZC7r9DVEpXdbUYGIRYOUDGwcvynCH0rb1xt', '2025-07-09 11:17:17', '2025-07-09 11:17:17'),
 (3, 'Rajyeswar Roy', 'rajyeswar@gmail.com', '$2y$12$OmH33BrTf20CrznXZctO6eHmUQ1M42n93wr6qoXavuwSiVQR3KIdq', NULL, 1, 0, 1, NULL, '2025-07-19 09:41:53', '2025-07-19 09:41:53'),
 (9, 'John Doe', 'john.doe@example.com', '$2y$12$FSIaZQ37b90WJdsK9NgsuOa9pxqKs2LfHARu4tlWZMOKyCLK7mZWu', 'teacher', 1, 1, 0, NULL, '2025-07-30 11:41:24', '2025-07-30 11:43:29'),
 (10, 'Soiyoda Jahan', 'soiyoda', '$2y$12$SMdRi3dqaL.cyhPoXR7tIuc7EEmTrRdX3xU44Btet5k.BYjuF8rHS', 'teacher', 1, 1, 0, NULL, '2025-08-01 10:23:32', '2025-08-01 10:23:32'),
@@ -1718,6 +1870,12 @@ ALTER TABLE `genders`
   ADD UNIQUE KEY `genders_name_unique` (`name`);
 
 --
+-- Indexes for table `grades`
+--
+ALTER TABLE `grades`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `guardians`
 --
 ALTER TABLE `guardians`
@@ -1806,6 +1964,18 @@ ALTER TABLE `students`
   ADD KEY `students_academic_session_id_foreign` (`academic_session_id`);
 
 --
+-- Indexes for table `student_marks`
+--
+ALTER TABLE `student_marks`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `student_mark_unique` (`student_id`,`exam_id`,`subject_id`,`mark_distribution_id`),
+  ADD KEY `student_marks_school_class_id_foreign` (`school_class_id`),
+  ADD KEY `student_marks_class_section_id_foreign` (`class_section_id`),
+  ADD KEY `student_marks_subject_id_foreign` (`subject_id`),
+  ADD KEY `student_marks_exam_id_foreign` (`exam_id`),
+  ADD KEY `student_marks_mark_distribution_id_foreign` (`mark_distribution_id`);
+
+--
 -- Indexes for table `subjects`
 --
 ALTER TABLE `subjects`
@@ -1856,151 +2026,163 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `academic_sessions`
 --
 ALTER TABLE `academic_sessions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `bloods`
 --
 ALTER TABLE `bloods`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `class_rooms`
 --
 ALTER TABLE `class_rooms`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `class_sections`
 --
 ALTER TABLE `class_sections`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `designations`
 --
 ALTER TABLE `designations`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `exams`
 --
 ALTER TABLE `exams`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `exam_categories`
 --
 ALTER TABLE `exam_categories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `final_mark_configurations`
 --
 ALTER TABLE `final_mark_configurations`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `genders`
 --
 ALTER TABLE `genders`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `grades`
+--
+ALTER TABLE `grades`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `guardians`
 --
 ALTER TABLE `guardians`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `mark_distributions`
 --
 ALTER TABLE `mark_distributions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `religions`
 --
 ALTER TABLE `religions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `school_classes`
 --
 ALTER TABLE `school_classes`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `shifts`
 --
 ALTER TABLE `shifts`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=499;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=499;
+
+--
+-- AUTO_INCREMENT for table `student_marks`
+--
+ALTER TABLE `student_marks`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `subjects`
 --
 ALTER TABLE `subjects`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `subject_assigns`
 --
 ALTER TABLE `subject_assigns`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `subject_assign_items`
 --
 ALTER TABLE `subject_assign_items`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `subject_mark_distributions`
 --
 ALTER TABLE `subject_mark_distributions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=522;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=522;
 
 --
 -- Constraints for dumped tables
@@ -2054,6 +2236,17 @@ ALTER TABLE `students`
   ADD CONSTRAINT `students_school_class_id_foreign` FOREIGN KEY (`school_class_id`) REFERENCES `school_classes` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `students_shift_id_foreign` FOREIGN KEY (`shift_id`) REFERENCES `shifts` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `students_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `student_marks`
+--
+ALTER TABLE `student_marks`
+  ADD CONSTRAINT `student_marks_class_section_id_foreign` FOREIGN KEY (`class_section_id`) REFERENCES `class_sections` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_marks_exam_id_foreign` FOREIGN KEY (`exam_id`) REFERENCES `exams` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_marks_mark_distribution_id_foreign` FOREIGN KEY (`mark_distribution_id`) REFERENCES `mark_distributions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_marks_school_class_id_foreign` FOREIGN KEY (`school_class_id`) REFERENCES `school_classes` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_marks_student_id_foreign` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `student_marks_subject_id_foreign` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `subject_assigns`

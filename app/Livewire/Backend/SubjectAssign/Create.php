@@ -94,6 +94,8 @@ class Create extends Component
         $this->reset(['school_class_id', 'class_section_id', 'shift_id', 'rows']);
         $this->rows = [['subject_id' => '', 'teacher_id' => '']];
         $this->sections = [];
+
+        return $this->redirect(route('admin.subject-assign.index'), navigate: true);
     }
 
     public function render()

@@ -91,17 +91,28 @@ class GeneratePdf extends Component
                 $annualMark = 0;
                 $isFailInAnyDistribution = false;
 
+                $absentCount = 0;
+                $totalDistributions = $distributions->count();
+
                 foreach ($distributions as $dist) {
-                    $mark = StudentMark::where([
+                    $markRecord = StudentMark::where([
                         'student_id' => $student->id,
                         'exam_id' => $this->exam_id,
                         'school_class_id' => $this->school_class_id,
                         'class_section_id' => $this->class_section_id,
                         'subject_id' => $subject->id,
                         'mark_distribution_id' => $dist->mark_distribution_id,
-                    ])->value('marks_obtained') ?? 0;
+                    ])->first();
+
+                    $isAbsent = $markRecord ? (bool) $markRecord->is_absent : true;
+                    $mark = (!$isAbsent && $markRecord) ? ($markRecord->marks_obtained ?? 0) : 0;
+
+                    if ($isAbsent) {
+                        $absentCount++;
+                    }
 
                     $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
+
                     if ($isCT) {
                         $ctMark += $mark;
                     } else {
@@ -119,11 +130,23 @@ class GeneratePdf extends Component
 
                 $total = $ctMark + $annualMarkWeighted;
 
-                $gradeData = Grade::where('start_marks', '<=', $total)
-                    ->where('end_marks', '>=', $total)
-                    ->first();
+                // If all distributions are absent, mark as absent for the subject
+                $isFullyAbsent = $absentCount === $totalDistributions;
 
-                $gradePoint = $gradeData->grade_point ?? 0;
+                if ($isFullyAbsent) {
+                    $failFlag = true;
+                    $isFailInAnyDistribution = true;
+                    $total = 0;
+                    $gradePoint = 0;
+                    $gradeName = 'F';
+                } else {
+                    $gradeData = Grade::where('start_marks', '<=', $total)
+                        ->where('end_marks', '>=', $total)
+                        ->first();
+
+                    $gradePoint = $gradeData->grade_point ?? 0;
+                    $gradeName = $gradeData->grade_name ?? 'N/A';
+                }
 
                 if ($isFailInAnyDistribution) {
                     $failFlag = true;
@@ -158,16 +181,11 @@ class GeneratePdf extends Component
         $positions = [];
         $lastTotal = null;
         $rank = 0;
-        $sameRankCount = 0;
 
         foreach ($studentTotals as $index => $data) {
             if ($lastTotal === null || $data['total'] != $lastTotal) {
                 $rank = $index + 1;
-                $sameRankCount = 1;
-            } else {
-                $sameRankCount++;
             }
-
             $positions[$data['student_id']] = $rank;
             $lastTotal = $data['total'];
         }
@@ -197,21 +215,37 @@ class GeneratePdf extends Component
                 $annualMark = 0;
                 $isFailInAnyDistribution = false;
 
+                $absentCount = 0;
+                $totalDistributions = $distributions->count();
+
+                $ctDisplayArr = [];
+                $annualDisplayArr = [];
+
                 foreach ($distributions as $dist) {
-                    $mark = StudentMark::where([
+                    $markRecord = StudentMark::where([
                         'student_id' => $student->id,
                         'exam_id' => $this->exam_id,
                         'school_class_id' => $this->school_class_id,
                         'class_section_id' => $this->class_section_id,
                         'subject_id' => $subject->id,
                         'mark_distribution_id' => $dist->mark_distribution_id,
-                    ])->value('marks_obtained') ?? 0;
+                    ])->first();
+
+                    $isAbsent = $markRecord ? (bool) $markRecord->is_absent : true;
+                    $mark = (!$isAbsent && $markRecord) ? ($markRecord->marks_obtained ?? 0) : 0;
+
+                    if ($isAbsent) {
+                        $absentCount++;
+                    }
 
                     $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
+
                     if ($isCT) {
                         $ctMark += $mark;
+                        $ctDisplayArr[] = $isAbsent ? 'Absent' : $mark;
                     } else {
                         $annualMark += $mark;
+                        $annualDisplayArr[] = $isAbsent ? 'Absent' : $mark;
                     }
 
                     if ($mark < $dist->pass_mark) {
@@ -225,13 +259,22 @@ class GeneratePdf extends Component
 
                 $total = $ctMark + $annualMarkWeighted;
 
-                $gradeData = Grade::where('start_marks', '<=', $total)
-                    ->where('end_marks', '>=', $total)
-                    ->first();
+                $isFullyAbsent = $absentCount === $totalDistributions;
 
-                $gradeName = $gradeData->grade_name ?? 'N/A';
-                $gradePoint = $gradeData->grade_point ?? 0;
-                $remarks = $gradeData->remarks ?? '';
+                if ($isFullyAbsent) {
+                    $failFlag = true;
+                    $isFailInAnyDistribution = true;
+                    $gradePoint = 0;
+                    $gradeName = 'F';
+                    $total = 0;
+                } else {
+                    $gradeData = Grade::where('start_marks', '<=', $total)
+                        ->where('end_marks', '>=', $total)
+                        ->first();
+
+                    $gradePoint = $gradeData->grade_point ?? 0;
+                    $gradeName = $gradeData->grade_name ?? 'N/A';
+                }
 
                 if ($isFailInAnyDistribution) {
                     $failFlag = true;
@@ -246,14 +289,17 @@ class GeneratePdf extends Component
                     $studAnnual = 0;
 
                     foreach ($distributions as $dist) {
-                        $studMark = StudentMark::where([
+                        $studMarkRecord = StudentMark::where([
                             'student_id' => $studId,
                             'exam_id' => $this->exam_id,
                             'school_class_id' => $this->school_class_id,
                             'class_section_id' => $this->class_section_id,
                             'subject_id' => $subject->id,
                             'mark_distribution_id' => $dist->mark_distribution_id,
-                        ])->value('marks_obtained') ?? 0;
+                        ])->first();
+
+                        $studIsAbsent = $studMarkRecord ? (bool) $studMarkRecord->is_absent : true;
+                        $studMark = (!$studIsAbsent && $studMarkRecord) ? ($studMarkRecord->marks_obtained ?? 0) : 0;
 
                         $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
                         if ($isCT) {
@@ -276,27 +322,26 @@ class GeneratePdf extends Component
                     ->where('end_marks', '>=', $highest)
                     ->first();
 
-                $highestGPA = $highestGradeData->grade_point ?? 0;
-                $highestGradeName = $this->getLetterGrade($highestGPA);
+                $highestGradeName = $this->getLetterGrade($highestGradeData->grade_point ?? 0);
 
                 $subjects[] = [
                     'name' => $subject->name,
                     'full_mark' => $finalConfig ? $finalConfig->other_parts_total : $distributions->sum('mark'),
-                    'ct' => $ctMark,
-                    'annual' => $annualMark,
+                    'ct' => $ctDisplayArr,          // You can adjust in your PDF view for better display
+                    'annual' => $annualDisplayArr,  // Same here
                     'cal_ct' => $ctMark,
                     'cal_annual' => round($annualMarkWeighted, 2),
                     'total' => round($total, 2),
                     'gpa' => $isFailInAnyDistribution ? number_format(0, 2) : number_format($gradePoint, 2),
                     'grade' => $isFailInAnyDistribution ? 'F' : $gradeName,
                     'result' => $isFailInAnyDistribution ? 'Fail' : 'Pass',
-                    'remarks' => $remarks,
                     'highest' => round($highest, 2),
                     'highest_grade' => $highestGradeName,
                 ];
 
                 $totalMarksObtained += $total;
 
+                // Exclude Art from GPA for class 3,4,5
                 $excludedFromGPA = in_array((int) $this->school_class_id, [3, 4, 5]) &&
                     strtolower($subject->name) === 'art';
 

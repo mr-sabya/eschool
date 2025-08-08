@@ -12,6 +12,7 @@ use App\Models\{
     Grade,
     FinalMarkConfiguration
 };
+use Illuminate\Support\Facades\Log;
 
 class Show extends Component
 {
@@ -52,7 +53,6 @@ class Show extends Component
         $subjectCount = 0;
         $failFlag = false;
 
-        // Get all students in class & section for position & highest marks calculation
         $studentsInClassSection = Student::where('school_class_id', $this->classId)
             ->where('class_section_id', $this->sectionId)
             ->get();
@@ -72,8 +72,14 @@ class Show extends Component
 
             $fullMark = $finalConfig ? $finalConfig->other_parts_total : $distributions->sum('mark');
 
-            $ctMark = 0;
-            $annualMark = 0;
+            // Track sum of marks for calculations
+            $ctMarkSum = 0;
+            $annualMarkSum = 0;
+
+            // For display: array of per-distribution marks or "Absent"
+            $ctDisplayArr = [];
+            $annualDisplayArr = [];
+
             $isFailInAnyDistribution = false;
 
             foreach ($distributions as $dist) {
@@ -84,25 +90,41 @@ class Show extends Component
                     'class_section_id' => $this->sectionId,
                     'subject_id' => $subject->id,
                     'mark_distribution_id' => $dist->mark_distribution_id,
-                ])->value('marks_obtained') ?? 0;
+                ])->first();
+
+                $isAbsent = $mark ? (bool)$mark->is_absent : true;
+                $markValue = (!$isAbsent && $mark) ? ($mark->marks_obtained ?? 0) : 0;
+
+                // Log::info("Subject {$subject->name} Dist {$dist->markDistribution->name} student absent? " . ($isAbsent ? 'Yes' : 'No'));
 
                 $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
+
                 if ($isCT) {
-                    $ctMark += $mark;
+                    $ctMarkSum += $markValue;
+                    $ctDisplayArr[] = $isAbsent ? 'Absent' : $markValue;
                 } else {
-                    $annualMark += $mark;
+                    $annualMarkSum += $markValue;
+                    $annualDisplayArr[] = $isAbsent ? 'Absent' : $markValue;
                 }
 
-                if ($mark < $dist->pass_mark) {
+                if (!$isAbsent && $markValue < $dist->pass_mark) {
                     $isFailInAnyDistribution = true;
                 }
             }
 
-            $annualMarkWeighted = $finalConfig
-                ? $annualMark * ($finalConfig->final_result_weight_percentage / 100)
-                : $annualMark;
+            // Determine if fully absent in CT or Annual parts
+            $ctIsFullyAbsent = count($ctDisplayArr) > 0 && count(array_filter($ctDisplayArr, fn($v) => $v === 'Absent')) === count($ctDisplayArr);
+            $annualIsFullyAbsent = count($annualDisplayArr) > 0 && count(array_filter($annualDisplayArr, fn($v) => $v === 'Absent')) === count($annualDisplayArr);
 
-            $total = $ctMark + $annualMarkWeighted;
+            // For display, show 'Absent' if all distributions absent in that category, else sum
+            $displayCT = $ctIsFullyAbsent ? 'Absent' : $ctMarkSum;
+            $displayAnnual = $annualIsFullyAbsent ? 'Absent' : $annualMarkSum;
+
+            $annualMarkWeighted = $finalConfig
+                ? $annualMarkSum * ($finalConfig->final_result_weight_percentage / 100)
+                : $annualMarkSum;
+
+            $total = $ctMarkSum + $annualMarkWeighted;
 
             $gradeData = Grade::where('start_marks', '<=', $total)
                 ->where('end_marks', '>=', $total)
@@ -116,7 +138,16 @@ class Show extends Component
                 $failFlag = true;
             }
 
-            // Calculate highest mark among all students for this subject
+            // If fully absent in both CT and Annual, consider subject fully absent
+            $isFullyAbsent = $ctIsFullyAbsent && $annualIsFullyAbsent;
+            if ($isFullyAbsent) {
+                $failFlag = true;
+                $gradeName = 'F';
+                $gradePoint = 0.00;
+                $remarks = 'Absent';
+            }
+
+            // Calculate highest marks among students in this subject
             $studentsTotalMarks = [];
             foreach ($studentsInClassSection as $stud) {
                 $studCT = 0;
@@ -130,13 +161,17 @@ class Show extends Component
                         'class_section_id' => $this->sectionId,
                         'subject_id' => $subject->id,
                         'mark_distribution_id' => $dist->mark_distribution_id,
-                    ])->value('marks_obtained') ?? 0;
+                    ])->first();
+
+                    $isAbsent = $studMark ? (bool)$studMark->is_absent : true;
+                    $markValue = (!$isAbsent && $studMark) ? ($studMark->marks_obtained ?? 0) : 0;
 
                     $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
+
                     if ($isCT) {
-                        $studCT += $studMark;
+                        $studCT += $markValue;
                     } else {
-                        $studAnnual += $studMark;
+                        $studAnnual += $markValue;
                     }
                 }
 
@@ -160,13 +195,13 @@ class Show extends Component
             $this->subjects[] = [
                 'name' => $subject->name,
                 'full_mark' => $fullMark,
-                'ct' => $ctMark,
-                'annual' => $annualMark,
-                'cal_ct' => $ctMark,
+                'ct' => $displayCT,
+                'annual' => $displayAnnual,
+                'cal_ct' => $ctMarkSum,
                 'cal_annual' => round($annualMarkWeighted, 2),
                 'total' => round($total, 2),
-                'gpa' => $isFailInAnyDistribution ? number_format(0, 2) : number_format($gradePoint, 2),
-                'grade' => $isFailInAnyDistribution ? 'F' : $gradeName,
+                'gpa' => number_format($gradePoint, 2),
+                'grade' => $gradeName,
                 'result' => $isFailInAnyDistribution ? 'Fail' : 'Pass',
                 'remarks' => $remarks,
                 'highest' => round($highest, 2),
@@ -175,11 +210,11 @@ class Show extends Component
                 'highest_remarks' => $highestRemarks,
             ];
 
-            $totalMarksObtained += $total;
+            $totalMarksObtained += $isFullyAbsent ? 0 : $total;
 
-            $excludedFromGPA = in_array((int) $this->classId, [3, 4, 5]) && strtolower($subject->name) === 'art';
+            $excludedFromGPA = in_array((int)$this->classId, [3, 4, 5]) && strtolower($subject->name) === 'art';
 
-            if (!$excludedFromGPA) {
+            if (!$excludedFromGPA && !$isFullyAbsent) {
                 $totalGradePoints += $isFailInAnyDistribution ? 0 : $gradePoint;
                 $subjectCount++;
             }
@@ -187,13 +222,26 @@ class Show extends Component
 
         $averageGPA = $failFlag ? 0.00 : ($subjectCount > 0 ? round($totalGradePoints / $subjectCount, 2) : 0.00);
 
-        // Calculate position by total marks for all students in this class and section
+        $position = $this->calculateClassPosition($subjectAssign, $studentsInClassSection);
+
+        $this->summary = [
+            'total' => round($totalMarksObtained, 2),
+            'grade' => $failFlag ? 'F' : $this->getLetterGrade($averageGPA),
+            'gpa' => number_format($averageGPA, 2),
+            'result' => $failFlag ? 'Fail' : 'Pass',
+            'position' => $position,
+            'comment' => '',
+        ];
+    }
+
+    protected function calculateClassPosition($subjectAssign, $students)
+    {
         $studentsTotals = [];
-        foreach ($studentsInClassSection as $stud) {
+
+        foreach ($students as $stud) {
             $studTotal = 0;
             $studFail = false;
 
-            // Calculate student's total marks and check if fail in any subject
             foreach ($subjectAssign->items as $item) {
                 $subject = $item->subject;
 
@@ -208,6 +256,7 @@ class Show extends Component
 
                 $studCT = 0;
                 $studAnnual = 0;
+                $isFullyAbsent = true;
                 $studFailInSubject = false;
 
                 foreach ($distributions as $dist) {
@@ -218,16 +267,24 @@ class Show extends Component
                         'class_section_id' => $this->sectionId,
                         'subject_id' => $subject->id,
                         'mark_distribution_id' => $dist->mark_distribution_id,
-                    ])->value('marks_obtained') ?? 0;
+                    ])->first();
 
-                    $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
-                    if ($isCT) {
-                        $studCT += $studMark;
-                    } else {
-                        $studAnnual += $studMark;
+                    $isAbsent = $studMark ? (bool)$studMark->is_absent : true;
+                    $markValue = (!$isAbsent && $studMark) ? ($studMark->marks_obtained ?? 0) : 0;
+
+                    if (!$isAbsent) {
+                        $isFullyAbsent = false;
                     }
 
-                    if ($studMark < $dist->pass_mark) {
+                    $isCT = str($dist->markDistribution->name)->contains(['ct', 'class test'], true);
+
+                    if ($isCT) {
+                        $studCT += $markValue;
+                    } else {
+                        $studAnnual += $markValue;
+                    }
+
+                    if ($markValue < $dist->pass_mark) {
                         $studFailInSubject = true;
                     }
                 }
@@ -236,9 +293,9 @@ class Show extends Component
                     ? $studAnnual * ($finalConfig->final_result_weight_percentage / 100)
                     : $studAnnual;
 
-                $studTotal += $studCT + $studAnnualWeighted;
+                $studTotal += $isFullyAbsent ? 0 : $studCT + $studAnnualWeighted;
 
-                if ($studFailInSubject) {
+                if ($studFailInSubject || $isFullyAbsent) {
                     $studFail = true;
                 }
             }
@@ -250,23 +307,15 @@ class Show extends Component
             ];
         }
 
-        // Sort descending by total marks
-        usort($studentsTotals, function ($a, $b) {
-            return $b['total'] <=> $a['total'];
-        });
+        usort($studentsTotals, fn($a, $b) => $b['total'] <=> $a['total']);
 
-        // Find position of current student
         $position = 0;
         $lastTotal = null;
         $rank = 0;
-        $sameRankCount = 1;
 
         foreach ($studentsTotals as $index => $data) {
             if ($lastTotal === null || $data['total'] != $lastTotal) {
                 $rank = $index + 1;
-                $sameRankCount = 1;
-            } else {
-                $sameRankCount++;
             }
 
             if ($data['student_id'] == $this->studentId) {
@@ -277,14 +326,7 @@ class Show extends Component
             $lastTotal = $data['total'];
         }
 
-        $this->summary = [
-            'total' => round($totalMarksObtained, 2),
-            'grade' => $failFlag ? 'F' : $this->getLetterGrade($averageGPA),
-            'gpa' => $failFlag ? number_format(0, 2) : number_format($averageGPA, 2),
-            'result' => $failFlag ? 'Fail' : 'Pass',
-            'position' => $position,
-            'comment' => '',
-        ];
+        return $position;
     }
 
     protected function getLetterGrade($gpa)

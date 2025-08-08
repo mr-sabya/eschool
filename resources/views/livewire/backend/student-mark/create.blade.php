@@ -63,7 +63,7 @@
                             <th>Roll Number</th>
                             <th>Student Name</th>
                             @foreach ($markDistributions as $md)
-                            <th>
+                            <th style="width: 300px;">
                                 {{ $md->markDistribution->name }}
                                 <br>
                                 <small>Max: {{ $md->mark }}</small>
@@ -79,13 +79,28 @@
                             <td>{{ $student->user->name }}</td>
                             @foreach ($markDistributions as $md)
                             <td style="width: 120px;">
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="{{ $md->mark }}"
-                                    step="0.01"
-                                    wire:model.defer="marks.{{ $student->id }}.{{ $md->mark_distribution_id }}"
-                                    class="form-control form-control-sm">
+                                <div class="d-flex align-items-center gap-1">
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        max="{{ $md->mark }}"
+                                        step="0.01"
+                                        wire:model.defer="marks.{{ $student->id }}.{{ $md->mark_distribution_id }}.marks_obtained"
+                                        class="form-control form-control-sm"
+                                        :disabled="$wire.marks[{{ $student->id }}][{{ $md->mark_distribution_id }}]?.is_absent">
+
+                                    <div class="form-check ms-1">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            wire:model.defer="marks.{{ $student->id }}.{{ $md->mark_distribution_id }}.is_absent"
+                                            id="absent_{{ $student->id }}_{{ $md->mark_distribution_id }}">
+                                        <label class="form-check-label small" for="absent_{{ $student->id }}_{{ $md->mark_distribution_id }}">
+                                            Absent
+                                        </label>
+                                    </div>
+                                </div>
+
                             </td>
                             @endforeach
                         </tr>

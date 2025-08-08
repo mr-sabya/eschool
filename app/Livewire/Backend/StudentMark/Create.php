@@ -24,7 +24,7 @@ class Create extends Component
     public Collection $students;
     public Collection $markDistributions;
 
-    // [studentId][markDistributionId] => marks_obtained
+    // Structure: $marks[studentId][markDistributionId] = ['marks_obtained' => X, 'is_absent' => true|false]
     public $marks = [];
 
     protected $rules = [
@@ -42,7 +42,6 @@ class Create extends Component
         $this->marks = [];
     }
 
-    // Custom handler for Class select change
     public function onClassChange()
     {
         $this->classSectionId = null;
@@ -56,7 +55,6 @@ class Create extends Component
         $this->loadSections();
     }
 
-    // Custom handler for Section select change
     public function onSectionChange()
     {
         $this->subjectId = null;
@@ -67,7 +65,6 @@ class Create extends Component
         $this->marks = [];
     }
 
-    // Custom handler for Subject select change
     public function onSubjectChange()
     {
         $this->markDistributions = collect();
@@ -79,7 +76,6 @@ class Create extends Component
         $this->loadExistingMarks();
     }
 
-    // Custom handler for Exam select change
     public function onExamChange()
     {
         $this->marks = [];
@@ -88,35 +84,29 @@ class Create extends Component
 
     public function loadSections()
     {
-        if ($this->schoolClassId) {
-            $this->sections = ClassSection::where('school_class_id', $this->schoolClassId)->get();
-        } else {
-            $this->sections = collect();
-        }
+        $this->sections = $this->schoolClassId
+            ? ClassSection::where('school_class_id', $this->schoolClassId)->get()
+            : collect();
     }
 
     public function loadMarkDistributions()
     {
-        if ($this->schoolClassId && $this->subjectId) {
-            $this->markDistributions = SubjectMarkDistribution::with('markDistribution')
-                ->where('school_class_id', $this->schoolClassId)
-                ->where('subject_id', $this->subjectId)
-                ->get();
-        } else {
-            $this->markDistributions = collect();
-        }
+        $this->markDistributions = ($this->schoolClassId && $this->subjectId)
+            ? SubjectMarkDistribution::with('markDistribution')
+            ->where('school_class_id', $this->schoolClassId)
+            ->where('subject_id', $this->subjectId)
+            ->get()
+            : collect();
     }
 
     public function loadStudents()
     {
-        if ($this->schoolClassId && $this->classSectionId) {
-            $this->students = Student::where('school_class_id', $this->schoolClassId)
-                ->where('class_section_id', $this->classSectionId)
-                ->orderBy('roll_number')
-                ->get();
-        } else {
-            $this->students = collect();
-        }
+        $this->students = ($this->schoolClassId && $this->classSectionId)
+            ? Student::where('school_class_id', $this->schoolClassId)
+            ->where('class_section_id', $this->classSectionId)
+            ->orderBy('roll_number')
+            ->get()
+            : collect();
     }
 
     public function loadExistingMarks()
@@ -132,7 +122,10 @@ class Create extends Component
             ->get();
 
         foreach ($existingMarks as $mark) {
-            $this->marks[$mark->student_id][$mark->mark_distribution_id] = $mark->marks_obtained;
+            $this->marks[$mark->student_id][$mark->mark_distribution_id] = [
+                'marks_obtained' => $mark->marks_obtained,
+                'is_absent' => (bool) $mark->is_absent,
+            ];
         }
     }
 
@@ -140,10 +133,13 @@ class Create extends Component
     {
         $this->validate();
 
-        foreach ($this->marks as $studentId => $markDistributionArray) {
-            foreach ($markDistributionArray as $markDistributionId => $marksObtained) {
-                if ($marksObtained === null || $marksObtained === '') {
-                    // Delete existing if input cleared
+        foreach ($this->marks as $studentId => $distributions) {
+            foreach ($distributions as $markDistributionId => $data) {
+                $isAbsent = isset($data['is_absent']) && $data['is_absent'];
+                $marksObtained = $isAbsent ? null : ($data['marks_obtained'] ?? null);
+
+                if ($marksObtained === null && !$isAbsent) {
+                    // If no mark and not absent, delete
                     StudentMark::where([
                         'student_id' => $studentId,
                         'school_class_id' => $this->schoolClassId,
@@ -166,6 +162,7 @@ class Create extends Component
                     ],
                     [
                         'marks_obtained' => $marksObtained,
+                        'is_absent' => $isAbsent,
                     ]
                 );
             }
@@ -188,14 +185,10 @@ class Create extends Component
                 : collect(),
             'exams' => Exam::all()
                 ->filter(fn($exam) => $exam->academicSession->is_active)
-                ->map(function ($exam) {
-                    $startDate = Carbon::parse($exam->start_at);
-                    $endDate = Carbon::parse($exam->end_at);
-                    return [
-                        'id' => $exam->id,
-                        'name' => $exam->examCategory->name . ' (' . $startDate->format('Y-m-d') . ' - ' . $endDate->format('Y-m-d') . ')',
-                    ];
-                }),
+                ->map(fn($exam) => [
+                    'id' => $exam->id,
+                    'name' => $exam->examCategory->name . ' (' . Carbon::parse($exam->start_at)->format('Y-m-d') . ' - ' . Carbon::parse($exam->end_at)->format('Y-m-d') . ')',
+                ]),
         ]);
     }
 }

@@ -93,7 +93,7 @@ class Edit extends Component
         }
 
         session()->flash('success', 'Subject assignment updated successfully.');
-        return redirect()->route('subject-assign.index');
+        return $this->redirect(route('subject-assign.index'), navigate: true);
     }
 
     public function render()

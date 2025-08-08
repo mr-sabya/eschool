@@ -17,6 +17,7 @@ class StudentMark extends Model
         'exam_id',
         'mark_distribution_id',
         'marks_obtained',
+        'is_absent',
     ];
 
     // Relationships
