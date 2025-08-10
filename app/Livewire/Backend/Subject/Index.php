@@ -11,7 +11,7 @@ class Index extends Component
 {
     use WithPagination, WithoutUrlPagination;
 
-    public $name, $code, $type = 'theory', $subjectId;
+    public $name, $code, $is_fourth_subject = false, $subjectId;
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'desc';
@@ -25,7 +25,7 @@ class Index extends Component
         return [
             'name' => 'required|unique:subjects,name,' . $id,
             'code' => 'nullable|unique:subjects,code,' . $id,
-            'type' => 'required|in:theory,practical',
+            'is_fourth_subject' => 'required|boolean',
         ];
     }
 
@@ -56,7 +56,7 @@ class Index extends Component
         $this->subjectId = $subject->id;
         $this->name = $subject->name;
         $this->code = $subject->code;
-        $this->type = $subject->type;
+        $this->is_fourth_subject = $subject->is_fourth_subject;
     }
 
     public function confirmDelete($id)
@@ -74,8 +74,8 @@ class Index extends Component
 
     public function resetForm()
     {
-        $this->reset(['name', 'code', 'type', 'subjectId']);
-        $this->type = 'theory';
+        $this->reset(['name', 'code', 'is_fourth_subject', 'subjectId']);
+        $this->is_fourth_subject = false;
     }
 
     public function sortBy($field)

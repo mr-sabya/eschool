@@ -14,7 +14,7 @@
 
                 @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Academic -->
-                <li class="{{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.*', 'admin.classroom.index', 'admin.academic-session.index') ? 'mm-active' : '' }}">
+                <li class="{{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.class-subject-assign.*', 'admin.classroom.index', 'admin.academic-session.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.index', 'admin.classroom.index', 'admin.academic-session.index') ? 'active' : '' }}">
                         <i class="ri-wallet-line"></i>
                         <span>Academic</span>
@@ -24,7 +24,7 @@
                         <li><a href="{{ route('admin.section.index') }}" class="{{ Route::is('admin.section.index') ? 'active' : '' }}">Section</a></li>
                         <li><a href="{{ route('admin.shift.index') }}" class="{{ Route::is('admin.shift.index') ? 'active' : '' }}">Shift</a></li>
                         <li><a href="{{ route('admin.subject.index') }}" class="{{ Route::is('admin.subject.index') ? 'active' : '' }}">Subject</a></li>
-                        <li><a href="{{ route('admin.subject-assign.index') }}" class="{{ Route::is('admin.subject-assign.index') ? 'active' : '' }}">Subject Assignments</a></li>
+                        <li><a href="{{ route('admin.class-subject-assign.index') }}" class="{{ Route::is('admin.class-subject-assign.index') ? 'active' : '' }}">Subject Assignments</a></li>
                         <li><a href="{{ route('admin.classroom.index') }}" class="{{ Route::is('admin.classroom.index') ? 'active' : '' }}">Classroom</a></li>
                         <li><a href="{{ route('admin.academic-session.index') }}" class="{{ Route::is('admin.academic-session.index') ? 'active' : '' }}">Academic Session</a></li>
                     </ul>

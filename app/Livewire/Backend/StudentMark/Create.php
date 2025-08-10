@@ -10,28 +10,36 @@ use App\Models\Student;
 use App\Models\SubjectMarkDistribution;
 use App\Models\StudentMark;
 use App\Models\Exam;
-use App\Models\Department; // Add this
+use App\Models\Department;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class Create extends Component
 {
-    public $departmentId;  // new property for department filter
+    public $departmentId;
     public $schoolClassId;
     public $classSectionId;
     public $subjectId;
     public $examId;
 
-    public Collection $departments;  // load all departments
+    public Collection $departments;
     public Collection $sections;
     public Collection $students;
     public Collection $markDistributions;
 
-    // Structure: $marks[studentId][markDistributionId] = ['marks_obtained' => X, 'is_absent' => true|false]
+    public Subject|null $currentSubject = null;  // to hold selected subject model
+
+    // Structure: $marks[studentId][markDistributionId] = [
+    //    'marks_obtained' => X,
+    //    'is_absent' => true|false,
+    // ]
     public $marks = [];
 
+    // Track 4th subject checkbox per student
+    public $fourth_subject = [];  // [studentId => true|false]
+
     protected $rules = [
-        'departmentId' => 'nullable|exists:departments,id',  // department is nullable
+        'departmentId' => 'nullable|exists:departments,id',
         'schoolClassId' => 'required|exists:school_classes,id',
         'classSectionId' => 'required|exists:class_sections,id',
         'subjectId' => 'required|exists:subjects,id',
@@ -40,24 +48,26 @@ class Create extends Component
 
     public function mount()
     {
-        $this->departments = Department::all();  // load all departments
+        $this->departments = Department::all();
         $this->sections = collect();
         $this->students = collect();
         $this->markDistributions = collect();
         $this->marks = [];
+        $this->fourth_subject = [];
     }
 
     public function onDepartmentChange()
     {
-        // Reset dependent selects and data
         $this->subjectId = null;
         $this->examId = null;
         $this->markDistributions = collect();
         $this->students = collect();
         $this->marks = [];
+        $this->fourth_subject = [];
+        $this->currentSubject = null;
 
-        // Reload students filtered by department
         $this->loadStudents();
+        $this->loadMarkDistributions();
     }
 
     public function onClassChange()
@@ -69,6 +79,8 @@ class Create extends Component
         $this->students = collect();
         $this->markDistributions = collect();
         $this->marks = [];
+        $this->fourth_subject = [];
+        $this->currentSubject = null;
 
         $this->loadSections();
     }
@@ -81,6 +93,8 @@ class Create extends Component
         $this->students = collect();
         $this->markDistributions = collect();
         $this->marks = [];
+        $this->fourth_subject = [];
+        $this->currentSubject = null;
     }
 
     public function onSubjectChange()
@@ -88,6 +102,10 @@ class Create extends Component
         $this->markDistributions = collect();
         $this->students = collect();
         $this->marks = [];
+        $this->fourth_subject = [];
+
+        // Load the selected subject model
+        $this->currentSubject = $this->subjectId ? Subject::find($this->subjectId) : null;
 
         $this->loadMarkDistributions();
         $this->loadStudents();
@@ -97,6 +115,7 @@ class Create extends Component
     public function onExamChange()
     {
         $this->marks = [];
+        $this->fourth_subject = [];
         $this->loadExistingMarks();
     }
 
@@ -109,12 +128,20 @@ class Create extends Component
 
     public function loadMarkDistributions()
     {
-        $this->markDistributions = ($this->schoolClassId && $this->subjectId)
-            ? SubjectMarkDistribution::with('markDistribution')
+        if (!$this->schoolClassId || !$this->subjectId) {
+            $this->markDistributions = collect();
+            return;
+        }
+
+        $query = SubjectMarkDistribution::with('markDistribution')
             ->where('school_class_id', $this->schoolClassId)
-            ->where('subject_id', $this->subjectId)
-            ->get()
-            : collect();
+            ->where('subject_id', $this->subjectId);
+
+        if ($this->departmentId) {
+            $query->where('department_id', $this->departmentId);
+        }
+
+        $this->markDistributions = $query->get();
     }
 
     public function loadStudents()
@@ -124,7 +151,6 @@ class Create extends Component
             return;
         }
 
-        // Filter by department if selected
         $query = Student::where('school_class_id', $this->schoolClassId)
             ->where('class_section_id', $this->classSectionId)
             ->orderBy('roll_number');
@@ -153,6 +179,11 @@ class Create extends Component
                 'marks_obtained' => $mark->marks_obtained,
                 'is_absent' => (bool) $mark->is_absent,
             ];
+
+            // If this subject is 4th subject, track is_fourth_subject per student
+            if ($mark->is_fourth_subject) {
+                $this->fourth_subject[$mark->student_id] = true;
+            }
         }
     }
 
@@ -166,7 +197,6 @@ class Create extends Component
                 $marksObtained = $isAbsent ? null : ($data['marks_obtained'] ?? null);
 
                 if ($marksObtained === null && !$isAbsent) {
-                    // If no mark and not absent, delete
                     StudentMark::where([
                         'student_id' => $studentId,
                         'school_class_id' => $this->schoolClassId,
@@ -190,6 +220,9 @@ class Create extends Component
                     [
                         'marks_obtained' => $marksObtained,
                         'is_absent' => $isAbsent,
+                        'is_fourth_subject' => $this->currentSubject && $this->currentSubject->is_fourth_subject
+                            ? ($this->fourth_subject[$studentId] ?? false)
+                            : false,
                     ]
                 );
             }

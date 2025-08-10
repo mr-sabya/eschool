@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('subject_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('code')->unique()->nullable(); // optional code for the subject
-            // is 4th subject
-            $table->boolean('is_fourth_subject')->default(false);
+            $table->string('name')->unique(); // e.g., Theory, Practical, Project
+            $table->string('code')->nullable(); // Short code like TH, PR, PJ
+            $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('subject_types');
     }
 };

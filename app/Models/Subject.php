@@ -12,7 +12,7 @@ class Subject extends Model
     protected $fillable = [
         'name',
         'code',
-        'type',
+        'is_fourth_subject', // Indicates if this is the 4th subject
     ];
 
 

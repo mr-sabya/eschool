@@ -42,7 +42,6 @@
                     @error('departmentId') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
-
                 <div class="col-md-3">
                     <label for="subjectSelect" class="form-label">Subject</label>
                     <select id="subjectSelect" wire:model="subjectId" wire:change="onSubjectChange" class="form-select" {{ $subjects->isEmpty() ? 'disabled' : '' }}>
@@ -81,6 +80,9 @@
                                 <small>Max: {{ $md->mark }}</small>
                             </th>
                             @endforeach
+                            @if (isset($currentSubject) && $currentSubject && $currentSubject->is_fourth_subject)
+                            <th>4th Subject</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -89,6 +91,7 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $student->roll_number }}</td>
                             <td>{{ $student->user->name }}</td>
+
                             @foreach ($markDistributions as $md)
                             <td style="width: 120px;">
                                 <div class="d-flex align-items-center gap-1">
@@ -98,7 +101,8 @@
                                         max="{{ $md->mark }}"
                                         step="0.01"
                                         wire:model.defer="marks.{{ $student->id }}.{{ $md->mark_distribution_id }}.marks_obtained"
-                                        class="form-control form-control-sm">
+                                        class="form-control form-control-sm"
+                                        @if(data_get($marks, "{$student->id}.{$md->mark_distribution_id}.is_absent" )) disabled @endif>
 
                                     <div class="form-check ms-1">
                                         <input
@@ -111,12 +115,27 @@
                                         </label>
                                     </div>
                                 </div>
-
                             </td>
                             @endforeach
+
+                            @if (isset($currentSubject) && $currentSubject && $currentSubject->is_fourth_subject)
+                            <td>
+                                <div class="form-check mt-1">
+                                    <input
+                                        type="checkbox"
+                                        class="form-check-input"
+                                        wire:model.defer="fourth_subject.{{ $student->id }}"
+                                        id="fourth_{{ $student->id }}">
+                                    <label class="form-check-label" for="fourth_{{ $student->id }}">
+                                        4th Subject
+                                    </label>
+                                </div>
+                            </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>
+
                 </table>
             </div>
 

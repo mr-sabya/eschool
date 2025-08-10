@@ -20,13 +20,14 @@
                             @error('code') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
+                        <!-- is_fourth_subject -->
                         <div class="mb-3">
-                            <label>Type</label>
-                            <select class="form-select" wire:model="type">
-                                <option value="theory">Theory</option>
-                                <option value="practical">Practical</option>
+                            <label>4th Subject</label>
+                            <select class="form-select" wire:model="is_fourth_subject">
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
                             </select>
-                            @error('type') <span class="text-danger">{{ $message }}</span> @enderror
+                            @error('is_fourth_subject') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
                         <button class="btn btn-primary" type="submit">{{ $subjectId ? 'Update' : 'Save' }}</button>
@@ -72,8 +73,8 @@
                                     <th wire:click="sortBy('code')" style="cursor: pointer;">
                                         Code @if($sortField === 'code') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
                                     </th>
-                                    <th wire:click="sortBy('type')" style="cursor: pointer;">
-                                        Type @if($sortField === 'type') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
+                                    <th wire:click="sortBy('is_fourth_subject')" style="cursor: pointer;">
+                                        4th Subject @if($sortField === 'is_fourth_subject') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
                                     </th>
                                     <th>Action</th>
                                 </tr>
@@ -85,7 +86,7 @@
                                     <td>{{ ($subjects->currentPage() - 1) * $subjects->perPage() + $loop->iteration }}</td>
                                     <td>{{ $subject->name }}</td>
                                     <td>{{ $subject->code }}</td>
-                                    <td>{{ ucfirst($subject->type) }}</td>
+                                    <td>{{ ucfirst($subject->is_fourth_subject ? 'yes' : 'no') }}</td>
                                     <td>
                                         <button class="btn btn-sm btn-primary" wire:click="edit({{ $subject->id }})"><i class="ri-edit-line"></i></button>
                                         <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $subject->id }})" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="ri-delete-bin-line"></i></button>

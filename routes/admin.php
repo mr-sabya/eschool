@@ -39,14 +39,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // subject management
     Route::get('subjects', [App\Http\Controllers\Backend\SubjectController::class, 'index'])->name('subject.index');
 
-    // subject assign management
-    Route::get('subject-assigns', [App\Http\Controllers\Backend\SubjectAssignController::class, 'index'])->name('subject-assign.index');
+    // class subject assign management
+    Route::get('class-subject-assigns', [App\Http\Controllers\Backend\ClassSubjectAssignController::class, 'index'])->name('class-subject-assign.index');
 
-    // subject assign create
-    Route::get('subject-assigns/create', [App\Http\Controllers\Backend\SubjectAssignController::class, 'create'])->name('subject-assign.create');
+    // class subject assign create
+    Route::get('class-subject-assigns/create', [App\Http\Controllers\Backend\ClassSubjectAssignController::class, 'create'])->name('class-subject-assign.create');
 
-    // subject assign edit
-    Route::get('subject-assigns/{subjectAssignId}/edit', [App\Http\Controllers\Backend\SubjectAssignController::class, 'edit'])->name('subject-assign.edit');
+    // class subject assign edit
+    Route::get('class-subject-assigns/{classSubjectAssignId}/edit', [App\Http\Controllers\Backend\ClassSubjectAssignController::class, 'edit'])->name('class-subject-assign.edit');
 
     // designation management
     Route::get('designations', [App\Http\Controllers\Backend\DesignationController::class, 'index'])->name('designation.index');
