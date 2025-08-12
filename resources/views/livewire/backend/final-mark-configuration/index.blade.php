@@ -59,6 +59,8 @@
                     <th wire:click="sortBy('class_test_total')" style="cursor: pointer">Class Test Total</th>
                     <th wire:click="sortBy('other_parts_total')" style="cursor: pointer">Other Parts Total</th>
                     <th wire:click="sortBy('final_result_weight_percentage')" style="cursor: pointer">Final Result Weight (%)</th>
+                    <th wire:click="sortBy('grading_scale')" style="cursor: pointer">Grading Scale</th>
+                    <th class="text-center" wire:click="sortBy('exclude_from_gpa')" style="cursor: pointer">Exclude from GPA</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -73,6 +75,10 @@
                     <td>{{ $config->class_test_total }}</td>
                     <td>{{ $config->other_parts_total }}</td>
                     <td>{{ $config->final_result_weight_percentage }}</td>
+                    <td>{{ $config->grading_scale == 100 ? '100 Marks' : '50 Marks' }}</td>
+                    <td class="text-center">
+                        {{ $config->exclude_from_gpa ? 'Yes' : 'No' }}
+                    </td>
                     <td>
                         <a href="{{ route('admin.final-mark-configuration.edit', $config->id) }}" wire:navigate class="btn btn-sm btn-primary">Edit</a>
                         <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $config->id }})">Delete</button>
