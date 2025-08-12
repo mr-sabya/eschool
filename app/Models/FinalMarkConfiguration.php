@@ -16,6 +16,8 @@ class FinalMarkConfiguration extends Model
         'class_test_total',
         'other_parts_total',
         'final_result_weight_percentage',
+        'grading_scale',
+        'exclude_from_gpa'
     ];
 
     public function schoolClass()

@@ -15,5 +15,6 @@ class Grade extends Model
         'start_marks',
         'end_marks',
         'remarks',
+        'grading_scale',
     ];
 }
