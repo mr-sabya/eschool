@@ -59,7 +59,31 @@
                                 <input type="number" wire:model="final_result_weight_percentage" class="form-control" min="0" max="100">
                                 @error('final_result_weight_percentage') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
+
+
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Grading Scale</label>
+                                <select class="form-select" wire:model="grading_scale">
+                                    <option value="">Select Grading Scale</option>
+                                    <option value="100">100 Marks</option>
+                                    <option value="50">50 Marks</option>
+                                </select>
+                                @error('grading_scale') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+
+
+                            <div class="col-md-12 mb-3 d-flex align-items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="exclude_from_gpa"
+                                    wire:model="exclude_from_gpa"
+                                    class="form-check-input" />
+                                <label for="exclude_from_gpa" class="form-check-label mb-0">
+                                    Not Include in GPA
+                                </label>
+                            </div>
                         </div>
+
 
                         <div class="text-end mt-3">
                             <button type="submit" class="btn btn-primary">

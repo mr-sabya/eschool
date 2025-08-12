@@ -45,7 +45,7 @@
                 <span>Records per page</span>
             </div>
             <div class="w-25">
-                <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search by Class or Subject...">
+                <input type="text" class="form-control form-control-sm" wire:model.live="search" placeholder="Search by Class or Subject...">
             </div>
         </div>
 

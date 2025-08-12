@@ -5,27 +5,27 @@ namespace App\Livewire\Backend\FinalMarkConfiguration;
 use App\Models\FinalMarkConfiguration;
 use App\Models\SchoolClass;
 use App\Models\Subject;
-use App\Models\Department;  // Import Department model
+use App\Models\Department;
 use Livewire\Component;
 
 class Create extends Component
 {
     public $school_class_id;
-    public $department_id; // add department_id property (nullable)
+    public $department_id;
 
     public $rows = [];
 
     public $classes;
     public $subjects;
-    public $departments; // to load departments list
+    public $departments;
 
     public function mount()
     {
         $this->classes = SchoolClass::all();
         $this->subjects = Subject::all();
-        $this->departments = Department::all(); // load departments for dropdown
+        $this->departments = Department::all();
 
-        $this->addRow(); // initialize one row
+        $this->addRow();
     }
 
     public function addRow()
@@ -35,6 +35,8 @@ class Create extends Component
             'class_test_total' => 20,
             'other_parts_total' => 100,
             'final_result_weight_percentage' => 80,
+            'grading_scale' => 100,        // new field with default
+            'exclude_from_gpa' => false,   // new field with default
         ];
     }
 
@@ -48,11 +50,13 @@ class Create extends Component
     {
         $this->validate([
             'school_class_id' => 'required|exists:school_classes,id',
-            'department_id' => 'nullable|exists:departments,id',  // department validation nullable
+            'department_id' => 'nullable|exists:departments,id',
             'rows.*.subject_id' => 'required|exists:subjects,id',
             'rows.*.class_test_total' => 'required|integer|min:0',
             'rows.*.other_parts_total' => 'required|integer|min:0',
             'rows.*.final_result_weight_percentage' => 'required|integer|min:0|max:100',
+            'rows.*.grading_scale' => 'required|integer|in:50,100',
+            'rows.*.exclude_from_gpa' => 'boolean',
         ]);
 
         foreach ($this->rows as $row) {
@@ -62,10 +66,12 @@ class Create extends Component
                     'subject_id' => $row['subject_id'],
                 ],
                 [
-                    'department_id' => $this->department_id,  // save department_id
+                    'department_id' => $this->department_id,
                     'class_test_total' => $row['class_test_total'],
                     'other_parts_total' => $row['other_parts_total'],
                     'final_result_weight_percentage' => $row['final_result_weight_percentage'],
+                    'grading_scale' => $row['grading_scale'],
+                    'exclude_from_gpa' => $row['exclude_from_gpa'],
                 ]
             );
         }

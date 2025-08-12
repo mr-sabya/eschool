@@ -40,6 +40,8 @@
                         <th>Class Test Total</th>
                         <th>Other Parts Total</th>
                         <th>Final Result %</th>
+                        <th>Grading Scale</th>
+                        <th>Exclude from GPA</th>
                         <th style="width: 40px;">#</th>
                     </tr>
                 </thead>
@@ -67,6 +69,18 @@
                             <input type="number" class="form-control" wire:model="rows.{{ $index }}.final_result_weight_percentage" />
                             @error("rows.$index.final_result_weight_percentage") <small class="text-danger">{{ $message }}</small> @enderror
                         </td>
+                        <td>
+                            <select class="form-select" wire:model="rows.{{ $index }}.grading_scale">
+                                <option value="100">100</option>
+                                <option value="50">50</option>
+                            </select>
+                            @error("rows.$index.grading_scale") <small class="text-danger">{{ $message }}</small> @enderror
+                        </td>
+                        <td class="text-center d-flex align-items-center gap-2">
+                            <input type="checkbox" id="exclude_gpa_{{ $index }}" wire:model="rows.{{ $index }}.exclude_from_gpa" />
+                            <label for="exclude_gpa_{{ $index }}" class="mb-0">Not Include in GPA</label>
+                        </td>
+
                         <td class="text-center">
                             <button class="btn btn-sm btn-danger" wire:click.prevent="removeRow({{ $index }})">
                                 <i class="fas fa-trash-alt"></i>
@@ -76,6 +90,7 @@
                     @endforeach
                 </tbody>
             </table>
+
 
             <div class="d-flex justify-content-between">
                 <button wire:click.prevent="addRow" class="btn btn-sm btn-secondary">
