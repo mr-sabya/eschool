@@ -1,26 +1,80 @@
 <div class="card">
 
-    
+
     <div class="card-header bg-primary">
         <div class="card-title m-0 text-white">Subject Mark Distributions</div>
     </div>
 
     <div class="card-body">
-        <div class="table-action d-flex justify-content-between mb-3">
+
+        <div class="border-bottom pb-3 mb-5 ">
+            <h4 class="mb-3">Filter Subject Mark Distributions</h4>
+            <div class="row">
+                <div class="col-lg-2">
+                    <!-- Class Filter -->
+                    <select wire:change="changeClass($event.target.value)" class="form-select">
+                        <option value="">All Classes</option>
+                        @foreach($classes as $class)
+                        <option value="{{ $class->id }}" @selected($filterClass==$class->id)>{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <!-- Section Filter -->
+                    <select wire:change="changeSection($event.target.value)" class="form-select" @disabled(empty($sections))>
+                        <option value="">All Sections</option>
+                        @foreach($sections as $section)
+                        <option value="{{ $section->id }}" @selected($filterSection==$section->id)>{{ $section->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <!-- Department Filter -->
+                    <select wire:change="changeDepartment($event.target.value)" class="form-select">
+                        <option value="">All Departments</option>
+                        @foreach($departments as $department)
+                        <option value="{{ $department->id }}" @selected($filterDepartment==$department->id)>{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-lg-6">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        wire:click="resetFilters"
+                        @disabled(!$filterClass && !$filterSection && !$filterDepartment && !$search)>
+                        Reset Filters
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="table-action d-flex justify-content-between mb-3 gap-2">
+
             <div class="d-flex gap-2 align-items-center">
-                <select wire:model="perPage" class="form-select form-select-sm w-auto">
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
+                <select wire:change="changePerPage($event.target.value)" class="form-select form-select-sm w-auto">
+                    <option value="5" @selected($perPage==5)>5</option>
+                    <option value="10" @selected($perPage==10)>10</option>
+                    <option value="25" @selected($perPage==25)>25</option>
+                    <option value="50" @selected($perPage==50)>50</option>
+                    <option value="100" @selected($perPage==100)>100</option>
                 </select>
                 <span>Records per page</span>
             </div>
+
             <div class="w-25">
+
+                <!-- Search -->
                 <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search...">
             </div>
         </div>
+
+
+
 
         <table class="table table-bordered table-hover table-striped mb-0">
             <thead>
