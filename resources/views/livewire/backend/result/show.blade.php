@@ -32,7 +32,11 @@
                 <th rowspan="2">Subject</th>
                 <th rowspan="2">Full Mark</th>
                 <th colspan="{{ count($markdistributions) }}">Obtained Marks</th>
+                @if($student->schoolClass['numeric_name'] >= 6)
+                <th colspan="2">Calculated Marks</th>
+                @else
                 <th colspan="{{ count($markdistributions) }}">Calculated Marks</th>
+                @endif
                 <th rowspan="2">Total</th>
                 <th rowspan="2">Highest</th>
                 <th rowspan="2">GPA</th>
@@ -43,9 +47,15 @@
                 @foreach ($markdistributions as $distribution)
                 <th>{{ $distribution->markDistribution['name'] }}</th>
                 @endforeach
+
+                @if($student->schoolClass['numeric_name'] >= 6)
+                <th>Class Test</th>
+                <th>Total</th>
+                @else
                 @foreach ($markdistributions as $distribution)
                 <th>{{ $distribution->markDistribution['name'] }}</th>
                 @endforeach
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -107,13 +117,43 @@
                     {{ $marksObtained }}
                     @endif
                     @else
-                    N/A
+                    -
                     @endif
                 </td>
                 @endforeach
 
-                {{-- Calculated Marks --}}
 
+
+                @if($student->schoolClass['numeric_name'] >= 6)
+
+                <td>
+                    @foreach ($markdistributions as $distribution)
+                    @php
+                    if($distribution->markDistribution['name'] == 'Class Test'){
+                    $subjectMarkDistribution = App\Models\SubjectMarkDistribution::where('subject_id', $subject->subject['id'])
+                    ->where('school_class_id', $student->school_class_id)
+                    ->where('class_section_id', $student->class_section_id)
+                    ->where('mark_distribution_id', $markDistribution ? $markDistribution->id : null)
+                    ->first();
+
+                    $studentClassTestMark = App\Models\StudentMark::where('student_id', $student->id)
+                    ->where('subject_id', $subject->subject['id'])
+                    ->where('school_class_id', $student->school_class_id)
+                    ->where('exam_id', $exam->id)
+                    ->where('mark_distribution_id', $markDistribution->id)
+                    ->first();
+
+                    if($studentClassTestMark){
+                    echo $studentClassTestMark->marks_obtained;
+                    }
+                    }
+                    @endphp
+                    @endforeach
+                </td>
+                <td></td>
+
+                @else
+                {{-- Calculated Marks --}}
                 @foreach ($markdistributions as $distribution)
                 @php
                 $markDistribution = App\Models\MarkDistribution::where('name', $distribution->markDistribution['name'])->first();
@@ -167,7 +207,7 @@
                     @if($studentClassTestMark)
                     {{ $studentClassTestMark->marks_obtained }}
                     @else
-                    N/A
+                    -
                     @endif
                     @else
 
@@ -175,11 +215,12 @@
                     {!! $studentSubjectMark->is_absent ? '<span style="color:red;">Absent</span>' : $calculatedMark !!}
 
                     @else
-                    N/A
+                    -
                     @endif
                     @endif
                 </td>
                 @endforeach
+                @endif
 
                 {{-- Total Calculated Mark --}}
                 <td>{{ $totalCalculatedMark }}</td>
@@ -197,7 +238,7 @@
                     ->where('grading_scale', $finalMarkConfiguration->grading_scale)
                     ->first();
 
-                    $gradeName = $grade ? $grade->grade_name : 'N/A';
+                    $gradeName = $grade ? $grade->grade_name : '-';
                     $gradePoint = $grade ? $grade->grade_point : 0;
                     @endphp
 
@@ -236,7 +277,7 @@
         ->orderBy('grade_point', 'desc')
         ->first();
 
-        $letterGrade = $finalGrade ? $finalGrade->grade_name : 'N/A';
+        $letterGrade = $finalGrade ? $finalGrade->grade_name : '-';
 
         // Override if failed any subject
         if ($finalResult === 'Fail') {
