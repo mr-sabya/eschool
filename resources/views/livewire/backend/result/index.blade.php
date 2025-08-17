@@ -81,6 +81,11 @@
     'sectionId' => $selectedSection,
     'sessionId' => $selectedSession,
 ]) }}" class="btn btn-sm btn-info" target="_blank">View Result</a>
+                            <a href="{{ route('admin.result.download', ['studentId' => $student->id, 'examId' => $selectedExam]) }}"
+                                class="btn btn-primary btn-sm"
+                                target="_blank">
+                                <i class="fas fa-download me-1"></i> Download Result PDF
+                            </a>
                         </td>
                     </tr>
                     @endforeach

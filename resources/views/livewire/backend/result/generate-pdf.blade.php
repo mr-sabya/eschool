@@ -39,14 +39,20 @@
                         </select>
                         @error('exam_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
+                </div>
 
-                    <div class="mt-3">
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                        <!-- Text while downloading -->
+                        <span wire:loading>
+                            <i class="fas fa-spinner fa-spin me-1"></i> Downloading...
+                        </span>
 
-
-                        <button type="submit" class="btn btn-primary">
+                        <!-- Normal button text -->
+                        <span wire:loading.remove>
                             <i class="fas fa-download me-1"></i> Download PDF
-                        </button>
-                    </div>
+                        </span>
+                </div>
             </form>
         </div>
     </div>

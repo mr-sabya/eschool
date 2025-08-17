@@ -20,4 +20,9 @@ class Subject extends Model
     {
         return $this->hasMany(SubjectMarkDistribution::class);
     }
+
+    public function markDistributions()
+    {
+        return $this->hasMany(SubjectMarkDistribution::class, 'subject_id', 'id');
+    }
 }

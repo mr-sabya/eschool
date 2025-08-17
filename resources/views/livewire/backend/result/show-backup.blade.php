@@ -98,8 +98,7 @@
                     @endphp
 
                     @if($studentSubjectMark->is_absent)
-                    @php $failedAnyDistribution = true; @endphp
-                    <span style="color:red;">Absent</span>
+                    Absent
                     @elseif(!$isPass)
                     <span style="color:red;">Fail ({{ $marksObtained }})</span>
                     @php $failedAnyDistribution = true; @endphp
@@ -157,9 +156,7 @@
                 $draftMark = $calculatedMark;
                 }
 
-
                 $totalCalculatedMark += $draftMark;
-
                 @endphp
 
                 <td>
@@ -172,8 +169,7 @@
                     @else
 
                     @if($studentSubjectMark)
-                    {!! $studentSubjectMark->is_absent ? '<span style="color:red;">Absent</span>' : $calculatedMark !!}
-
+                    {{ $studentSubjectMark->is_absent ? 'Absent' : $calculatedMark }}
                     @else
                     N/A
                     @endif
@@ -186,9 +182,12 @@
 
                 {{-- Highest Mark --}}
                 @php
-                $highestMark = App\Helpers\HighestMarkHelper::getHighestMark($students, $subject->subject['id'], $student->school_class_id, $student->class_section_id, $exam->id);
+                $highestMark = App\Models\StudentMark::where('subject_id', $subject->subject['id'])
+                ->where('school_class_id', $student->school_class_id)
+                ->where('exam_id', $exam->id)
+                ->max('marks_obtained');
                 @endphp
-                <td>{{ $highestMark['highest_mark'] }}</td>
+                <td>{{ $highestMark }}</td>
 
                 {{-- GPA and Grade --}}
                 @php
@@ -217,10 +216,9 @@
             </tr>
 
             @php
-
+            $totalObtainedMarks += $totalCalculatedMark;
 
             if (!$excludeFromGPA) {
-            $totalObtainedMarks += $totalCalculatedMark;
             $totalGradePoints += $gradePoint;
             $gpaSubjectCount++;
             }
@@ -232,7 +230,8 @@
     @php
     $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
 
-    $finalGrade = App\Models\Grade::where('grade_point', '<=', $finalgpa)
+    $finalGrade = App\Models\Grade::where('grading_scale', $finalMarkConfiguration->grading_scale)
+    ->where('grade_point', '<=', $finalgpa)
         ->orderBy('grade_point', 'desc')
         ->first();
 
