@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Helpers\ClassPositionHelper;
 use App\Helpers\ResultHelper;
 use App\Http\Controllers\Controller;
 use App\Models\ClassSubjectAssign;
@@ -23,6 +24,12 @@ class ResultController extends Controller
     public function show($studentId, $examId, $classId, $sectionId, $sessionId)
     {
         return view('backend.result.show', compact('studentId', 'examId', 'classId', 'sectionId', 'sessionId'));
+    }
+
+    // high school result
+    public function highSchool($studentId, $examId, $classId, $sectionId, $sessionId)
+    {
+        return view('backend.result.high-school', compact('studentId', 'examId', 'classId', 'sectionId', 'sessionId'));
     }
 
     // generate PDF
@@ -64,32 +71,52 @@ class ResultController extends Controller
             ->unique(fn($item) => $item->markDistribution->name)
             ->values();
 
-        // Generate PDF
-        $pdf = Pdf::loadView('backend.result.pdf', [
-            'student' => $student,
-            'exam' => $exam,
-            'students' => $students,
-            'subjects' => $subjects,
-            'markdistributions' => $markdistributions,
-        ])->setPaper('A4', 'landscape');
+        if ($student->schoolClass['numeric_name'] >= 6) {
+
+            // return view('backend.result.high-school-pdf', [
+            //     'student' => $student,
+            //     'exam' => $exam,
+            //     'students' => $students,
+            //     'subjects' => $subjects,
+            //     'markdistributions' => $markdistributions,
+            // ]);
+            // Generate PDF
+            $pdf = Pdf::loadView('backend.result.high-school-pdf', [
+                'student' => $student,
+                'exam' => $exam,
+                'students' => $students,
+                'subjects' => $subjects,
+                'markdistributions' => $markdistributions,
+            ])->setPaper('A4', 'landscape');
+        } else {
+
+            // Generate PDF
+            $pdf = Pdf::loadView('backend.result.pdf', [
+                'student' => $student,
+                'exam' => $exam,
+                'students' => $students,
+                'subjects' => $subjects,
+                'markdistributions' => $markdistributions,
+            ])->setPaper('A4', 'landscape');
+        }
 
         // Return as download
         $fileName = $student->user->name . '-result.pdf';
         return $pdf->download($fileName);
     }
-    
-    
+
+
     // show result position
     public function showResultPosition()
     {
         $students = Student::with(['schoolClass', 'classSection'])
-            ->where('school_class_id', 2)
-            ->where('class_section_id', 2)
+            ->where('school_class_id', 6)
+            ->where('class_section_id', 6)
             ->get();
 
         $examId = 1; // Example exam ID, replace with actual logic to get the exam ID
 
-        $resuls = ResultHelper::getClassResults($students, $examId);
+        $resuls = ClassPositionHelper::getClassResults($students, $examId);
 
         return $resuls;
     }

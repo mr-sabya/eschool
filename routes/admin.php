@@ -132,6 +132,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // show result
     Route::get('results/{studentId}/{examId}/{classId}/{sectionId}/{sessionId}', [App\Http\Controllers\Backend\ResultController::class, 'show'])
         ->name('result.show');
+    
+    // high school result
+    Route::get('results/high-school/{studentId}/{examId}/{classId}/{sectionId}/{sessionId}', [App\Http\Controllers\Backend\ResultController::class, 'highSchool'])
+        ->name('result.high-school');
 
     // generate PDF
     Route::get('results/generate-pdf', [App\Http\Controllers\Backend\ResultController::class, 'generatePdf'])

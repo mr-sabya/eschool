@@ -32,7 +32,7 @@
                 <th rowspan="2">Subject</th>
                 <th rowspan="2">Full Mark</th>
                 <th colspan="{{ count($markdistributions) }}">Obtained Marks</th>
-                <th colspan="{{ count($markdistributions) }}">Calculated Marks</th>
+                <th colspan="2">Calculated Marks</th>
                 <th rowspan="2">Total</th>
                 <th rowspan="2">Highest</th>
                 <th rowspan="2">GPA</th>
@@ -43,9 +43,9 @@
                 @foreach ($markdistributions as $distribution)
                 <th>{{ $distribution->markDistribution['name'] }}</th>
                 @endforeach
-                @foreach ($markdistributions as $distribution)
-                <th>{{ $distribution->markDistribution['name'] }}</th>
-                @endforeach
+
+                <th>Class Test</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
@@ -98,7 +98,8 @@
                     @endphp
 
                     @if($studentSubjectMark->is_absent)
-                    Absent
+                    @php $failedAnyDistribution = true; @endphp
+                    <span style="color:red;">Absent</span>
                     @elseif(!$isPass)
                     <span style="color:red;">Fail ({{ $marksObtained }})</span>
                     @php $failedAnyDistribution = true; @endphp
@@ -106,88 +107,69 @@
                     {{ $marksObtained }}
                     @endif
                     @else
-                    N/A
+                    -
                     @endif
                 </td>
                 @endforeach
 
                 {{-- Calculated Marks --}}
 
-                @foreach ($markdistributions as $distribution)
+                <!-- class test -->
                 @php
-                $markDistribution = App\Models\MarkDistribution::where('name', $distribution->markDistribution['name'])->first();
 
-                $subjectMarkDistribution = App\Models\SubjectMarkDistribution::where('subject_id', $subject->subject['id'])
-                ->where('school_class_id', $student->school_class_id)
-                ->where('class_section_id', $student->class_section_id)
-                ->where('mark_distribution_id', $markDistribution ? $markDistribution->id : null)
-                ->first();
+                $markDistribution = App\Models\MarkDistribution::where('name', 'Class Test')->first();
 
-                $studentSubjectMark = null;
-                $studentClassTestMark = null;
-                if ($subjectMarkDistribution) {
-                if($distribution->markDistribution['name'] == 'Class Test'){
-                $studentClassTestMark = App\Models\StudentMark::where('student_id', $student->id)
+                $classTestMark = App\Models\StudentMark::where('student_id', $student->id)
                 ->where('subject_id', $subject->subject['id'])
                 ->where('school_class_id', $student->school_class_id)
                 ->where('exam_id', $exam->id)
                 ->where('mark_distribution_id', $markDistribution->id)
                 ->first();
-                }else{
-                $studentSubjectMark = App\Models\StudentMark::where('student_id', $student->id)
-                ->where('subject_id', $subject->subject['id'])
-                ->where('school_class_id', $student->school_class_id)
-                ->where('exam_id', $exam->id)
-                ->where('mark_distribution_id', $markDistribution->id)
-                ->first();
-                }
 
-                }
-
-                $calculatedMark = 0;
-                if ($studentSubjectMark) {
-                $calculatedMark = round(($studentSubjectMark->marks_obtained * $finalMarkConfiguration->final_result_weight_percentage) / 100);
-                }
-
-                if($studentClassTestMark){
-
-                $draftMark = $studentClassTestMark->marks_obtained + $calculatedMark;
-                }else{
-                $draftMark = $calculatedMark;
-                }
-
-                $totalCalculatedMark += $draftMark;
+                $finalClassTestMark = $classTestMark ? $classTestMark->marks_obtained : 0;
                 @endphp
 
                 <td>
-                    @if($distribution->markDistribution['name'] == 'Class Test')
-                    @if($studentClassTestMark)
-                    {{ $studentClassTestMark->marks_obtained }}
+                    @if($classTestMark)
+                    {{ $classTestMark->marks_obtained }}
                     @else
-                    N/A
-                    @endif
-                    @else
-
-                    @if($studentSubjectMark)
-                    {{ $studentSubjectMark->is_absent ? 'Absent' : $calculatedMark }}
-                    @else
-                    N/A
-                    @endif
+                    -
                     @endif
                 </td>
-                @endforeach
+
+                @php
+
+                $otherMarkDistributions = App\Models\MarkDistribution::where('name', '!=', 'Class Test')->get();
+
+                $totalSubjectMark = 0;
+                foreach ($otherMarkDistributions as $distribution) {
+                $markDistribution = App\Models\MarkDistribution::where('name', $distribution->name)->first();
+                
+                $studentSubjectMark = App\Models\StudentMark::where('student_id', $student->id)
+                    ->where('subject_id', $subject->subject['id'])
+                    ->where('school_class_id', $student->school_class_id)
+                    ->where('exam_id', $exam->id)
+                    ->where('mark_distribution_id', $markDistribution->id)
+                    ->first();
+                $marksObtained = $studentSubjectMark ? $studentSubjectMark->marks_obtained : 0;
+                $totalSubjectMark += $marksObtained;
+                }
+
+                $calculatedMark = round(($totalSubjectMark * $finalMarkConfiguration->final_result_weight_percentage) / 100);
+
+                $totalCalculatedMark = $calculatedMark + $finalClassTestMark;
+                @endphp
+
+                <td>{{ $calculatedMark }}</td>
 
                 {{-- Total Calculated Mark --}}
                 <td>{{ $totalCalculatedMark }}</td>
 
                 {{-- Highest Mark --}}
                 @php
-                $highestMark = App\Models\StudentMark::where('subject_id', $subject->subject['id'])
-                ->where('school_class_id', $student->school_class_id)
-                ->where('exam_id', $exam->id)
-                ->max('marks_obtained');
+                $highestMark = App\Helpers\SchoolHighestMarkHelper::getHighestMark($students, $subject->subject['id'], $student->school_class_id, $student->class_section_id, $exam->id);
                 @endphp
-                <td>{{ $highestMark }}</td>
+                <td>{{ $highestMark['highest_mark'] }}</td>
 
                 {{-- GPA and Grade --}}
                 @php
@@ -216,9 +198,10 @@
             </tr>
 
             @php
-            $totalObtainedMarks += $totalCalculatedMark;
+
 
             if (!$excludeFromGPA) {
+            $totalObtainedMarks += $totalCalculatedMark;
             $totalGradePoints += $gradePoint;
             $gpaSubjectCount++;
             }
@@ -243,7 +226,7 @@
         $finalgpa = 0.00;
         }
 
-        $studentResult = App\Helpers\ResultHelper::getStudentPosition($student->id, $students, $exam->id);
+        $studentResult = App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
         $classPosition = $studentResult['position'] ? $studentResult['position'] : 0;
 
         @endphp

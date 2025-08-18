@@ -2,16 +2,13 @@
 
 namespace App\Livewire\Backend\Result;
 
+use App\Models\ClassSubjectAssign;
+use App\Models\Exam;
+use App\Models\Student;
+use App\Models\SubjectMarkDistribution;
 use Livewire\Component;
-use App\Models\{
-    Student,
-    ClassSubjectAssign,
-    Exam,
-    MarkDistribution,
-    SubjectMarkDistribution
-};
 
-class Show extends Component
+class HighSchool extends Component
 {
     public $studentId;
     public $examId;
@@ -61,7 +58,7 @@ class Show extends Component
 
     public function render()
     {
-        return view('livewire.backend.result.show', [
+        return view('livewire.backend.result.high-school', [
             'student' => $this->student,
             'exam' => $this->exam,
             'subjects' => $this->subjects,

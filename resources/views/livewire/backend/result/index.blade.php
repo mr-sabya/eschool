@@ -74,6 +74,15 @@
                         <td>{{ $student->email }}</td>
                         <td>{{ $student->phone }}</td>
                         <td>
+                            @if($student->schoolClass['numeric_name'] >= 6)
+                            <a href="{{ route('admin.result.high-school', [
+    'studentId' => $student->id,
+    'examId' => $selectedExam,
+    'classId' => $selectedClass,
+    'sectionId' => $selectedSection,
+    'sessionId' => $selectedSession,
+]) }}" class="btn btn-sm btn-info" target="_blank">View Result</a>
+                            @else
                             <a href="{{ route('admin.result.show', [
     'studentId' => $student->id,
     'examId' => $selectedExam,
@@ -81,6 +90,10 @@
     'sectionId' => $selectedSection,
     'sessionId' => $selectedSession,
 ]) }}" class="btn btn-sm btn-info" target="_blank">View Result</a>
+
+
+                            @endif
+
                             <a href="{{ route('admin.result.download', ['studentId' => $student->id, 'examId' => $selectedExam]) }}"
                                 class="btn btn-primary btn-sm"
                                 target="_blank">
