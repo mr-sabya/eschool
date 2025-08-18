@@ -191,6 +191,8 @@ class Create extends Component
     {
         $this->validate();
 
+        // dd($this->marks);
+
         foreach ($this->marks as $studentId => $distributions) {
             foreach ($distributions as $markDistributionId => $data) {
                 $isAbsent = isset($data['is_absent']) && $data['is_absent'];

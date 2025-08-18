@@ -117,14 +117,24 @@
                 <!-- class test -->
                 @php
 
-                $markDistribution = App\Models\MarkDistribution::where('name', 'Class Test')->first();
+                $ctMarkDistribution = App\Models\MarkDistribution::where('name', 'Class Test')->first();
 
+                $ctSubjectMarkDistribution = App\Models\SubjectMarkDistribution::where('subject_id', $subject->subject['id'])
+                ->where('school_class_id', $student->school_class_id)
+                ->where('class_section_id', $student->class_section_id)
+                ->where('mark_distribution_id', $ctMarkDistribution->id)
+                ->first();
+
+                if($ctSubjectMarkDistribution) {
                 $classTestMark = App\Models\StudentMark::where('student_id', $student->id)
                 ->where('subject_id', $subject->subject['id'])
                 ->where('school_class_id', $student->school_class_id)
                 ->where('exam_id', $exam->id)
-                ->where('mark_distribution_id', $markDistribution->id)
+                ->where('mark_distribution_id', $ctMarkDistribution->id)
                 ->first();
+                } else {
+                $classTestMark = null;
+                }
 
                 $finalClassTestMark = $classTestMark ? $classTestMark->marks_obtained : 0;
                 @endphp
@@ -143,14 +153,25 @@
 
                 $totalSubjectMark = 0;
                 foreach ($otherMarkDistributions as $distribution) {
-                $markDistribution = App\Models\MarkDistribution::where('name', $distribution->name)->first();
-                
+                $getMarkDistribution = App\Models\MarkDistribution::where('name', $distribution->name)->first();
+
+                $subjectMarkDistribution = App\Models\SubjectMarkDistribution::where('subject_id', $subject->subject['id'])
+                ->where('school_class_id', $student->school_class_id)
+                ->where('class_section_id', $student->class_section_id)
+                ->where('mark_distribution_id', $getMarkDistribution ? $getMarkDistribution->id : null)
+                ->first();
+
+                $studentSubjectMark = null;
+
+                if($subjectMarkDistribution) {
                 $studentSubjectMark = App\Models\StudentMark::where('student_id', $student->id)
-                    ->where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('exam_id', $exam->id)
-                    ->where('mark_distribution_id', $markDistribution->id)
-                    ->first();
+                ->where('subject_id', $subject->subject['id'])
+                ->where('school_class_id', $student->school_class_id)
+                ->where('exam_id', $exam->id)
+                ->where('mark_distribution_id', $getMarkDistribution->id)
+                ->first();
+                }
+
                 $marksObtained = $studentSubjectMark ? $studentSubjectMark->marks_obtained : 0;
                 $totalSubjectMark += $marksObtained;
                 }
