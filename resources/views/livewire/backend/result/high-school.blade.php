@@ -98,7 +98,9 @@
                     @endphp
 
                     @if($studentSubjectMark->is_absent)
+                    @if($markDistribution['name'] != 'Class Test')
                     @php $failedAnyDistribution = true; @endphp
+                    @endif
                     <span style="color:red;">Absent</span>
                     @elseif(!$isPass)
                     <span style="color:red;">Fail ({{ $marksObtained }})</span>
@@ -141,7 +143,11 @@
 
                 <td>
                     @if($classTestMark)
-                    {{ $classTestMark->marks_obtained }}
+                    @if($classTestMark->is_absent)
+                    0
+                    @else
+                    {{ $finalClassTestMark }}
+                    @endif
                     @else
                     -
                     @endif
