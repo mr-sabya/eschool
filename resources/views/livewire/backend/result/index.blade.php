@@ -34,6 +34,16 @@
                 </div>
 
                 <div class="col-md-3">
+                    <label for="department" class="form-label">Department</label>
+                    <select wire:model="selectedDepartment" id="department" class="form-select">
+                        <option value="">Select Department</option>
+                        @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-3">
                     <label for="exam" class="form-label">Exam</label>
                     <select wire:model="selectedExam" id="exam" class="form-select" required>
                         <option value="">Select Exam</option>

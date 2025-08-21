@@ -4,6 +4,7 @@ namespace App\Livewire\Backend\Result;
 
 use App\Models\AcademicSession;
 use App\Models\ClassSection;
+use App\Models\Department;
 use App\Models\Exam;
 use App\Models\SchoolClass;
 use App\Models\Student;
@@ -20,13 +21,14 @@ class Index extends Component
     public $selectedClass = null;
     public $selectedSection = null;
     public $selectedExam = null;
+    public $selectedDepartment = null;
 
     public $students;
 
     public function mount()
     {
         $this->academicSessions = AcademicSession::orderBy('start_date', 'desc')->get();
-        $this->classes = SchoolClass::orderBy('name')->get();
+        $this->classes = SchoolClass::orderBy('id')->get();
         $this->students = collect();
     }
 
@@ -57,6 +59,7 @@ class Index extends Component
             $this->selectedSection = null;
             $this->students = collect();
         }
+        $this->selectedDepartment = null;
     }
 
     public function generateResults()
@@ -72,6 +75,7 @@ class Index extends Component
             ->where('academic_session_id', $this->selectedSession)
             ->where('school_class_id', $this->selectedClass)
             ->where('class_section_id', $this->selectedSection)
+            ->where('department_id', $this->selectedDepartment)
             ->where('is_active', true)
             ->orderBy('roll_number')
             ->get();
@@ -79,6 +83,8 @@ class Index extends Component
 
     public function render()
     {
-        return view('livewire.backend.result.index');
+        return view('livewire.backend.result.index',[
+            'departments' => Department::orderBy('id')->get(),
+        ]);
     }
 }

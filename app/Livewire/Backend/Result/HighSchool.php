@@ -12,55 +12,64 @@ class HighSchool extends Component
 {
     public $studentId;
     public $examId;
+    public $classId;
+    public $sectionId;
+    public $sessionId;
+
     public $student;
     public $exam;
     public $subjects;
     public $markdistributions;
     public $students;
 
-    public function mount($studentId, $examId)
-    {
-        $this->studentId = $studentId;
-        $this->examId = $examId;
+    public $readyToLoad = false;
 
-        // Load the student with relations
+    public function mount($studentId, $examId, $classId, $sectionId, $sessionId)
+    {
+        // Only store IDs here, don’t fetch heavy data yet
+        $this->studentId  = $studentId;
+        $this->examId     = $examId;
+        $this->classId    = $classId;
+        $this->sectionId  = $sectionId;
+        $this->sessionId  = $sessionId;
+    }
+
+    public function loadReport()
+    {
+        $this->readyToLoad = true;
+
+        // Now fetch heavy data here
         $this->student = Student::with(['schoolClass', 'classSection'])->findOrFail($this->studentId);
 
-        // students of list class section
         $this->students = Student::where('school_class_id', $this->student->school_class_id)
             ->where('class_section_id', $this->student->class_section_id)
             ->get();
 
-        // Load the exam
         $this->exam = Exam::findOrFail($this->examId);
 
-        // Load assigned subjects for student's class, section and session
         $this->subjects = ClassSubjectAssign::with('subject')
             ->where('academic_session_id', $this->student->academic_session_id)
             ->where('school_class_id', $this->student->school_class_id)
             ->where('class_section_id', $this->student->class_section_id)
+            ->where('department_id', $this->student->department_id)
             ->get();
 
-        // Get subject IDs assigned
         $subjectIds = $this->subjects->pluck('subject_id')->toArray();
 
-        // Load mark distributions
         $this->markdistributions = SubjectMarkDistribution::with('markDistribution')
             ->where('school_class_id', $this->student->school_class_id)
             ->where('class_section_id', $this->student->class_section_id)
             ->whereIn('subject_id', $subjectIds)
             ->get()
-            ->unique(function ($item) {
-                return $item->markDistribution->name;
-            })
-            ->values(); // reset keys
+            ->unique(fn ($item) => $item->markDistribution->name)
+            ->values();
     }
 
     public function render()
     {
         return view('livewire.backend.result.high-school', [
-            'student' => $this->student,
-            'exam' => $this->exam,
+            'student'  => $this->student,
+            'exam'     => $this->exam,
             'subjects' => $this->subjects,
         ]);
     }
