@@ -105,11 +105,6 @@ class HighSchool extends Component
             ->where('subject_id', $subject->id)
             ->first();
 
-        $studentFourthSubject = StudentMark::where('student_id', $this->student->id)
-            ->where('exam_id', $this->exam->id)
-            ->where('subject_id', $subject->subject_id)
-            ->where('is_fourth_subject', 1)
-            ->first();
 
         $annualFullMark = $finalMarkConfiguration ? $finalMarkConfiguration->other_parts_total : 0;
 
@@ -133,6 +128,7 @@ class HighSchool extends Component
             'grade_point' => 0,
             'final_result' => '',
             'exclude_from_gpa' => $excludeFromGPA,
+            'fail_any_distribution' => $failedAnyDistribution,
         ];
 
 
@@ -267,14 +263,16 @@ class HighSchool extends Component
             ->where('grading_scale', $finalMarkConfiguration->grading_scale)
             ->first();
 
+        if($failedAnyDistribution) {
+            $marks['grade_name'] = 'F';
+            $marks['grade_point'] = number_format(0, 2);;
+        } else {
+            $marks['grade_name'] = $grade ? $grade->grade_name : 'N/A';
+            $marks['grade_point'] = $grade ? $grade->grade_point : number_format(0, 2);;
+        }
 
-        $gradeName = $grade ? $grade->grade_name : 'N/A';
-        $gradePoint = $grade ? $grade->grade_point : 0;
-
-
-        $marks['grade_name'] = $gradeName;
-        $marks['grade_point'] = $gradePoint;
         $marks['final_result'] = $failedAnyDistribution ? '<span style="color:red;">Fail</span>' : 'Pass';
+        $marks['fail_any_distribution'] = $failedAnyDistribution;
 
         return $marks;
     }

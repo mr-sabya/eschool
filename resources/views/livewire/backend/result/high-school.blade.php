@@ -50,6 +50,7 @@
         $totalObtainedMarks = 0;
         $totalGradePoints = 0;
         $gpaSubjectCount = 0;
+        $failAnySubject = false;
         $finalResult = 'Pass';
         $classPosition = 0;
         @endphp
@@ -82,7 +83,6 @@
                 @foreach ($marks as $mark)
                 @php
                 $totalCalculatedMark = 0;
-                $gradePoint = 0;
                 $excludeFromGPA = false;
 
                 $subject = App\Models\Subject::where('id', $mark['subject_id'])->first();
@@ -94,6 +94,11 @@
 
                 if($mark['exclude_from_gpa']) {
                 $excludeFromGPA = true;
+                }
+
+                if($mark['fail_any_distribution']){
+                $finalResult = 'Fail';
+                $failAnySubject = true;
                 }
                 @endphp
 
@@ -150,7 +155,9 @@
 
                 @php
                 $totalObtainedMarks += $fourthSubjectMarks['total_calculated_marks'];
+                if($fourthSubjectMarks['grade_point'] >= 2.0) {
                 $totalGradePoints = $totalGradePoints + ($fourthSubjectMarks['grade_point'] - 2.0); // Adjusting for 4th subject
+                }
                 @endphp
 
                 @endif
@@ -185,7 +192,7 @@
                 <tr>
                     <td><strong>Obtained Total:</strong> {{ $totalObtainedMarks }}</td>
                     <td><strong>Letter Grade:</strong> {{ $letterGrade }}</td>
-                    <td><strong>GPA:</strong> {{ is_numeric($finalgpa) ? number_format($finalgpa, 2) : $finalgpa }} {{ totalGradePoints }}</td>
+                    <td><strong>GPA:</strong> {{ is_numeric($finalgpa) ? number_format($finalgpa, 2) : $finalgpa }} </td>
                     <td>
                         <strong>Result:</strong>
                         @if($finalResult === 'Fail')
@@ -228,7 +235,7 @@
                 progressBar.style.width = width + "%";
                 progressBar.innerText = width + "%";
             }
-        }, 50); // speed (50ms → 5 seconds to reach 95%)
+        }, 100); // speed (50ms → 5 seconds to reach 95%)
 
         Livewire.hook("message.processed", (message, component) => {
             if (@this.readyToLoad) {
