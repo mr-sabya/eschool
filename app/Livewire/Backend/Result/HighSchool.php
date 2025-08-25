@@ -54,6 +54,9 @@ class HighSchool extends Component
 
         $this->students = Student::where('school_class_id', $this->student->school_class_id)
             ->where('class_section_id', $this->student->class_section_id)
+            ->when($this->student->department_id, function ($query) {
+                $query->where('department_id', $this->student->department_id);
+            })
             ->get();
 
         $this->exam = Exam::findOrFail($this->examId);
