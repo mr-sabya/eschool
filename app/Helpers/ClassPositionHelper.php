@@ -234,7 +234,7 @@ class ClassPositionHelper
 
 
             // ✅ Final GPA & Grade
-            $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
+            $finalgpa = $gpaSubjectCount > 0 ? (float) number_format($totalGradePoints / $gpaSubjectCount, 2, '.', '') : 0.00;
 
             $finalGrade = Grade::where('grade_point', '<=', $finalgpa)
                 ->orderBy('grade_point', 'desc')
