@@ -2,12 +2,14 @@
 
 namespace App\Livewire\Backend\Result;
 
+use App\Livewire\Backend\Result\HighSchool;
 use App\Models\AcademicSession;
 use App\Models\ClassSection;
 use App\Models\Department;
 use App\Models\Exam;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 
 class Index extends Component
@@ -81,9 +83,34 @@ class Index extends Component
             ->get();
     }
 
+
+    public function downloadStudentPdf($studentId, $examId, $classId, $sectionId, $sessionId)
+    {
+        // Create an instance of GeneratePdf component manually
+        $pdfComponent = app(HighSchool::class);
+        $pdfComponent->mount($studentId, $examId, $classId, $sectionId, $sessionId);
+        $pdfComponent->loadReport();
+
+        $pdf = Pdf::loadView('backend.result.high-school-pdf', [
+            'student' => $pdfComponent->student,
+            'exam' => $pdfComponent->exam,
+            'subjects' => $pdfComponent->subjects,
+            'marks' => $pdfComponent->marks,
+            'fourthSubjectMarks' => $pdfComponent->fourthSubjectMarks,
+            'markdistributions' => $pdfComponent->markdistributions,
+            'students' => $pdfComponent->students,
+        ])->setPaper('A4', 'landscape');
+
+        $fileName = $pdfComponent->student->user['name'] . '-result.pdf';
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $fileName);
+    }
+
     public function render()
     {
-        return view('livewire.backend.result.index',[
+        return view('livewire.backend.result.index', [
             'departments' => Department::orderBy('id')->get(),
         ]);
     }

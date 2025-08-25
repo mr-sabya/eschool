@@ -92,6 +92,22 @@
     'sectionId' => $selectedSection,
     'sessionId' => $selectedSession,
 ]) }}" class="btn btn-sm btn-info" target="_blank">View Result</a>
+
+                            <button
+                                wire:click="downloadStudentPdf({{ $student->id }}, {{ $selectedExam }}, {{ $selectedClass }}, {{ $selectedSection }}, {{ $selectedSession }})"
+                                wire:loading.attr="disabled"
+                                wire:target="downloadStudentPdf({{ $student->id }}, {{ $selectedExam }}, {{ $selectedClass }}, {{ $selectedSection }}, {{ $selectedSession }})"
+                                class="btn btn-sm btn-primary">
+                                <span wire:loading.remove
+                                    wire:target="downloadStudentPdf({{ $student->id }}, {{ $selectedExam }}, {{ $selectedClass }}, {{ $selectedSection }}, {{ $selectedSession }})">
+                                    Download PDF
+                                </span>
+                                <span wire:loading
+                                    wire:target="downloadStudentPdf({{ $student->id }}, {{ $selectedExam }}, {{ $selectedClass }}, {{ $selectedSection }}, {{ $selectedSession }})">
+                                    Downloading...
+                                </span>
+                            </button>
+
                             @else
                             <a href="{{ route('admin.result.show', [
     'studentId' => $student->id,
@@ -102,13 +118,13 @@
 ]) }}" class="btn btn-sm btn-info" target="_blank">View Result</a>
 
 
-                            @endif
-
                             <a href="{{ route('admin.result.download', ['studentId' => $student->id, 'examId' => $selectedExam]) }}"
                                 class="btn btn-primary btn-sm"
                                 target="_blank">
                                 <i class="fas fa-download me-1"></i> Download Result PDF
                             </a>
+                            @endif
+
                         </td>
                     </tr>
                     @endforeach

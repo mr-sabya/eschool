@@ -15,7 +15,7 @@
             max-width: 1000px;
             margin: auto;
             border: 1px solid #000;
-            padding: 10px;
+            padding: 5px;
         }
 
         .school-header {
@@ -25,17 +25,16 @@
 
         .boarder-top {
             border-top: 2px solid #000;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            padding-top: 10px;
+            margin-top: 5px;
+            padding-top: 5px;
         }
 
         .school-header img {
-            height: 80px;
+            height: 75px;
         }
 
         .title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
         }
 
@@ -70,14 +69,14 @@
 
         .section-title {
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 10px;
             text-decoration: underline;
         }
 
         .result-footer {
             display: flex;
             justify-content: space-between;
-            margin-top: 40px;
+            margin-top: 20px;
         }
 
         .signature {
@@ -88,7 +87,7 @@
 
         .comment-box {
             border: 1px solid #000;
-            height: 30px;
+            height: 20px;
             padding: 5px;
         }
     </style>
@@ -97,7 +96,7 @@
 <body>
 
     <div class="report-box">
-        <div class="school-header" style="width: 100%; height: 85px;">
+        <div class="school-header" style="width: 100%; height: 75px;">
             <table style="text-align: left; float: left;">
                 <tr>
                     <td>
@@ -159,178 +158,99 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($subjects as $subject)
+
+                @foreach ($marks as $mark)
                 @php
-                $finalMarkConfiguration = App\Models\FinalMarkConfiguration::where('school_class_id', $student->school_class_id)
-                ->where('subject_id', $subject->subject['id'])
+                $totalCalculatedMark = 0;
+                $excludeFromGPA = false;
+
+                $subject = App\Models\Subject::where('id', $mark['subject_id'])->first();
+
+                $fourthSubject = App\Models\StudentMark::where('student_id', $student->id)
+                ->where('exam_id', $exam->id)
+                ->where('is_fourth_subject', 1)
                 ->first();
 
-                $annualFullMark = $finalMarkConfiguration ? $finalMarkConfiguration->other_parts_total : 0;
+                if($mark['exclude_from_gpa']) {
+                $excludeFromGPA = true;
+                }
 
-                // Check if any mark distribution for this subject excludes it from GPA
-                $excludeFromGPA = $finalMarkConfiguration ? $finalMarkConfiguration->exclude_from_gpa : false;
-
-                $totalCalculatedMark = 0;
-                $failedAnyDistribution = false;
+                if($mark['fail_any_distribution']){
+                $finalResult = 'Fail';
+                $failAnySubject = true;
+                }
                 @endphp
 
+                @if($fourthSubject && $fourthSubject->subject_id == $subject->id)
+                @continue
+                @endif
+
                 <tr>
-                    <td>{{ $subject->subject['name'] }}</td>
-                    <td>{{ $annualFullMark }}</td>
-
-                    {{-- Obtained Marks --}}
-                    @foreach ($markdistributions as $distribution)
-                    @php
-                    $markDistribution = App\Models\MarkDistribution::where('name', $distribution->markDistribution['name'])->first();
-
-                    $subjectMarkDistribution = App\Models\SubjectMarkDistribution::where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('class_section_id', $student->class_section_id)
-                    ->where('mark_distribution_id', $markDistribution ? $markDistribution->id : null)
-                    ->first();
-
-                    $studentSubjectMark = null;
-                    if ($subjectMarkDistribution) {
-                    $studentSubjectMark = App\Models\StudentMark::where('student_id', $student->id)
-                    ->where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('exam_id', $exam->id)
-                    ->where('mark_distribution_id', $markDistribution->id)
-                    ->first();
-                    }
-                    @endphp
-                    <td>
-                        @if($studentSubjectMark)
-                        @php
-                        $passMark = $subjectMarkDistribution->pass_mark ?? 0;
-                        $marksObtained = $studentSubjectMark->marks_obtained;
-                        $isPass = $marksObtained >= $passMark;
-                        @endphp
-
-                        @if($studentSubjectMark->is_absent)
-                        @if($markDistribution['name'] != 'Class Test')
-                        @php $failedAnyDistribution = true; @endphp
-                        @endif
-                        <span style="color:red;">Absent</span>
-                        @elseif(!$isPass)
-                        <span style="color:red;">Fail ({{ $marksObtained }})</span>
-                        @php $failedAnyDistribution = true; @endphp
-                        @else
-                        {{ $marksObtained }}
-                        @endif
-                        @else
-                        -
-                        @endif
-                    </td>
+                    <td>{{ $mark['subject_name'] }}</td>
+                    <td>{{ $mark['full_mark'] }}</td>
+                    @foreach ($mark['obtained_marks'] as $obtainedMark)
+                    <td>{!! $obtainedMark !!}</td>
                     @endforeach
+                    <td>{{ $mark['class_test_result'] }}</td>
+                    <td>{{ $mark['other_parts_total'] }}</td>
+                    <td>{{ $mark['total_calculated_marks'] }}</td>
+                    <td>{{ $mark['highest_mark'] }}</td>
+                    <td>{{ $mark['grade_name'] }}</td>
 
-                    {{-- Calculated Marks --}}
-
-                    <!-- class test -->
-                    @php
-
-                    $markDistribution = App\Models\MarkDistribution::where('name', 'Class Test')->first();
-
-                    $classTestMark = App\Models\StudentMark::where('student_id', $student->id)
-                    ->where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('exam_id', $exam->id)
-                    ->where('mark_distribution_id', $markDistribution->id)
-                    ->first();
-
-                    $finalClassTestMark = $classTestMark ? $classTestMark->marks_obtained : 0;
-                    @endphp
-
-                    <td>
-                        @if($classTestMark)
-                        @if($classTestMark->is_absent)
-                        0
-                        @else
-                        {{ $finalClassTestMark }}
-                        @endif
-                        @else
-                        -
-                        @endif
-                    </td>
-
-                    @php
-
-                    $otherMarkDistributions = App\Models\MarkDistribution::where('name', '!=', 'Class Test')->get();
-
-                    $totalSubjectMark = 0;
-                    foreach ($otherMarkDistributions as $distribution) {
-                    $markDistribution = App\Models\MarkDistribution::where('name', $distribution->name)->first();
-
-                    $studentSubjectMark = App\Models\StudentMark::where('student_id', $student->id)
-                    ->where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('exam_id', $exam->id)
-                    ->where('mark_distribution_id', $markDistribution->id)
-                    ->first();
-                    $marksObtained = $studentSubjectMark ? $studentSubjectMark->marks_obtained : 0;
-                    $totalSubjectMark += $marksObtained;
-                    }
-
-                    $calculatedMark = round(($totalSubjectMark * $finalMarkConfiguration->final_result_weight_percentage) / 100);
-
-                    $totalCalculatedMark = $calculatedMark + $finalClassTestMark;
-                    @endphp
-
-                    <td>{{ $calculatedMark }}</td>
-
-                    {{-- Total Calculated Mark --}}
-                    <td>{{ $totalCalculatedMark }}</td>
-
-                    {{-- Highest Mark --}}
-                    @php
-                    $highestMark = App\Helpers\SchoolHighestMarkHelper::getHighestMark($students, $subject->subject['id'], $student->school_class_id, $student->class_section_id, $exam->id);
-                    @endphp
-                    <td>{{ $highestMark['highest_mark'] }}</td>
-
-                    {{-- GPA and Grade --}}
-                    @php
-                    $grade = App\Models\Grade::where('start_marks', '<=', $totalCalculatedMark)
-                        ->where('end_marks', '>=', $totalCalculatedMark)
-                        ->where('grading_scale', $finalMarkConfiguration->grading_scale)
-                        ->first();
-
-                        $gradeName = $grade ? $grade->grade_name : 'N/A';
-                        $gradePoint = $grade ? $grade->grade_point : 0;
-                        @endphp
-
-                        <td>{{ $gradeName }}</td>
-                        <td>{{ $gradePoint }}</td>
-
-                        {{-- Result: Fail if any distribution failed --}}
-                        <td>
-
-                            @if($failedAnyDistribution)
-                            <span style="color:red;">Fail</span>
-                            @php $finalResult = 'Fail'; @endphp
-                            @else
-                            Pass
-                            @endif
-                        </td>
+                    <td> {{ $mark['grade_point'] }}</td>
+                    <td>{!! $mark['final_result'] !!}</td>
                 </tr>
+
 
                 @php
 
 
                 if (!$excludeFromGPA) {
-                $totalObtainedMarks += $totalCalculatedMark;
-                $totalGradePoints += $gradePoint;
+                $totalObtainedMarks += $mark['total_calculated_marks'];
+                $totalGradePoints += $mark['grade_point'];
                 $gpaSubjectCount++;
                 }
                 @endphp
                 @endforeach
+
+
+                <!-- 4th subject -->
+                @if($fourthSubjectMarks)
+                <tr style="background-color: #f0f0f0;">
+                    <td>{{ $fourthSubjectMarks['subject_name'] }} (4th Subject)</td>
+                    <td>{{ $fourthSubjectMarks['full_mark'] }}</td>
+
+                    @foreach ($fourthSubjectMarks['obtained_marks'] as $obtainedMark)
+                    <td>{!! $obtainedMark !!}</td>
+                    @endforeach
+                    <td>{{ $fourthSubjectMarks['class_test_result'] }}</td>
+                    <td>{{ $fourthSubjectMarks['other_parts_total'] }}</td>
+                    <td>{{ $fourthSubjectMarks['total_calculated_marks'] }}</td>
+                    <td>{{ $fourthSubjectMarks['highest_mark'] }}</td>
+                    <td>{{ $fourthSubjectMarks['grade_name'] }}</td>
+                    <td>{{ $fourthSubjectMarks['grade_point'] }}</td>
+                    <td>{!! $fourthSubjectMarks['final_result'] !!}</td>
+                </tr>
+
+                @php
+                $totalObtainedMarks += $fourthSubjectMarks['total_calculated_marks'];
+                if($fourthSubjectMarks['grade_point'] >= 2.0) {
+                $totalGradePoints = $totalGradePoints + ($fourthSubjectMarks['grade_point'] - 2.0); // Adjusting for 4th subject
+                }
+                @endphp
+
+                @endif
+
+
+
+
             </tbody>
         </table>
 
         @php
         $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
 
-        $finalGrade = App\Models\Grade::where('grading_scale', $finalMarkConfiguration->grading_scale)
-        ->where('grade_point', '<=', $finalgpa)
+        $finalGrade = App\Models\Grade::where('grade_point', '<=', $finalgpa)
             ->orderBy('grade_point', 'desc')
             ->first();
 
@@ -351,7 +271,7 @@
                 <tr>
                     <td><strong>Obtained Total:</strong> {{ $totalObtainedMarks }}</td>
                     <td><strong>Letter Grade:</strong> {{ $letterGrade }}</td>
-                    <td><strong>GPA:</strong> {{ is_numeric($finalgpa) ? number_format($finalgpa, 2) : $finalgpa }}</td>
+                    <td><strong>GPA:</strong> {{ is_numeric($finalgpa) ? number_format($finalgpa, 2) : $finalgpa }} </td>
                     <td>
                         <strong>Result:</strong>
                         @if($finalResult === 'Fail')
@@ -374,11 +294,11 @@
                 </tr>
             </table>
 
-            <div style="width: 100%; margin-top: 50px; margin-bottom: 25px;">
-                <div style="float: left; border-top: 1px solid #000; padding: 5px 20px 0 0;">
+            <div style="width: 100%; margin-top: 25px; margin-bottom: 15px;">
+                <div style="float: left; border-top: 1px solid #000; padding: 3px 20px 0 0;">
                     Class Teacher
                 </div>
-                <div style="float: right; border-top: 1px solid #000; padding: 5px 0 0 20px;">
+                <div style="float: right; border-top: 1px solid #000; padding: 3px 0 0 20px;">
                     Principal
                 </div>
             </div>

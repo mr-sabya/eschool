@@ -12,6 +12,7 @@ use App\Models\Student;
 use App\Models\StudentMark;
 use App\Models\Subject;
 use App\Models\SubjectMarkDistribution;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 
 class HighSchool extends Component
@@ -32,6 +33,7 @@ class HighSchool extends Component
     public $fourthSubjectMarks;
 
     public $readyToLoad = false;
+
 
     public function mount($studentId, $examId, $classId, $sectionId, $sessionId)
     {
@@ -263,7 +265,7 @@ class HighSchool extends Component
             ->where('grading_scale', $finalMarkConfiguration->grading_scale)
             ->first();
 
-        if($failedAnyDistribution) {
+        if ($failedAnyDistribution) {
             $marks['grade_name'] = 'F';
             $marks['grade_point'] = number_format(0, 2);;
         } else {
@@ -271,6 +273,9 @@ class HighSchool extends Component
             $marks['grade_point'] = $grade ? $grade->grade_point : number_format(0, 2);;
         }
 
+        if ($grade && $grade->grade_point == 0) {
+            $failedAnyDistribution = true;
+        }
         $marks['final_result'] = $failedAnyDistribution ? '<span style="color:red;">Fail</span>' : 'Pass';
         $marks['fail_any_distribution'] = $failedAnyDistribution;
 

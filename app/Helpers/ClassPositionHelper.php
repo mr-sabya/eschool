@@ -119,6 +119,10 @@ class ClassPositionHelper
 
                 $gradePoint = $grade ? $grade->grade_point : 0;
 
+                if($grade && $grade->grade_point == 0) {
+                    $failedAnyDistribution = true;
+                }
+
                 if ($failedAnyDistribution) {
                     $failCount++;
                 }
