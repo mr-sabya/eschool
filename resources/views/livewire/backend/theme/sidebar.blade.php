@@ -174,16 +174,21 @@
                     </ul>
                 </li>
                 @endif
+                
                 @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Marks -->
-                <li class="{{ Route::is('admin.website.banner.*') ? 'mm-active' : '' }}">
-                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.website.banner.*') ? 'active' : '' }}">
+                <li class="{{ Route::is('admin.website.banner.*', 'admin.website.notice.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.website.banner.*', 'admin.website.notice.*') ? 'active' : '' }}">
                         <i class="ri-wallet-line"></i>
                         <span>Website</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li>
                             <a href="{{ route('admin.website.banner.index') }}" class="{{ Route::is('admin.website.banner.index') ? 'active' : '' }}" wire:navigate>Banners</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.website.notice.index') }}" class="{{ Route::is('admin.website.notice.index') ? 'active' : '' }}" wire:navigate>Notice Board</a>
                         </li>
 
                     </ul>

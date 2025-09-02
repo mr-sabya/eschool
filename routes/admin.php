@@ -158,4 +158,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
     Route::get('website/banners/create', [App\Http\Controllers\Backend\Website\BannerController::class, 'create'])->name('website.banner.create');
     Route::get('website/banners/{id}/edit', [App\Http\Controllers\Backend\Website\BannerController::class, 'edit'])->name('website.banner.edit');
+
+    // notice board
+    Route::get('website/notices', [App\Http\Controllers\Backend\Website\NoticeController::class, 'index'])->name('website.notice.index');
+    Route::get('website/notices/create', [App\Http\Controllers\Backend\Website\NoticeController::class, 'create'])->name('website.notice.create');
+    Route::get('website/notices/{id}/edit', [App\Http\Controllers\Backend\Website\NoticeController::class, 'edit'])->name('website.notice.edit');
 });

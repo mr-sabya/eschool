@@ -25,6 +25,9 @@
     <!-- seelct2 -->
     <link rel="stylesheet" href="{{ asset('assets/backend/libs/select2/css/select2.min.css') }}">
 
+    <!-- quill text editor -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
     <!-- App Css-->
     <link href="{{ asset('assets/backend/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/backend/css/custom.css') }}" id="app-style" rel="stylesheet" type="text/css" />
@@ -123,6 +126,9 @@
 
     <!-- seelct2 -->
     <script data-navigate-once src="{{ asset('assets/backend/libs/select2/js/select2.min.js') }}"></script>
+
+    <!-- Include the Quill library -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
     <!-- App js -->
     <script src="{{ asset('assets/backend/js/app.js') }}"></script>
