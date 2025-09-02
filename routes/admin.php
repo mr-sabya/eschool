@@ -132,7 +132,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // show result
     Route::get('results/{studentId}/{examId}/{classId}/{sectionId}/{sessionId}', [App\Http\Controllers\Backend\ResultController::class, 'show'])
         ->name('result.show');
-    
+
     // high school result
     Route::get('results/high-school/{studentId}/{examId}/{classId}/{sectionId}/{sessionId}', [App\Http\Controllers\Backend\ResultController::class, 'highSchool'])
         ->name('result.high-school');
@@ -148,8 +148,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // setting
     Route::get('settings', [App\Http\Controllers\Backend\SettingController::class, 'index'])
         ->name('setting.index');
-        
+
     // show result
     Route::get('show-result-position', [App\Http\Controllers\Backend\ResultController::class, 'showResultPosition'])
         ->name('result.position.show');
+
+
+    // website banner
+    Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
+    Route::get('website/banners/create', [App\Http\Controllers\Backend\Website\BannerController::class, 'create'])->name('website.banner.create');
+    Route::get('website/banners/{id}/edit', [App\Http\Controllers\Backend\Website\BannerController::class, 'edit'])->name('website.banner.edit');
 });

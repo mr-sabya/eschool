@@ -6,7 +6,7 @@
 
                 <!-- Single Menu Item -->
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="waves-effect {{ Route::is('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" class="waves-effect {{ Route::is('admin.dashboard') ? 'active' : '' }}" wire:navigate>
                         <i class="ri-dashboard-line"></i>
                         <span>Dashboard</span>
                     </a>
@@ -20,13 +20,27 @@
                         <span>Academic</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('admin.class.index') }}" class="{{ Route::is('admin.class.index') ? 'active' : '' }}">Class</a></li>
-                        <li><a href="{{ route('admin.section.index') }}" class="{{ Route::is('admin.section.index') ? 'active' : '' }}">Section</a></li>
-                        <li><a href="{{ route('admin.shift.index') }}" class="{{ Route::is('admin.shift.index') ? 'active' : '' }}">Shift</a></li>
-                        <li><a href="{{ route('admin.subject.index') }}" class="{{ Route::is('admin.subject.index') ? 'active' : '' }}">Subject</a></li>
-                        <li><a href="{{ route('admin.class-subject-assign.index') }}" class="{{ Route::is('admin.class-subject-assign.index') ? 'active' : '' }}">Subject Assignments</a></li>
-                        <li><a href="{{ route('admin.classroom.index') }}" class="{{ Route::is('admin.classroom.index') ? 'active' : '' }}">Classroom</a></li>
-                        <li><a href="{{ route('admin.academic-session.index') }}" class="{{ Route::is('admin.academic-session.index') ? 'active' : '' }}">Academic Session</a></li>
+                        <li>
+                            <a href="{{ route('admin.class.index') }}" class="{{ Route::is('admin.class.index') ? 'active' : '' }}" wire:navigate>Class</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.section.index') }}" class="{{ Route::is('admin.section.index') ? 'active' : '' }}" wire:navigate>Section</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.shift.index') }}" class="{{ Route::is('admin.shift.index') ? 'active' : '' }}" wire:navigate>Shift</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.subject.index') }}" class="{{ Route::is('admin.subject.index') ? 'active' : '' }}" wire:navigate>Subject</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.class-subject-assign.index') }}" class="{{ Route::is('admin.class-subject-assign.index') ? 'active' : '' }}" wire:navigate>Subject Assignments</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.classroom.index') }}" class="{{ Route::is('admin.classroom.index') ? 'active' : '' }}" wire:navigate>Classroom</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.academic-session.index') }}" class="{{ Route::is('admin.academic-session.index') ? 'active' : '' }}" wire:navigate>Academic Session</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -39,11 +53,21 @@
                         <span>App Setting</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('admin.designation.index') }}" class="{{ Route::is('admin.designation.index') ? 'active' : '' }}">Designation</a></li>
-                        <li><a href="{{ route('admin.department.index') }}" class="{{ Route::is('admin.department.index') ? 'active' : '' }}">Department</a></li>
-                        <li><a href="{{ route('admin.gender.index') }}" class="{{ Route::is('admin.gender.index') ? 'active' : '' }}">Gender</a></li>
-                        <li><a href="{{ route('admin.blood.index') }}" class="{{ Route::is('admin.blood.index') ? 'active' : '' }}">Blood Group</a></li>
-                        <li><a href="{{ route('admin.religion.index') }}" class="{{ Route::is('admin.religion.index') ? 'active' : '' }}">Religions</a></li>
+                        <li>
+                            <a href="{{ route('admin.designation.index') }}" class="{{ Route::is('admin.designation.index') ? 'active' : '' }}" wire:navigate>Designation</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.department.index') }}" class="{{ Route::is('admin.department.index') ? 'active' : '' }}" wire:navigate>Department</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.gender.index') }}" class="{{ Route::is('admin.gender.index') ? 'active' : '' }}" wire:navigate>Gender</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.blood.index') }}" class="{{ Route::is('admin.blood.index') ? 'active' : '' }}" wire:navigate>Blood Group</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.religion.index') }}" class="{{ Route::is('admin.religion.index') ? 'active' : '' }}" wire:navigate>Religions</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -56,8 +80,12 @@
                         <span>Students</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('admin.student.index') }}" class="{{ Route::is('admin.student.index') ? 'active' : '' }}">Students List</a></li>
-                        <li><a href="{{ route('admin.student.create') }}" class="{{ Route::is('admin.student.create') ? 'active' : '' }}">Add New Student</a></li>
+                        <li>
+                            <a href="{{ route('admin.student.index') }}" class="{{ Route::is('admin.student.index') ? 'active' : '' }}" wire:navigate>Students List</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.student.create') }}" class="{{ Route::is('admin.student.create') ? 'active' : '' }}" wire:navigate>Add New Student</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -70,8 +98,12 @@
                         <span>Guardians</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('admin.guardian.index') }}" class="{{ Route::is('admin.guardian.index') ? 'active' : '' }}">Guardians List</a></li>
-                        <li><a href="{{ route('admin.guardian.create') }}" class="{{ Route::is('admin.guardian.create') ? 'active' : '' }}">Add New Guardian</a></li>
+                        <li>
+                            <a href="{{ route('admin.guardian.index') }}" class="{{ Route::is('admin.guardian.index') ? 'active' : '' }}" wire:navigate>Guardians List</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.guardian.create') }}" class="{{ Route::is('admin.guardian.create') ? 'active' : '' }}" wire:navigate>Add New Guardian</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -84,8 +116,12 @@
                         <span>Staffs</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('admin.staff.index') }}" class="{{ Route::is('admin.staff.index') ? 'active' : '' }}">Staff List</a></li>
-                        <li><a href="{{ route('admin.staff.create') }}" class="{{ Route::is('admin.staff.create') ? 'active' : '' }}">Add New Staff</a></li>
+                        <li>
+                            <a href="{{ route('admin.staff.index') }}" class="{{ Route::is('admin.staff.index') ? 'active' : '' }}" wire:navigate>Staff List</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.staff.create') }}" class="{{ Route::is('admin.staff.create') ? 'active' : '' }}" wire:navigate>Add New Staff</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -98,12 +134,24 @@
                         <span>Exams</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('admin.exam-category.index') }}" class="{{ Route::is('admin.exam-category.index') ? 'active' : '' }}">Exam Categories</a></li>
-                        <li><a href="{{ route('admin.exam.index') }}" class="{{ Route::is('admin.exam.index') ? 'active' : '' }}">Exams</a></li>
-                        <li><a href="{{ route('admin.mark-distribution.index') }}" class="{{ Route::is('admin.mark-distribution.index') ? 'active' : '' }}">Mark Distribution</a></li>
-                        <li><a href="{{ route('admin.subject-mark-distribution.index') }}" class="{{ Route::is('admin.subject-mark-distribution.index') ? 'active' : '' }}">Subject Mark Distribution</a></li>
-                        <li><a href="{{ route('admin.final-mark-configuration.index') }}" class="{{ Route::is('admin.final-mark-configuration.index') ? 'active' : '' }}">Final Mark Configuration</a></li>
-                        <li><a href="{{ route('admin.grade.index') }}" class="{{ Route::is('admin.grade.index') ? 'active' : '' }}">Grades</a></li>
+                        <li>
+                            <a href="{{ route('admin.exam-category.index') }}" class="{{ Route::is('admin.exam-category.index') ? 'active' : '' }}" wire:navigate>Exam Categories</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.exam.index') }}" class="{{ Route::is('admin.exam.index') ? 'active' : '' }}" wire:navigate>Exams</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.mark-distribution.index') }}" class="{{ Route::is('admin.mark-distribution.index') ? 'active' : '' }}" wire:navigate>Mark Distribution</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.subject-mark-distribution.index') }}" class="{{ Route::is('admin.subject-mark-distribution.index') ? 'active' : '' }}" wire:navigate>Subject Mark Distribution</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.final-mark-configuration.index') }}" class="{{ Route::is('admin.final-mark-configuration.index') ? 'active' : '' }}" wire:navigate>Final Mark Configuration</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.grade.index') }}" class="{{ Route::is('admin.grade.index') ? 'active' : '' }}" wire:navigate>Grades</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -116,9 +164,28 @@
                         <span>Marks</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
-                        <li><a href="{{ route('admin.student-mark.create') }}" class="{{ Route::is('admin.student-mark.create') ? 'active' : '' }}">Add Student Marks</a></li>
-                        <li><a href="{{ route('admin.result.index') }}" class="{{ Route::is('admin.result.index') ? 'active' : '' }}">Student Results</a></li>
+                        <li>
+                            <a href="{{ route('admin.student-mark.create') }}" class="{{ Route::is('admin.student-mark.create') ? 'active' : '' }}">Add Student Marks</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.result.index') }}" class="{{ Route::is('admin.result.index') ? 'active' : '' }}">Student Results</a>
+                        </li>
                         <!-- <li><a href="{{ route('admin.result.generate.pdf') }}" class="{{ Route::is('admin.result.generate.pdf') ? 'active' : '' }}">Generate PDF</a></li> -->
+                    </ul>
+                </li>
+                @endif
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.website.banner.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.website.banner.*') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Website</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.website.banner.index') }}" class="{{ Route::is('admin.website.banner.index') ? 'active' : '' }}" wire:navigate>Banners</a>
+                        </li>
+
                     </ul>
                 </li>
                 @endif
