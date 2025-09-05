@@ -14,7 +14,7 @@ use App\Enums\AttendanceStatus;
 
 class Manage extends Component
 {
-     use WithPagination;
+    use WithPagination;
 
     public $school_class_id;
     public $class_section_id;
@@ -37,35 +37,35 @@ class Manage extends Component
         $this->class_section_id = null;
         $this->attendances = [];
         $this->sections = $this->school_class_id ? ClassSection::where('school_class_id', $this->school_class_id)->get() : [];
-        $this->dispatch('notify', ['type'=>'success','message'=>'Class changed.']);
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'Class changed.']);
     }
 
     public function onSectionChange($value)
     {
         $this->class_section_id = $value ?: null;
         $this->attendances = [];
-        $this->dispatch('notify', ['type'=>'success','message'=>'Section changed.']);
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'Section changed.']);
     }
 
     public function onShiftChange($value)
     {
         $this->shift_id = $value ?: null;
         $this->attendances = [];
-        $this->dispatch('notify', ['type'=>'success','message'=>'Shift changed.']);
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'Shift changed.']);
     }
 
     public function onDepartmentChange($value)
     {
         $this->department_id = $value ?: null;
         $this->attendances = [];
-        $this->dispatch('notify', ['type'=>'success','message'=>'Department changed.']);
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'Department changed.']);
     }
 
     public function onDateChange($value)
     {
         $this->attendance_date = $value ?: null;
         $this->prefillExisting();
-        $this->dispatch('notify', ['type'=>'success','message'=>'Date changed.']);
+        $this->dispatch('notify', ['type' => 'success', 'message' => 'Date changed.']);
     }
 
     protected function prefillExisting()
@@ -74,11 +74,11 @@ class Manage extends Component
 
         $existing = DailyAttendance::query()
             ->where('school_class_id', $this->school_class_id)
-            ->when($this->class_section_id, fn($q)=>$q->where('class_section_id', $this->class_section_id))
-            ->when($this->shift_id, fn($q)=>$q->where('shift_id', $this->shift_id))
-            ->when($this->department_id, fn($q)=>$q->where('department_id', $this->department_id))
+            ->when($this->class_section_id, fn($q) => $q->where('class_section_id', $this->class_section_id))
+            ->when($this->shift_id, fn($q) => $q->where('shift_id', $this->shift_id))
+            ->when($this->department_id, fn($q) => $q->where('department_id', $this->department_id))
             ->whereDate('attendance_date', $this->attendance_date)
-            ->pluck('status','student_id')
+            ->pluck('status', 'student_id')
             ->toArray();
 
         $this->attendances = $existing;
@@ -110,6 +110,21 @@ class Manage extends Component
         ]);
     }
 
+    public function getStudentsProperty()
+    {
+        if (!$this->school_class_id || !$this->attendance_date) {
+            return collect();
+        }
+
+        return Student::query()
+            ->where('school_class_id', $this->school_class_id)
+            ->when($this->class_section_id, fn($q) => $q->where('class_section_id', $this->class_section_id))
+            ->when($this->shift_id, fn($q) => $q->where('shift_id', $this->shift_id))
+            ->when($this->department_id, fn($q) => $q->where('department_id', $this->department_id))
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->get();
+    }
+
     public function markAll($status)
     {
         if (!$this->students) return;
@@ -118,7 +133,7 @@ class Manage extends Component
             $this->updateAttendance($student->id, $status);
         }
 
-        $this->dispatch('notify', ['type'=>'success','message'=>"All students marked as {$status}"]);
+        $this->dispatch('notify', ['type' => 'success', 'message' => "All students marked as {$status}"]);
     }
 
     public function sortBy($field)
@@ -140,7 +155,7 @@ class Manage extends Component
                 ->when($this->class_section_id, fn($q) => $q->where('class_section_id', $this->class_section_id))
                 ->when($this->shift_id, fn($q) => $q->where('shift_id', $this->shift_id))
                 ->when($this->department_id, fn($q) => $q->where('department_id', $this->department_id))
-                ->where('roll_number','like',"%{$this->search}%")
+                ->where('roll_number', 'like', "%{$this->search}%")
                 ->orderBy($this->sortField, $this->sortDirection)
                 ->get();
         }
@@ -153,5 +168,4 @@ class Manage extends Component
             'statuses' => AttendanceStatus::cases(),
         ]);
     }
-
 }

@@ -63,10 +63,16 @@
                     <input type="text" class="form-control w-25" placeholder="Search..." wire:model.debounce.500ms="search">
 
                     @if($students->count())
-                    <div class="btn-group btn-group-sm">
-                        @foreach($statuses as $status)
-                        <button type="button" class="btn btn-outline-primary" wire:click="markAll('{{ $status->value }}')">{{ ucfirst($status->value) }}</button>
-                        @endforeach
+                    <div class="mb-2 d-flex justify-content-end align-items-center">
+                        <span class="me-2">Mark All:</span>
+                        <div class="btn-group btn-group-sm">
+                            @foreach($statuses as $status)
+                            <button type="button" class="btn btn-outline-primary"
+                                wire:click="markAll('{{ $status->value }}')">
+                                {{ ucfirst($status->value) }}
+                            </button>
+                            @endforeach
+                        </div>
                     </div>
                     @endif
                 </div>
@@ -74,16 +80,21 @@
                 <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th>Student ID</th>
                             <th wire:click="sortBy('roll_number')" style="cursor:pointer">Roll</th>
                             <th wire:click="sortBy('name')" style="cursor:pointer">Name</th>
+                            <th>Class (Section)</th>
                             <th>Status</th>
+                            <th>Note</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($students as $student)
                         <tr>
+                            <td>{{ $student->id }}</td>
                             <td>{{ $student->roll_number }}</td>
                             <td>{{ $student->user->name }}</td>
+                            <td>{{ $student->schoolClass->name }} ({{ $student->classSection->name }})</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     @foreach($statuses as $status)
@@ -95,10 +106,17 @@
                                     @endforeach
                                 </div>
                             </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <input type="text" class="form-control form-control-sm" wire:model.lazy="notes.{{ $student->id }}" placeholder="Add note...">
+                                    <!-- add button -->
+                                    <button class="btn btn-sm btn-primary" wire:click="saveNote({{ $student->id }})">Add</button>
+                                </div>
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="3" class="text-center">No students found</td>
+                            <td colspan="6" class="text-center">No students found</td>
                         </tr>
                         @endforelse
                     </tbody>
