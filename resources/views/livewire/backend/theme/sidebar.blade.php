@@ -194,6 +194,27 @@
                     </ul>
                 </li>
                 @endif
+
+
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.subject-attendance.*', 'admin.daily-attendance.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.subject-attendance.*', 'admin.daily-attendance.*') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Attendance</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.subject-attendance.manage') }}" class="{{ Route::is('admin.subject-attendance.manage') ? 'active' : '' }}" wire:navigate>Subject Attendance</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.daily-attendance.manage') }}" class="{{ Route::is('admin.daily-attendance.manage') ? 'active' : '' }}" wire:navigate>Daily Attendance</a>
+                        </li>
+
+                    </ul>
+                </li>
+                @endif
             </ul>
         </div>
     </div>

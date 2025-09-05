@@ -153,6 +153,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('show-result-position', [App\Http\Controllers\Backend\ResultController::class, 'showResultPosition'])
         ->name('result.position.show');
 
+    
+    // subject attendance
+    Route::get('subject-attendance/manage', [App\Http\Controllers\Backend\AttendanceController::class, 'subjectAttendaceManage'])->name('subject-attendance.manage');
+
+    // daily attendance
+    Route::get('daily-attendance/manage', [App\Http\Controllers\Backend\AttendanceController::class, 'dailyAttendaceManage'])->name('daily-attendance.manage');
+
 
     // website banner
     Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
