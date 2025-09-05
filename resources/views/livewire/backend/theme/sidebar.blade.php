@@ -174,7 +174,7 @@
                     </ul>
                 </li>
                 @endif
-                
+
                 @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Marks -->
                 <li class="{{ Route::is('admin.website.banner.*', 'admin.website.notice.*') ? 'mm-active' : '' }}">
@@ -212,6 +212,25 @@
                             <a href="{{ route('admin.daily-attendance.manage') }}" class="{{ Route::is('admin.daily-attendance.manage') ? 'active' : '' }}" wire:navigate>Daily Attendance</a>
                         </li>
 
+                    </ul>
+                </li>
+                @endif
+
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.leave.type.index', 'admin.leave.student.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.leave.type.index', 'admin.leave.student.index') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Leave</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.leave.type.index') }}" class="{{ Route::is('admin.leave.type.index') ? 'active' : '' }}" wire:navigate>Leave Type</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.leave.student.index') }}" class="{{ Route::is('admin.leave.student.index') ? 'active' : '' }}" wire:navigate>Student Leave</a>
+                        </li>
                     </ul>
                 </li>
                 @endif

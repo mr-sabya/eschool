@@ -160,6 +160,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // daily attendance
     Route::get('daily-attendance/manage', [App\Http\Controllers\Backend\AttendanceController::class, 'dailyAttendaceManage'])->name('daily-attendance.manage');
 
+    // leave type
+    Route::get('leave-types', [App\Http\Controllers\Backend\LeaveController::class, 'leaveType'])->name('leave.type.index');
+
+    // student leave
+    Route::get('student-leaves', [App\Http\Controllers\Backend\LeaveController::class, 'studentLeave'])->name('leave.student.index');
+
 
     // website banner
     Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
