@@ -234,6 +234,28 @@
                     </ul>
                 </li>
                 @endif
+
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.fee.type.index', 'admin.fee.list.index', 'admin.fee.collection.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.fee.type.index', 'admin.fee.list.index', 'admin.fee.collection.*') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Fee</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.fee.type.index') }}" class="{{ Route::is('admin.fee.type.index') ? 'active' : '' }}" wire:navigate>Fee Type</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.fee.list.index') }}" class="{{ Route::is('admin.fee.list.index') ? 'active' : '' }}" wire:navigate>Fee List</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.fee.collection.index') }}" class="{{ Route::is('admin.fee.collection.index') ? 'active' : '' }}" wire:navigate>Fee Collection</a>
+                        </li>
+
+                    </ul>
+                </li>
+                @endif
             </ul>
         </div>
     </div>

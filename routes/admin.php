@@ -167,6 +167,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('student-leaves', [App\Http\Controllers\Backend\LeaveController::class, 'studentLeave'])->name('leave.student.index');
 
 
+    // fee type management
+    Route::get('fee/types', [App\Http\Controllers\Backend\FeeController::class, 'feeType'])->name('fee.type.index');
+
+    // fee list management
+    Route::get('fee/lists', [App\Http\Controllers\Backend\FeeController::class, 'feeList'])->name('fee.list.index');
+    
+    // fee collection
+    Route::get('fee/collection', [App\Http\Controllers\Backend\FeeController::class, 'feeCollectionIndex'])->name('fee.collection.index');
+    Route::get('fee/collection/create', [App\Http\Controllers\Backend\FeeController::class, 'feeCollectionCreate'])->name('fee.collection.create');
+
+
     // website banner
     Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
     Route::get('website/banners/create', [App\Http\Controllers\Backend\Website\BannerController::class, 'create'])->name('website.banner.create');
