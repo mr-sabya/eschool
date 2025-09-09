@@ -256,6 +256,30 @@
                     </ul>
                 </li>
                 @endif
+
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Library</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.library.book-category.index') }}" class="{{ Route::is('admin.library.book-category.index') ? 'active' : '' }}" wire:navigate>Book Categories</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.library.book.index') }}" class="{{ Route::is('admin.library.book.index') ? 'active' : '' }}" wire:navigate>Books</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.library.member-category.index') }}" class="{{ Route::is('admin.library.member-category.index') ? 'active' : '' }}" wire:navigate>Member Categories</a>
+                        </li>
+
+                    </ul>
+                </li>
+                @endif
+
             </ul>
         </div>
     </div>
