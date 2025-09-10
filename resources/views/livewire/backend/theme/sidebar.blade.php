@@ -259,8 +259,8 @@
 
                 @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Marks -->
-                <li class="{{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index') ? 'mm-active' : '' }}">
-                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index') ? 'active' : '' }}">
+                <li class="{{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index', 'admin.library.member.*', 'admin.library.book-issue.*') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index', 'admin.library.member.*', 'admin.library.book-issue.*') ? 'active' : '' }}">
                         <i class="ri-wallet-line"></i>
                         <span>Library</span>
                     </a>
@@ -274,6 +274,13 @@
 
                         <li>
                             <a href="{{ route('admin.library.member-category.index') }}" class="{{ Route::is('admin.library.member-category.index') ? 'active' : '' }}" wire:navigate>Member Categories</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.library.member.index') }}" class="{{ Route::is('admin.library.member.index') ? 'active' : '' }}" wire:navigate>Members</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.library.book-issue.index') }}" class="{{ Route::is('admin.library.book-issue.index') ? 'active' : '' }}" wire:navigate>Book Issues</a>
                         </li>
 
                     </ul>

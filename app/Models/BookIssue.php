@@ -11,7 +11,7 @@ class BookIssue extends Model
 
     protected $fillable = [
         'book_id',
-        'member_id',
+        'library_member_id',
         'issued_by',
         'issue_date',
         'due_date',
@@ -27,7 +27,7 @@ class BookIssue extends Model
 
     public function member()
     {
-        return $this->belongsTo(LibraryMember::class);
+        return $this->belongsTo(LibraryMember::class, 'library_member_id');
     }
 
     public function issuedBy()

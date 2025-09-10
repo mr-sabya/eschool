@@ -188,6 +188,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // library member category
     Route::get('library/member-categories', [App\Http\Controllers\Backend\LibraryController::class, 'memberCategory'])->name('library.member-category.index');
 
+    // library member
+    Route::get('library/members', [App\Http\Controllers\Backend\LibraryController::class, 'member'])->name('library.member.index');
+    Route::get('library/members/create', [App\Http\Controllers\Backend\LibraryController::class, 'createMember'])->name('library.member.create');
+
+    // library book issue
+    Route::get('library/book-issues', [App\Http\Controllers\Backend\LibraryController::class, 'bookIssue'])->name('library.book-issue.index');
+    Route::get('library/book-issues/create', [App\Http\Controllers\Backend\LibraryController::class, 'createBookIssue'])->name('library.book-issue.create');
+
 
     // website banner
     Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
