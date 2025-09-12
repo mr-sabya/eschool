@@ -287,6 +287,33 @@
                 </li>
                 @endif
 
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.accounts.income-head.index', 'admin.accounts.income.index', 'admin.accounts.expense-head.index', 'admin.accounts.expense.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.accounts.income-head.index', 'admin.accounts.income.index', 'admin.accounts.expense-head.index', 'admin.accounts.expense.index') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Income & Expense</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.accounts.income-head.index') }}" class="{{ Route::is('admin.accounts.income-head.index') ? 'active' : '' }}" wire:navigate>Income Heads</a>
+                        </li>
+                       <li>
+                            <a href="{{ route('admin.accounts.income.index') }}" class="{{ Route::is('admin.accounts.income.index') ? 'active' : '' }}" wire:navigate>Income</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.accounts.expense-head.index') }}" class="{{ Route::is('admin.accounts.expense-head.index') ? 'active' : '' }}" wire:navigate>Expense Heads</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.accounts.expense.index') }}" class="{{ Route::is('admin.accounts.expense.index') ? 'active' : '' }}" wire:navigate>Expense</a>
+                        </li>
+
+                    </ul>
+                </li>
+                @endif
+
             </ul>
         </div>
     </div>

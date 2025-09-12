@@ -16,6 +16,8 @@ class Expense extends Model
         'payment_method_id',
         'note',
         'created_by',
+        'invoice_number', // new field
+        'attachment',     // new field
     ];
 
     public function head()

@@ -16,6 +16,8 @@ class Income extends Model
         'payment_method_id',
         'note',
         'created_by',
+        'invoice_number',   // ✅ new
+        'attachment',       // ✅ new
     ];
 
     public function head()

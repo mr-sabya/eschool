@@ -196,6 +196,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('library/book-issues', [App\Http\Controllers\Backend\LibraryController::class, 'bookIssue'])->name('library.book-issue.index');
     Route::get('library/book-issues/create', [App\Http\Controllers\Backend\LibraryController::class, 'createBookIssue'])->name('library.book-issue.create');
 
+    // income heads
+    Route::get('accounts/income-heads', [App\Http\Controllers\Backend\IncomeController::class, 'incomeHeads'])->name('accounts.income-head.index');
+
+    // income
+    Route::get('accounts/income', [App\Http\Controllers\Backend\IncomeController::class, 'income'])->name('accounts.income.index');
+
+    // expense heads
+    Route::get('accounts/expense-heads', [App\Http\Controllers\Backend\ExpenseController::class, 'expenseHead'])->name('accounts.expense-head.index');
+
+    // expense
+    Route::get('accounts/expense', [App\Http\Controllers\Backend\ExpenseController::class, 'expense'])->name('accounts.expense.index');
 
     // website banner
     Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
