@@ -60,7 +60,6 @@
                                 <label>Role <span class="text-danger">*</span></label>
                                 <select class="form-select" wire:model="role">
                                     <option value="">-- Select Role --</option>
-                                    <option value="admin">Admin</option>
                                     <option value="teacher">Teacher</option>
                                     <option value="librarian">Librarian</option>
                                     <option value="accountant">Accountant</option>
@@ -69,7 +68,15 @@
                                 @error('role') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
 
-                            <div class="col-md-12">
+                            <!-- is admin -->
+                            <div class="col-md-4 mb-3">
+                                <input type="checkbox" class="form-check-input" wire:model="is_admin" id="is_admin" />
+                                <label for="is_admin" class="form-check-label">Make Admin</label>
+                                @error('is_admin') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
+
+
+                            <div class="col-md-4">
                                 <input type="checkbox" class="form-check-input" wire:model="status" id="is_active" />
                                 <label for="is_active" class="form-check-label">Active</label>
                                 @error('status') <small class="text-danger">{{ $message }}</small> @enderror

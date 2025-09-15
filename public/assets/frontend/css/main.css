@@ -186,7 +186,7 @@ a{
 
 
 /* Goto Top============================ */
-#myBtn {
+#scrollUpBtn {
     display: none;
     /* Hidden by default */
     position: fixed;
@@ -214,7 +214,7 @@ a{
 }
 
 
-#myBtn:hover {
+#scrollUpBtn:hover {
     background-color: #013C57;
     /* Add a dark-grey background on hover */
     opacity: 0.5;

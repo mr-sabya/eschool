@@ -14,3 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index'])->name('home');
+
+// teacher list
+Route::get('/teachers', [App\Http\Controllers\Frontend\StaffController::class, 'teacherList'])->name('teacher.index');

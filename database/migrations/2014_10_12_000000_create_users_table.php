@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('role', ['admin', 'teacher', 'librarian', 'accountant'])->nullable();
+            $table->enum('role', ['teacher', 'librarian', 'accountant'])->nullable();
             $table->boolean('status')->default(true);
             $table->boolean('is_admin')->default(false);
+            $table->boolean('is_staff')->default(false);
             $table->boolean('is_parent')->default(false);
             $table->rememberToken();
             $table->timestamps();

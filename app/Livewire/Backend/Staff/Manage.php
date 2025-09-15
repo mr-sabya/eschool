@@ -28,6 +28,9 @@ class Manage extends Component
         $designation_id, $gender_id, $marital_status = 'single', $basic_salary,
         $date_of_joining, $profile_picture, $new_profile_picture;
 
+    public $is_admin = false; // To mark staff users as admin
+    public $is_staff = true;
+
     public $departments, $designations, $genders;
 
     protected function rules()
@@ -84,6 +87,7 @@ class Manage extends Component
             $this->username = $user->username;
             $this->role = $user->role;
             $this->status = $user->status;
+            $this->is_admin = $user->is_admin;
 
             $staff = Staff::where('user_id', $userId)->first();
             if ($staff) {
@@ -162,6 +166,8 @@ class Manage extends Component
                 'basic_salary' => $this->basic_salary,
                 'date_of_joining' => $this->date_of_joining,
                 'profile_picture' => $profilePath,
+                'is_admin' => $this->is_admin,
+                'is_staff' => true, // Always mark as staff
             ]
         );
 

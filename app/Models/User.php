@@ -25,6 +25,8 @@ class User extends Authenticatable
         'role',         // ✅ make sure this is here
         'status',
         'is_admin',     // ✅ and this too
+        'is_staff',
+        'is_parent',
     ];
 
     /**
@@ -51,6 +53,7 @@ class User extends Authenticatable
     {
         return is_null($this->role) && !$this->is_parent;
     }
+    
 
     public function isParent()
     {
@@ -74,7 +77,13 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        return $this->role === 'admin' && $this->is_admin;
+        return $this->is_admin;
+    }
+
+    // staff
+    public function isStaff()
+    {
+        return $this->is_staff;
     }
 
     public function isActive()
