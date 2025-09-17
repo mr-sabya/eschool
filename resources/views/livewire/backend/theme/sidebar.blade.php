@@ -171,6 +171,11 @@
                             <a href="{{ route('admin.result.index') }}" class="{{ Route::is('admin.result.index') ? 'active' : '' }}">Student Results</a>
                         </li>
                         <!-- <li><a href="{{ route('admin.result.generate.pdf') }}" class="{{ Route::is('admin.result.generate.pdf') ? 'active' : '' }}">Generate PDF</a></li> -->
+
+                        <!-- generate tabulation -->
+                        <li>
+                            <a href="{{ route('admin.result.tabulation.index') }}" class="{{ Route::is('admin.result.tabulation.index') ? 'active' : '' }}">Generate Tabulation Sheet</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -298,7 +303,7 @@
                         <li>
                             <a href="{{ route('admin.accounts.income-head.index') }}" class="{{ Route::is('admin.accounts.income-head.index') ? 'active' : '' }}" wire:navigate>Income Heads</a>
                         </li>
-                       <li>
+                        <li>
                             <a href="{{ route('admin.accounts.income.index') }}" class="{{ Route::is('admin.accounts.income.index') ? 'active' : '' }}" wire:navigate>Income</a>
                         </li>
 

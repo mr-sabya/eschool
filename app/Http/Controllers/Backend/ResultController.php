@@ -121,4 +121,17 @@ class ResultController extends Controller
 
         return $resuls;
     }
+
+    // tabulation index
+    public function tabulationIndex()
+    {
+        return view('backend.result.tabulation.index');
+    }
+
+
+    // tabulation sheet
+    public function tabulationSheet()
+    {
+        return view('backend.result.tabulation.high-school');
+    }
 }

@@ -153,6 +153,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('show-result-position', [App\Http\Controllers\Backend\ResultController::class, 'showResultPosition'])
         ->name('result.position.show');
 
+        // tabulation index
+    Route::get('tabulation-sheet/index', [App\Http\Controllers\Backend\ResultController::class, 'tabulationIndex'])
+        ->name('result.tabulation.index');
+
+    // tabulation sheet
+    Route::get('tabulation-sheet', [App\Http\Controllers\Backend\ResultController::class, 'tabulationSheet'])
+        ->name('result.tabulation.sheet');  
+
     
     // subject attendance
     Route::get('subject-attendance/manage', [App\Http\Controllers\Backend\AttendanceController::class, 'subjectAttendaceManage'])->name('subject-attendance.manage');

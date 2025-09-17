@@ -285,6 +285,162 @@ class HighSchool extends Component
         return $marks;
     }
 
+    public static function getSubjectResultsStatic($student, $exam, $subjectAssign, $students, $markDistributions)
+    {
+        $subject = $subjectAssign->subject;
+
+        $finalMarkConfiguration = FinalMarkConfiguration::where('school_class_id', $student->school_class_id)
+            ->where('subject_id', $subject->id)
+            ->first();
+
+        $annualFullMark = $finalMarkConfiguration ? $finalMarkConfiguration->other_parts_total : 0;
+        $excludeFromGPA = $finalMarkConfiguration ? $finalMarkConfiguration->exclude_from_gpa : false;
+        $failedAnyDistribution = false;
+
+        $marks = [
+            'subject_id' => $subject->id,
+            'subject_name' => $subject->name,
+            'full_mark' => $annualFullMark,
+            'obtained_marks' => [],
+            'class_test_result' => null,
+            'other_parts_total' => 0,
+            'total_calculated_marks' => 0,
+            'highest_mark' => 0,
+            'grade_name' => '',
+            'grade_point' => 0,
+            'final_result' => '',
+            'exclude_from_gpa' => $excludeFromGPA,
+            'fail_any_distribution' => $failedAnyDistribution,
+        ];
+
+        // Loop through mark distributions
+        foreach ($markDistributions as $distribution) {
+            $markDistribution = $distribution->markDistribution;
+
+            $subjectMarkDistribution = SubjectMarkDistribution::where('subject_id', $subject->id)
+                ->where('school_class_id', $student->school_class_id)
+                ->where('class_section_id', $student->class_section_id)
+                ->where('mark_distribution_id', $markDistribution ? $markDistribution->id : null)
+                ->first();
+
+            $studentSubjectMark = null;
+            if ($subjectMarkDistribution) {
+                $studentSubjectMark = StudentMark::where('student_id', $student->id)
+                    ->where('subject_id', $subject->id)
+                    ->where('school_class_id', $student->school_class_id)
+                    ->where('exam_id', $exam->id)
+                    ->where('mark_distribution_id', $markDistribution->id)
+                    ->first();
+            }
+
+            if ($studentSubjectMark) {
+                $passMark = $subjectMarkDistribution->pass_mark ?? 0;
+                $marksObtained = $studentSubjectMark->marks_obtained;
+                $isPass = $marksObtained >= $passMark;
+
+                if ($studentSubjectMark->is_absent) {
+                    if ($markDistribution->name != 'Class Test') {
+                        $failedAnyDistribution = true;
+                    }
+                    $marks['obtained_marks'][] = '<span style="color:red;">Absent</span>';
+                } elseif (!$isPass) {
+                    $marks['obtained_marks'][] = '<span style="color:red;">Fail (' . $marksObtained . ')</span>';
+                    $failedAnyDistribution = true;
+                } else {
+                    $marks['obtained_marks'][] = $marksObtained;
+                }
+            } else {
+                $marks['obtained_marks'][] = '-';
+            }
+        }
+
+        // Class Test
+        $ctMarkDistribution = MarkDistribution::where('name', 'Class Test')->first();
+        $ctSubjectMarkDistribution = SubjectMarkDistribution::where('subject_id', $subject->id)
+            ->where('school_class_id', $student->school_class_id)
+            ->where('class_section_id', $student->class_section_id)
+            ->where('mark_distribution_id', $ctMarkDistribution->id)
+            ->first();
+
+        $classTestMark = $ctSubjectMarkDistribution
+            ? StudentMark::where('student_id', $student->id)
+            ->where('subject_id', $subject->id)
+            ->where('school_class_id', $student->school_class_id)
+            ->where('exam_id', $exam->id)
+            ->where('mark_distribution_id', $ctMarkDistribution->id)
+            ->first()
+            : null;
+
+        $finalClassTestMark = $classTestMark ? $classTestMark->marks_obtained : 0;
+
+        if ($classTestMark) {
+            $classTestResult = $classTestMark->is_absent ? 0 : $finalClassTestMark;
+        } else {
+            $classTestResult = '-';
+        }
+
+        $marks['class_test_result'] = $classTestResult;
+
+        // Other parts total
+        $otherMarkDistributions = MarkDistribution::where('name', '!=', 'Class Test')->get();
+        $totalSubjectMark = 0;
+
+        foreach ($otherMarkDistributions as $distribution) {
+            $getMarkDistribution = MarkDistribution::where('name', $distribution->name)->first();
+            $subjectMarkDistribution = SubjectMarkDistribution::where('subject_id', $subject->id)
+                ->where('school_class_id', $student->school_class_id)
+                ->where('class_section_id', $student->class_section_id)
+                ->where('mark_distribution_id', $getMarkDistribution ? $getMarkDistribution->id : null)
+                ->first();
+
+            $studentSubjectMark = $subjectMarkDistribution
+                ? StudentMark::where('student_id', $student->id)
+                ->where('subject_id', $subject->id)
+                ->where('school_class_id', $student->school_class_id)
+                ->where('exam_id', $exam->id)
+                ->where('mark_distribution_id', $getMarkDistribution->id)
+                ->first()
+                : null;
+
+            $marksObtained = $studentSubjectMark ? $studentSubjectMark->marks_obtained : 0;
+            $totalSubjectMark += $marksObtained;
+        }
+
+        $calculatedMark = round(($totalSubjectMark * $finalMarkConfiguration->final_result_weight_percentage) / 100);
+        $totalCalculatedMark = $calculatedMark + $finalClassTestMark;
+
+        $marks['other_parts_total'] = $calculatedMark;
+        $marks['total_calculated_marks'] = $totalCalculatedMark;
+
+        // Highest mark
+        $highestMark = SchoolHighestMarkHelper::getHighestMark($students, $subject->id, $student->school_class_id, $student->class_section_id, $exam->id);
+        $marks['highest_mark'] = $highestMark['highest_mark'];
+
+        // GPA / Grade
+        $grade = Grade::where('start_marks', '<=', $totalCalculatedMark)
+            ->where('end_marks', '>=', $totalCalculatedMark)
+            ->where('grading_scale', $finalMarkConfiguration->grading_scale)
+            ->first();
+
+        if ($failedAnyDistribution) {
+            $marks['grade_name'] = 'F';
+            $marks['grade_point'] = number_format(0, 2);
+        } else {
+            $marks['grade_name'] = $grade ? $grade->grade_name : 'N/A';
+            $marks['grade_point'] = $grade ? $grade->grade_point : number_format(0, 2);
+        }
+
+        if ($grade && $grade->grade_point == 0) {
+            $failedAnyDistribution = true;
+        }
+
+        $marks['final_result'] = $failedAnyDistribution ? '<span style="color:red;">Fail</span>' : 'Pass';
+        $marks['fail_any_distribution'] = $failedAnyDistribution;
+
+        return $marks;
+    }
+
+
 
     public function render()
     {
