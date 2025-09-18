@@ -11,6 +11,8 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
+use App\Jobs\GenerateResultZip; // <-- ADD THIS
+use Illuminate\Support\Facades\Auth; // <-- ADD THIS
 
 class Index extends Component
 {
@@ -26,6 +28,7 @@ class Index extends Component
     public $selectedDepartment = null;
 
     public $students;
+    public $jobStatusMessage = '';
 
     public function mount()
     {
@@ -84,12 +87,25 @@ class Index extends Component
     }
 
 
-    public function downloadStudentPdf($studentId, $examId, $classId, $sectionId, $sessionId)
+    public function downloadStudentPdf($studentId)
     {
-        // Create an instance of GeneratePdf component manually
+        // Use the currently selected filters from the component's public properties
         $pdfComponent = app(HighSchool::class);
-        $pdfComponent->mount($studentId, $examId, $classId, $sectionId, $sessionId);
+        $pdfComponent->mount(
+            $studentId,
+            $this->selectedExam,
+            $this->selectedClass,
+            $this->selectedSection,
+            $this->selectedSession
+        );
         $pdfComponent->loadReport();
+
+        // Ensure student data was loaded before proceeding
+        if (!$pdfComponent->student) {
+            // Optionally, flash a message to the user
+            session()->flash('error', 'Could not generate PDF. Student data not found.');
+            return;
+        }
 
         $pdf = Pdf::loadView('backend.result.high-school-pdf', [
             'student' => $pdfComponent->student,
@@ -99,13 +115,40 @@ class Index extends Component
             'fourthSubjectMarks' => $pdfComponent->fourthSubjectMarks,
             'markdistributions' => $pdfComponent->markdistributions,
             'students' => $pdfComponent->students,
-        ])->setPaper('A4', 'landscape');
+        ])->setPaper('a4', 'landscape');
 
         $fileName = $pdfComponent->student->user['name'] . '-result.pdf';
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, $fileName);
+    }
+
+
+    // vvv ADD THIS ENTIRE NEW FUNCTION vvv
+    public function downloadAllPdfs()
+    {
+        if ($this->students->isEmpty()) {
+            $this->jobStatusMessage = 'No students found to generate reports for.';
+            return;
+        }
+
+        // Get the IDs of the students to process
+        $studentIds = $this->students->pluck('id')->toArray();
+
+        // Dispatch the job to the queue
+        GenerateResultZip::dispatch(
+            $studentIds,
+            $this->selectedExam,
+            $this->selectedClass,
+            $this->selectedSection,
+            $this->selectedSession,
+            Auth::user() // Pass the currently logged-in user
+        );
+
+        // Provide immediate feedback to the user
+        // Reset the status message after dispatching
+        $this->jobStatusMessage = 'Your request has been received! The zip file is being generated in the background. You will be notified here when it is ready for download.';
     }
 
     public function render()

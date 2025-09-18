@@ -3,34 +3,48 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Class Result PDF</title>
+    <title>Progress Report - {{ $student->user['name'] }}</title>
     <style>
+        /* Using your new styles */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'DejaVu Sans', sans-serif;
+            /* DejaVu Sans is better for PDF special characters */
             font-size: 12px;
         }
 
-        /* report */
         .report-box {
-            max-width: 1000px;
+            width: 100%;
             margin: auto;
             border: 1px solid #000;
-            padding: 5px;
+            padding: 10px;
         }
 
         .school-header {
-            text-align: center;
-
+            width: 100%;
+            height: 80px;
+            /* Adjusted height */
+            margin-bottom: 10px;
         }
 
-        .boarder-top {
-            border-top: 2px solid #000;
-            margin-top: 5px;
-            padding-top: 5px;
+        .header-info-table {
+            width: 100%;
+            border: none;
         }
 
-        .school-header img {
-            height: 75px;
+        .header-info-table td {
+            vertical-align: top;
+        }
+
+        .logo {
+            width: 80px;
+        }
+
+        .logo img {
+            width: 100%;
+        }
+
+        .school-details {
+            padding-left: 15px;
         }
 
         .title {
@@ -42,8 +56,22 @@
             font-size: 14px;
         }
 
+        .exam-details {
+            text-align: right;
+        }
+
+        .exam-details h3 {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .boarder-top {
+            border-top: 2px solid #000;
+            margin-top: 5px;
+            padding-top: 5px;
+        }
+
         .info-table,
-        .grade-table,
         .marks-table {
             width: 100%;
             border-collapse: collapse;
@@ -55,9 +83,7 @@
         }
 
         .marks-table th,
-        .marks-table td,
-        .grade-table th,
-        .grade-table td {
+        .marks-table td {
             border: 1px solid #000;
             padding: 4px;
             text-align: center;
@@ -65,24 +91,19 @@
 
         .marks-table th {
             font-size: 11px;
+            background-color: #f2f2f2;
+        }
+
+        .marks-table td:first-child {
+            text-align: left;
+            /* Align subject names to the left */
         }
 
         .section-title {
             font-weight: bold;
             margin-top: 10px;
+            margin-bottom: 5px;
             text-decoration: underline;
-        }
-
-        .result-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .signature {
-            text-align: center;
-            width: 200px;
-            border-top: 1px solid #000;
         }
 
         .comment-box {
@@ -90,32 +111,57 @@
             height: 20px;
             padding: 5px;
         }
+
+        .footer-signatures {
+            width: 100%;
+            margin-top: 20px;
+            /* More space for signatures */
+            margin-bottom: 10px;
+        }
+
+        .footer-signatures .teacher {
+            float: left;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+        }
+
+        .footer-signatures .principal {
+            float: right;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+        }
+
+        span[style*="color:red;"] {
+            color: red !important;
+        }
     </style>
 </head>
 
 <body>
 
     <div class="report-box">
-        <div class="school-header" style="width: 100%; height: 75px;">
-            <table style="text-align: left; float: left;">
+        <div class="school-header">
+            <table class="header-info-table">
                 <tr>
-                    <td>
-                        <img src="{{ public_path('assets/frontend/images/kcgs-logo.png') }}" alt="School Logo">
+                    <td style="width: 80px;">
+                        <div class="logo">
+                            <img src="{{ public_path('assets/frontend/images/kcgs-logo.png') }}" alt="School Logo">
+                        </div>
                     </td>
-                    <td>
+                    <td class="school-details">
                         <div class="title">Khalishpur Collegiate Girls' School</div>
                         <div class="subtitle">Khalishpur, Khulna</div>
                         <div class="subtitle">Phone: 02477700262, kcgs899@gmail.com</div>
                     </td>
-
+                    <td class="exam-details">
+                        <h3>{{ $exam->examCategory['name'] }} - {{ $exam->academicSession['name'] }}<br>Progress Report</h3>
+                    </td>
                 </tr>
             </table>
-            <div style="float: right; padding-right: 20px; text-align: right;">
-                <h3>{{ $exam->examCategory['name'] }} - {{ $exam->academicSession['name'] }}<br>Progress Report</h3>
-            </div>
         </div>
+
         <div class="boarder-top">
-            <table class="info-table ">
+            <table class="info-table">
                 <tr>
                     <td><strong>Name:</strong> {{ $student->user['name'] }}</td>
                     <td><strong>Student's ID:</strong> {{ $student->id }}</td>
@@ -130,8 +176,7 @@
         $totalObtainedMarks = 0;
         $totalGradePoints = 0;
         $gpaSubjectCount = 0;
-        $finalResult = 'Pass';
-        $classPosition = 0;
+        $finalResult = 'Pass'; // Assume Pass initially
         @endphp
 
         <div class="section-title">Academic Performance</div>
@@ -144,47 +189,27 @@
                     <th colspan="2">Calculated Marks</th>
                     <th rowspan="2">Total</th>
                     <th rowspan="2">Highest</th>
-                    <th rowspan="2">GPA</th>
                     <th rowspan="2">Grade</th>
+                    <th rowspan="2">GPA</th>
                     <th rowspan="2">Result</th>
                 </tr>
                 <tr>
+                    {{-- Corrected loop for optimized component data --}}
                     @foreach ($markdistributions as $distribution)
-                    <th>{{ $distribution->markDistribution['name'] }}</th>
+                    <th>{{ $distribution->name }}</th>
                     @endforeach
-
                     <th>Class Test</th>
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-
+                {{-- OPTIMIZED LOOP: No database queries inside the view --}}
                 @foreach ($marks as $mark)
                 @php
-                $totalCalculatedMark = 0;
-                $excludeFromGPA = false;
-
-                $subject = App\Models\Subject::where('id', $mark['subject_id'])->first();
-
-                $fourthSubject = App\Models\StudentMark::where('student_id', $student->id)
-                ->where('exam_id', $exam->id)
-                ->where('is_fourth_subject', 1)
-                ->first();
-
-                if($mark['exclude_from_gpa']) {
-                $excludeFromGPA = true;
-                }
-
                 if($mark['fail_any_distribution']){
                 $finalResult = 'Fail';
-                $failAnySubject = true;
                 }
                 @endphp
-
-                @if($fourthSubject && $fourthSubject->subject_id == $subject->id)
-                @continue
-                @endif
-
                 <tr>
                     <td>{{ $mark['subject_name'] }}</td>
                     <td>{{ $mark['full_mark'] }}</td>
@@ -196,16 +221,11 @@
                     <td>{{ $mark['total_calculated_marks'] }}</td>
                     <td>{{ $mark['highest_mark'] }}</td>
                     <td>{{ $mark['grade_name'] }}</td>
-
-                    <td> {{ $mark['grade_point'] }}</td>
+                    <td>{{ $mark['grade_point'] }}</td>
                     <td>{!! $mark['final_result'] !!}</td>
                 </tr>
-
-
                 @php
-
-
-                if (!$excludeFromGPA) {
+                if (!$mark['exclude_from_gpa']) {
                 $totalObtainedMarks += $mark['total_calculated_marks'];
                 $totalGradePoints += $mark['grade_point'];
                 $gpaSubjectCount++;
@@ -213,13 +233,11 @@
                 @endphp
                 @endforeach
 
-
                 <!-- 4th subject -->
                 @if($fourthSubjectMarks)
                 <tr style="background-color: #f0f0f0;">
                     <td>{{ $fourthSubjectMarks['subject_name'] }} (4th Subject)</td>
                     <td>{{ $fourthSubjectMarks['full_mark'] }}</td>
-
                     @foreach ($fourthSubjectMarks['obtained_marks'] as $obtainedMark)
                     <td>{!! $obtainedMark !!}</td>
                     @endforeach
@@ -231,29 +249,22 @@
                     <td>{{ $fourthSubjectMarks['grade_point'] }}</td>
                     <td>{!! $fourthSubjectMarks['final_result'] !!}</td>
                 </tr>
-
                 @php
                 $totalObtainedMarks += $fourthSubjectMarks['total_calculated_marks'];
                 if($fourthSubjectMarks['grade_point'] >= 2.0) {
-                $totalGradePoints = $totalGradePoints + ($fourthSubjectMarks['grade_point'] - 2.0); // Adjusting for 4th subject
+                $totalGradePoints += ($fourthSubjectMarks['grade_point'] - 2.0);
+                }
+                if ($fourthSubjectMarks['fail_any_distribution']) {
+                $finalResult = 'Fail';
                 }
                 @endphp
-
                 @endif
-
-
-
-
             </tbody>
         </table>
 
         @php
         $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
-
-        $finalGrade = App\Models\Grade::where('grade_point', '<=', $finalgpa)
-            ->orderBy('grade_point', 'desc')
-            ->first();
-
+        $finalGrade = \App\Models\Grade::where('grade_point', '<=', $finalgpa)->orderBy('grade_point', 'desc')->first();
             $letterGrade = $finalGrade ? $finalGrade->grade_name : 'N/A';
 
             // Override if failed any subject
@@ -262,23 +273,18 @@
             $finalgpa = 0.00;
             }
 
-            $studentResult = App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
-            $classPosition = $studentResult['position'] ? $studentResult['position'] : 0;
-
+            $studentResult = \App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
+            $classPosition = $studentResult['position'] ?? 'N/A';
             @endphp
 
             <table class="info-table">
                 <tr>
                     <td><strong>Obtained Total:</strong> {{ $totalObtainedMarks }}</td>
                     <td><strong>Letter Grade:</strong> {{ $letterGrade }}</td>
-                    <td><strong>GPA:</strong> {{ is_numeric($finalgpa) ? number_format($finalgpa, 2) : $finalgpa }} </td>
+                    <td><strong>GPA:</strong> {{ number_format($finalgpa, 2) }} </td>
                     <td>
                         <strong>Result:</strong>
-                        @if($finalResult === 'Fail')
-                        <span style="color:red;">Fail</span>
-                        @else
-                        Pass
-                        @endif
+                        {!! $finalResult === 'Fail' ? '<span style="color:red;">Fail</span>' : 'Pass' !!}
                     </td>
                     <td><strong>Position in Class:</strong> {{ $classPosition }}</td>
                 </tr>
@@ -294,13 +300,9 @@
                 </tr>
             </table>
 
-            <div style="width: 100%; margin-top: 25px; margin-bottom: 15px;">
-                <div style="float: left; border-top: 1px solid #000; padding: 3px 20px 0 0;">
-                    Class Teacher
-                </div>
-                <div style="float: right; border-top: 1px solid #000; padding: 3px 0 0 20px;">
-                    Principal
-                </div>
+            <div class="footer-signatures">
+                <div class="teacher">Class Teacher</div>
+                <div class="principal">Principal</div>
             </div>
     </div>
 

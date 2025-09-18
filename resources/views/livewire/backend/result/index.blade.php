@@ -63,9 +63,21 @@
     </div>
 
     @if($students->count())
+
+    {{-- vvv ADD THIS BUTTON vvv --}}
     <div class="card">
-        <div class="card-header">Students List ({{ $students->count() }})</div>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>Student List ({{ $students->count() }})</h4>
+            <button wire:click="downloadAllPdfs" wire:loading.attr="disabled" class="btn btn-info">
+                {{-- Show spinner only while dispatching the job --}}
+                <span wire:loading wire:target="downloadAllPdfs" class="spinner-border spinner-border-sm"></span>
+                Download All Reports
+            </button>
+        </div>
         <div class="card-body table-responsive">
+            @if($jobStatusMessage)
+            <div class="alert alert-info">{{ $jobStatusMessage }}</div>
+            @endif
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>

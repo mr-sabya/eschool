@@ -70,8 +70,9 @@
                     <th rowspan="2">Result</th>
                 </tr>
                 <tr>
+                    {{-- THIS LOGIC IS SLIGHTLY CHANGED --}}
                     @foreach ($markdistributions as $distribution)
-                    <th>{{ $distribution->markDistribution['name'] }}</th>
+                    <th>{{ $distribution['name'] }}</th>
                     @endforeach
 
                     <th>Class Test</th>
@@ -82,19 +83,9 @@
 
                 @foreach ($marks as $mark)
                 @php
-                $totalCalculatedMark = 0;
-                $excludeFromGPA = false;
-
-                $subject = App\Models\Subject::where('id', $mark['subject_id'])->first();
-
-                $fourthSubject = App\Models\StudentMark::where('student_id', $student->id)
-                ->where('exam_id', $exam->id)
-                ->where('is_fourth_subject', 1)
-                ->first();
-
-                if($mark['exclude_from_gpa']) {
-                $excludeFromGPA = true;
-                }
+                // These queries have been removed as they are slow and no longer needed.
+                // $subject = App\Models\Subject::where('id', $mark['subject_id'])->first();
+                // $fourthSubject = App\Models\StudentMark::where(...);
 
                 if($mark['fail_any_distribution']){
                 $finalResult = 'Fail';
@@ -102,9 +93,8 @@
                 }
                 @endphp
 
-                @if($fourthSubject && $fourthSubject->subject_id == $subject->id)
-                @continue
-                @endif
+                {{-- This @if check is no longer needed because the component already separated the 4th subject --}}
+                {{-- @if($fourthSubject && $fourthSubject->subject_id == $subject->id) @continue @endif --}}
 
                 <tr>
                     <td>{{ $mark['subject_name'] }}</td>
@@ -117,16 +107,12 @@
                     <td>{{ $mark['total_calculated_marks'] }}</td>
                     <td>{{ $mark['highest_mark'] }}</td>
                     <td>{{ $mark['grade_name'] }}</td>
-
-                    <td> {{ $mark['grade_point'] }}</td>
+                    <td>{{ $mark['grade_point'] }}</td>
                     <td>{!! $mark['final_result'] !!}</td>
                 </tr>
 
-
                 @php
-
-
-                if (!$excludeFromGPA) {
+                if (!$mark['exclude_from_gpa']) {
                 $totalObtainedMarks += $mark['total_calculated_marks'];
                 $totalGradePoints += $mark['grade_point'];
                 $gpaSubjectCount++;
@@ -159,12 +145,7 @@
                 $totalGradePoints = $totalGradePoints + ($fourthSubjectMarks['grade_point'] - 2.0); // Adjusting for 4th subject
                 }
                 @endphp
-
                 @endif
-
-
-
-
             </tbody>
         </table>
 
@@ -183,9 +164,9 @@
             $finalgpa = 0.00;
             }
 
+            // This helper will now work correctly because the component provides the $students variable
             $studentResult = App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
             $classPosition = $studentResult['position'] ? $studentResult['position'] : 0;
-
             @endphp
 
             <table class="info-table">
@@ -223,6 +204,7 @@
     @endif
 </div>
 
+{{-- SCRIPT IS UNCHANGED AND CORRECT --}}
 <script>
     document.addEventListener("livewire:init", () => {
         let progressBar = document.getElementById("progress-bar");
@@ -235,7 +217,7 @@
                 progressBar.style.width = width + "%";
                 progressBar.innerText = width + "%";
             }
-        }, 100); // speed (50ms → 5 seconds to reach 95%)
+        }, 100);
 
         Livewire.hook("message.processed", (message, component) => {
             if (@this.readyToLoad) {
