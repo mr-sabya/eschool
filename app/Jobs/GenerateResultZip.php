@@ -73,7 +73,7 @@ class GenerateResultZip implements ShouldQueue
                     'fourthSubjectMarks' => $pdfComponent->fourthSubjectMarks,
                     'markdistributions' => $pdfComponent->markdistributions,
                     'students' => $pdfComponent->students,
-                ])->setPaper('a4', 'portrait');
+                ])->setPaper('a4', 'landscape');
 
                 $pdfFileNameInZip = $student->user['name'] . ' (Roll ' . $student->roll_number . ')-result.pdf';
                 $zip->addFromString($pdfFileNameInZip, $pdf->output());
