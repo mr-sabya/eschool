@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Livewire\Backend\Result\HighSchool;
+use App\Livewire\Backend\Result\Show;
 use App\Models\Student;
 use App\Models\User;
 use App\Notifications\ZipReadyNotification; // We will create this next
@@ -60,12 +60,12 @@ class GenerateResultZip implements ShouldQueue
         }
 
         foreach ($students as $student) {
-            $pdfComponent = app(HighSchool::class);
+            $pdfComponent = app(Show::class);
             $pdfComponent->mount($student->id, $this->examId, $this->classId, $this->sectionId, $this->sessionId);
             $pdfComponent->loadReport();
 
             if ($pdfComponent->student) {
-                $pdf = Pdf::loadView('backend.result.high-school-pdf', [
+                $pdf = Pdf::loadView('backend.result.pdf', [
                     'student' => $pdfComponent->student,
                     'exam' => $pdfComponent->exam,
                     'subjects' => $pdfComponent->subjects,

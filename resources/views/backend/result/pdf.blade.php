@@ -3,29 +3,56 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Class Result PDF</title>
+    <title>Progress Report - {{ $student->user['name'] }}</title>
     <style>
+        /* Using your new styles */
         body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 11px;
+            /* Slightly reduce the base font size */
+            margin: 0;
+            /* Remove default body margin */
+            padding: 0;
+            /* Remove default body padding */
         }
 
-        /* report */
         .report-box {
-            max-width: 1000px;
-            margin: auto;
+            width: 98%;
+            /* Increase width to use more of the page */
             border: 1px solid #000;
-            padding: 10px;
+            padding: 5px;
+            /* Reduce the padding inside the main box */
+            margin: 0 auto;
+            /* Center the box on the page */
         }
 
         .school-header {
-            text-align: center;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
+            width: 100%;
+            height: auto;
+            /* Allow height to be determined by content */
+            margin-bottom: 5px;
+            /* Reduce space after the header */
         }
 
-        .school-header img {
-            height: 80px;
+        .header-info-table {
+            width: 100%;
+            border: none;
+        }
+
+        .header-info-table td {
+            vertical-align: top;
+        }
+
+        .logo {
+            width: 80px;
+        }
+
+        .logo img {
+            width: 100%;
+        }
+
+        .school-details {
+            padding-left: 15px;
         }
 
         .title {
@@ -34,11 +61,25 @@
         }
 
         .subtitle {
+            font-size: 12px;
+        }
+
+        .exam-details {
+            text-align: right;
+        }
+
+        .exam-details h3 {
             font-size: 14px;
+            margin: 0;
+        }
+
+        .boarder-top {
+            border-top: 2px solid #000;
+            margin-top: 5px;
+            padding-top: 5px;
         }
 
         .info-table,
-        .grade-table,
         .marks-table {
             width: 100%;
             border-collapse: collapse;
@@ -50,40 +91,71 @@
         }
 
         .marks-table th,
-        .marks-table td,
-        .grade-table th,
-        .grade-table td {
+        .marks-table td {
             border: 1px solid #000;
-            padding: 4px;
+            padding: 2px;
             text-align: center;
         }
 
         .marks-table th {
             font-size: 11px;
+            background-color: #f2f2f2;
+        }
+
+        .marks-table td:first-child {
+            text-align: left;
+            /* Align subject names to the left */
         }
 
         .section-title {
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 5px;
+            margin-bottom: 3px;
             text-decoration: underline;
-        }
-
-        .result-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-        }
-
-        .signature {
-            text-align: center;
-            width: 200px;
-            border-top: 1px solid #000;
         }
 
         .comment-box {
             border: 1px solid #000;
-            height: 30px;
+            height: 20px;
             padding: 5px;
+        }
+
+        .footer-signatures-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            /* Space above the signature area */
+            margin-bottom: 10px;
+            /* Space below the signature area */
+        }
+
+        .footer-signatures-table td {
+            width: 50%;
+            /* Keep the cells occupying 50% of the width */
+            /* The border is now removed from here */
+        }
+
+        /* Style the text inside the cells */
+        .teacher-signature {
+            text-align: left;
+        }
+
+        .principal-signature {
+            text-align: right;
+        }
+
+        /* --- NEW STYLES FOR THE BORDER --- */
+        .footer-signatures-table td span {
+            display: inline-block;
+            /* Allows the span to have a border and padding */
+            border-top: 1px solid #000;
+            /* The signature line */
+            padding-top: 5px;
+            /* Space between the line and the text */
+        }
+
+        span[style*="color:red;"] {
+            color: red !important;
         }
     </style>
 </head>
@@ -92,29 +164,42 @@
 
     <div class="report-box">
         <div class="school-header">
-            <img src="{{ public_path('assets/frontend/images/kcgs-logo.png') }}" alt="School Logo">
-            <div class="title">Khalishpur Collegiate Girls' School</div>
-            <div class="subtitle">Khalishpur, Khulna</div>
-            <div class="subtitle">Phone: 02477700262, kcgs899@gmail.com</div>
-            <h3>{{ $exam->examCategory['name'] }} - {{ $exam->academicSession['name'] }}<br>Progress Report</h3>
+            <table class="header-info-table">
+                <tr>
+                    <td style="width: 80px;">
+                        <div class="logo">
+                            <img src="{{ public_path('assets/frontend/images/kcgs-logo.png') }}" alt="School Logo">
+                        </div>
+                    </td>
+                    <td class="school-details">
+                        <div class="title">Khalishpur Collegiate Girls' School</div>
+                        <div class="subtitle">Khalishpur, Khulna</div>
+                        <div class="subtitle">Phone: 02477700262, kcgs899@gmail.com</div>
+                    </td>
+                    <td class="exam-details">
+                        <h3>{{ $exam->examCategory['name'] }} - {{ $exam->academicSession['name'] }}<br>Progress Report</h3>
+                    </td>
+                </tr>
+            </table>
         </div>
 
-        <table class="info-table">
-            <tr>
-                <td><strong>Name:</strong> {{ $student->user['name'] }}</td>
-                <td><strong>Student's ID:</strong> {{ $student->id }}</td>
-                <td><strong>Class:</strong> {{ $student->schoolClass['name'] }}</td>
-                <td><strong>Section:</strong> {{ $student->classSection['name'] }}</td>
-                <td><strong>Roll No:</strong> {{ $student['roll_number'] }}</td>
-            </tr>
-        </table>
+        <div class="boarder-top">
+            <table class="info-table">
+                <tr>
+                    <td><strong>Name:</strong> {{ $student->user['name'] }}</td>
+                    <td><strong>Student's ID:</strong> {{ $student->id }}</td>
+                    <td><strong>Class:</strong> {{ $student->schoolClass['name'] }}</td>
+                    <td><strong>Section:</strong> {{ $student->classSection['name'] }}</td>
+                    <td><strong>Roll No:</strong> {{ $student['roll_number'] }}</td>
+                </tr>
+            </table>
+        </div>
 
         @php
         $totalObtainedMarks = 0;
         $totalGradePoints = 0;
         $gpaSubjectCount = 0;
-        $finalResult = 'Pass';
-        $classPosition = 0;
+        $finalResult = 'Pass'; // Assume Pass initially
         @endphp
 
         <div class="section-title">Academic Performance</div>
@@ -124,208 +209,85 @@
                     <th rowspan="2">Subject</th>
                     <th rowspan="2">Full Mark</th>
                     <th colspan="{{ count($markdistributions) }}">Obtained Marks</th>
-                    <th colspan="{{ count($markdistributions) }}">Calculated Marks</th>
+                    <th colspan="2">Calculated Marks</th>
                     <th rowspan="2">Total</th>
                     <th rowspan="2">Highest</th>
-                    <th rowspan="2">GPA</th>
                     <th rowspan="2">Grade</th>
+                    <th rowspan="2">GPA</th>
                     <th rowspan="2">Result</th>
                 </tr>
                 <tr>
+                    {{-- Corrected loop for optimized component data --}}
                     @foreach ($markdistributions as $distribution)
-                    <th>{{ $distribution->markDistribution['name'] }}</th>
+                    <th>{{ $distribution->name }}</th>
                     @endforeach
-                    @foreach ($markdistributions as $distribution)
-                    <th>{{ $distribution->markDistribution['name'] }}</th>
-                    @endforeach
+                    <th>Class Test</th>
+                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($subjects as $subject)
+                {{-- OPTIMIZED LOOP: No database queries inside the view --}}
+                @foreach ($marks as $mark)
                 @php
-                $finalMarkConfiguration = App\Models\FinalMarkConfiguration::where('school_class_id', $student->school_class_id)
-                ->where('subject_id', $subject->subject['id'])
-                ->first();
-
-                $annualFullMark = $finalMarkConfiguration ? $finalMarkConfiguration->other_parts_total : 0;
-
-                // Check if any mark distribution for this subject excludes it from GPA
-                $excludeFromGPA = $finalMarkConfiguration ? $finalMarkConfiguration->exclude_from_gpa : false;
-
-                $totalCalculatedMark = 0;
-                $failedAnyDistribution = false;
+                if($mark['fail_any_distribution']){
+                $finalResult = 'Fail';
+                }
                 @endphp
-
                 <tr>
-                    <td>{{ $subject->subject['name'] }}</td>
-                    <td>{{ $annualFullMark }}</td>
-
-                    {{-- Obtained Marks --}}
-                    @foreach ($markdistributions as $distribution)
-                    @php
-                    $markDistribution = App\Models\MarkDistribution::where('name', $distribution->markDistribution['name'])->first();
-
-                    $subjectMarkDistribution = App\Models\SubjectMarkDistribution::where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('class_section_id', $student->class_section_id)
-                    ->where('mark_distribution_id', $markDistribution ? $markDistribution->id : null)
-                    ->first();
-
-                    $studentSubjectMark = null;
-                    if ($subjectMarkDistribution) {
-                    $studentSubjectMark = App\Models\StudentMark::where('student_id', $student->id)
-                    ->where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('exam_id', $exam->id)
-                    ->where('mark_distribution_id', $markDistribution->id)
-                    ->first();
-                    }
-                    @endphp
-                    <td>
-                        @if($studentSubjectMark)
-                        @php
-                        $passMark = $subjectMarkDistribution->pass_mark ?? 0;
-                        $marksObtained = $studentSubjectMark->marks_obtained;
-                        $isPass = $marksObtained >= $passMark;
-                        @endphp
-
-                        @if($studentSubjectMark->is_absent)
-                        @php $failedAnyDistribution = true; @endphp
-                        <span style="color:red;">Absent</span>
-                        @elseif(!$isPass)
-                        <span style="color:red;">Fail ({{ $marksObtained }})</span>
-                        @php $failedAnyDistribution = true; @endphp
-                        @else
-                        {{ $marksObtained }}
-                        @endif
-                        @else
-                        N/A
-                        @endif
-                    </td>
+                    <td>{{ $mark['subject_name'] }}</td>
+                    <td>{{ $mark['full_mark'] }}</td>
+                    @foreach ($mark['obtained_marks'] as $obtainedMark)
+                    <td>{!! $obtainedMark !!}</td>
                     @endforeach
-
-                    {{-- Calculated Marks --}}
-
-                    @foreach ($markdistributions as $distribution)
-                    @php
-                    $markDistribution = App\Models\MarkDistribution::where('name', $distribution->markDistribution['name'])->first();
-
-                    $subjectMarkDistribution = App\Models\SubjectMarkDistribution::where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('class_section_id', $student->class_section_id)
-                    ->where('mark_distribution_id', $markDistribution ? $markDistribution->id : null)
-                    ->first();
-
-                    $studentSubjectMark = null;
-                    $studentClassTestMark = null;
-                    if ($subjectMarkDistribution) {
-                    if($distribution->markDistribution['name'] == 'Class Test'){
-                    $studentClassTestMark = App\Models\StudentMark::where('student_id', $student->id)
-                    ->where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('exam_id', $exam->id)
-                    ->where('mark_distribution_id', $markDistribution->id)
-                    ->first();
-                    }else{
-                    $studentSubjectMark = App\Models\StudentMark::where('student_id', $student->id)
-                    ->where('subject_id', $subject->subject['id'])
-                    ->where('school_class_id', $student->school_class_id)
-                    ->where('exam_id', $exam->id)
-                    ->where('mark_distribution_id', $markDistribution->id)
-                    ->first();
-                    }
-
-                    }
-
-                    $calculatedMark = 0;
-                    if ($studentSubjectMark) {
-                    $calculatedMark = round(($studentSubjectMark->marks_obtained * $finalMarkConfiguration->final_result_weight_percentage) / 100);
-                    }
-
-                    if($studentClassTestMark){
-
-                    $draftMark = $studentClassTestMark->marks_obtained + $calculatedMark;
-                    }else{
-                    $draftMark = $calculatedMark;
-                    }
-
-                    $totalCalculatedMark += $draftMark;
-                    @endphp
-
-                    <td>
-                        @if($distribution->markDistribution['name'] == 'Class Test')
-                        @if($studentClassTestMark)
-                        {{ $studentClassTestMark->marks_obtained }}
-                        @else
-                        N/A
-                        @endif
-                        @else
-
-                        @if($studentSubjectMark)
-                        {!! $studentSubjectMark->is_absent ? '<span style="color:red;">Absent</span>' : $calculatedMark !!}
-
-                        @else
-                        N/A
-                        @endif
-                        @endif
-                    </td>
-                    @endforeach
-
-                    {{-- Total Calculated Mark --}}
-                    <td>{{ $totalCalculatedMark }}</td>
-
-                    {{-- Highest Mark --}}
-                    @php
-                    $highestMark = App\Helpers\HighestMarkHelper::getHighestMark($students, $subject->subject['id'], $student->school_class_id, $student->class_section_id, $exam->id);
-                    @endphp
-                    <td>{{ $highestMark['highest_mark'] }}</td>
-
-                    {{-- GPA and Grade --}}
-                    @php
-                    $grade = App\Models\Grade::where('start_marks', '<=', $totalCalculatedMark)
-                        ->where('end_marks', '>=', $totalCalculatedMark)
-                        ->where('grading_scale', $finalMarkConfiguration->grading_scale)
-                        ->first();
-
-                        $gradeName = $grade ? $grade->grade_name : 'N/A';
-                        $gradePoint = $grade ? $grade->grade_point : 0;
-                        @endphp
-
-                        <td>{{ $gradeName }}</td>
-                        <td>{{ $gradePoint }}</td>
-
-                        {{-- Result: Fail if any distribution failed --}}
-                        <td>
-
-                            @if($failedAnyDistribution)
-                            <span style="color:red;">Fail</span>
-                            @php $finalResult = 'Fail'; @endphp
-                            @else
-                            Pass
-                            @endif
-                        </td>
+                    <td>{{ $mark['class_test_result'] }}</td>
+                    <td>{{ $mark['other_parts_total'] }}</td>
+                    <td>{{ $mark['total_calculated_marks'] }}</td>
+                    <td>{{ $mark['highest_mark'] }}</td>
+                    <td>{{ $mark['grade_name'] }}</td>
+                    <td>{{ $mark['grade_point'] }}</td>
+                    <td>{!! $mark['final_result'] !!}</td>
                 </tr>
-
                 @php
-
-                if (!$excludeFromGPA) {
-                $totalObtainedMarks += $totalCalculatedMark;
-                $totalGradePoints += $gradePoint;
+                if (!$mark['exclude_from_gpa']) {
+                $totalObtainedMarks += $mark['total_calculated_marks'];
+                $totalGradePoints += $mark['grade_point'];
                 $gpaSubjectCount++;
                 }
                 @endphp
                 @endforeach
+
+                <!-- 4th subject -->
+                @if($fourthSubjectMarks)
+                <tr style="background-color: #f0f0f0;">
+                    <td>{{ $fourthSubjectMarks['subject_name'] }} (4th Subject)</td>
+                    <td>{{ $fourthSubjectMarks['full_mark'] }}</td>
+                    @foreach ($fourthSubjectMarks['obtained_marks'] as $obtainedMark)
+                    <td>{!! $obtainedMark !!}</td>
+                    @endforeach
+                    <td>{{ $fourthSubjectMarks['class_test_result'] }}</td>
+                    <td>{{ $fourthSubjectMarks['other_parts_total'] }}</td>
+                    <td>{{ $fourthSubjectMarks['total_calculated_marks'] }}</td>
+                    <td>{{ $fourthSubjectMarks['highest_mark'] }}</td>
+                    <td>{{ $fourthSubjectMarks['grade_name'] }}</td>
+                    <td>{{ $fourthSubjectMarks['grade_point'] }}</td>
+                    <td>{!! $fourthSubjectMarks['final_result'] !!}</td>
+                </tr>
+                @php
+                $totalObtainedMarks += $fourthSubjectMarks['total_calculated_marks'];
+                if($fourthSubjectMarks['grade_point'] >= 2.0) {
+                $totalGradePoints += ($fourthSubjectMarks['grade_point'] - 2.0);
+                }
+                if ($fourthSubjectMarks['fail_any_distribution']) {
+                $finalResult = 'Fail';
+                }
+                @endphp
+                @endif
             </tbody>
         </table>
 
         @php
         $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
-
-        $finalGrade = App\Models\Grade::where('grading_scale', $finalMarkConfiguration->grading_scale)
-        ->where('grade_point', '<=', $finalgpa)
-            ->orderBy('grade_point', 'desc')
-            ->first();
-
+        $finalGrade = \App\Models\Grade::where('grade_point', '<=', $finalgpa)->orderBy('grade_point', 'desc')->first();
             $letterGrade = $finalGrade ? $finalGrade->grade_name : 'N/A';
 
             // Override if failed any subject
@@ -334,29 +296,24 @@
             $finalgpa = 0.00;
             }
 
-            $studentResult = App\Helpers\ResultHelper::getStudentPosition($student->id, $students, $exam->id);
-            $classPosition = $studentResult['position'] ? $studentResult['position'] : 0;
-
+            $studentResult = \App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
+            $classPosition = $studentResult['position_in_class'] ?? 'N/A';
             @endphp
 
             <table class="info-table">
                 <tr>
                     <td><strong>Obtained Total:</strong> {{ $totalObtainedMarks }}</td>
                     <td><strong>Letter Grade:</strong> {{ $letterGrade }}</td>
-                    <td><strong>GPA:</strong> {{ is_numeric($finalgpa) ? number_format($finalgpa, 2) : $finalgpa }}</td>
+                    <td><strong>GPA:</strong> {{ number_format($finalgpa, 2) }} </td>
                     <td>
                         <strong>Result:</strong>
-                        @if($finalResult === 'Fail')
-                        <span style="color:red;">Fail</span>
-                        @else
-                        Pass
-                        @endif
+                        {!! $finalResult === 'Fail' ? '<span style="color:red;">Fail</span>' : 'Pass' !!}
                     </td>
                     <td><strong>Position in Class:</strong> {{ $classPosition }}</td>
                 </tr>
             </table>
 
-            <div class="section-title">Class Teacher's Comment</div>
+            <div class="section-title" style="margin-bottom: 5px;">Class Teacher's Comment</div>
             <div class="comment-box"></div>
 
             <table class="info-table">
@@ -366,16 +323,16 @@
                 </tr>
             </table>
 
-            <div style="width: 100%; margin-top: 30px; margin-bottom: 25px;">
-                <div style="float: left; border-top: 1px solid #000; padding: 5px 20px 0 0;">
-                    Class Teacher
-                </div>
-                <div style="float: right; border-top: 1px solid #000; padding: 5px 0 0 20px;">
-                    Principal
-                </div>
-            </div>
-
-
+            <table class="footer-signatures-table">
+                <tr>
+                    <td class="teacher-signature">
+                        <span>Class Teacher</span>
+                    </td>
+                    <td class="principal-signature">
+                        <span>Principal</span>
+                    </td>
+                </tr>
+            </table>
     </div>
 
 </body>

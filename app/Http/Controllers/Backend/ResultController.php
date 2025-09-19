@@ -110,9 +110,8 @@ class ResultController extends Controller
     public function showResultPosition()
     {
         $students = Student::with(['schoolClass', 'classSection'])
-            ->where('school_class_id', 7)
-            ->where('class_section_id', 7)
-            ->where('department_id', 1)
+            ->where('school_class_id', 4)
+            ->where('class_section_id', 4)
             ->get();
 
         $examId = 1; // Example exam ID, replace with actual logic to get the exam ID

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Backend\Result;
 
-use App\Livewire\Backend\Result\HighSchool;
+use App\Helpers\ClassPositionHelper;
 use App\Models\AcademicSession;
 use App\Models\ClassSection;
 use App\Models\Department;
@@ -12,6 +12,8 @@ use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
 use App\Jobs\GenerateResultZip; // <-- ADD THIS
+use App\Models\ClassSubjectAssign;
+use App\Models\MarkDistribution;
 use Illuminate\Support\Facades\Auth; // <-- ADD THIS
 
 class Index extends Component
@@ -90,7 +92,7 @@ class Index extends Component
     public function downloadStudentPdf($studentId)
     {
         // Use the currently selected filters from the component's public properties
-        $pdfComponent = app(HighSchool::class);
+        $pdfComponent = app(Show::class);
         $pdfComponent->mount(
             $studentId,
             $this->selectedExam,
@@ -107,7 +109,7 @@ class Index extends Component
             return;
         }
 
-        $pdf = Pdf::loadView('backend.result.high-school-pdf', [
+        $pdf = Pdf::loadView('backend.result.pdf', [
             'student' => $pdfComponent->student,
             'exam' => $pdfComponent->exam,
             'subjects' => $pdfComponent->subjects,
@@ -149,6 +151,149 @@ class Index extends Component
         // Provide immediate feedback to the user
         // Reset the status message after dispatching
         $this->jobStatusMessage = 'Your request has been received! The zip file is being generated in the background. You will be notified here when it is ready for download.';
+    }
+
+
+    // vvv ADD THIS ENTIRE NEW FUNCTION vvv
+    public function downloadSummaryPdf()
+    {
+        if ($this->students->isEmpty()) {
+            session()->flash('error', 'No students found to generate a summary.');
+            return;
+        }
+
+        // Get results and the summary using your helper
+        $results = ClassPositionHelper::getClassResults($this->students, $this->selectedExam);
+        $summary = ClassPositionHelper::getResultSummary($results);
+
+        // Get additional data for the PDF header
+        $exam = Exam::find($this->selectedExam);
+        $class = SchoolClass::find($this->selectedClass);
+        $section = ClassSection::find($this->selectedSection);
+        $session = AcademicSession::find($this->selectedSession);
+
+        // Load the view and generate the PDF
+        $pdf = Pdf::loadView('backend.result.summary-pdf', [
+            'summary' => $summary,
+            'exam' => $exam,
+            'class' => $class,
+            'section' => $section,
+            'session' => $session,
+        ])->setPaper('a4', 'portrait');
+
+        // Create a filename and stream the download
+        $fileName = "Result-Summary-{$class->name}-{$section->name}.pdf";
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $fileName);
+    }
+
+
+
+    // vvv ADD THIS ENTIRE NEW FUNCTION vvv
+    public function downloadMeritListPdf()
+    {
+        if ($this->students->isEmpty()) {
+            session()->flash('error', 'No students found to generate a merit list.');
+            return;
+        }
+
+        // 1. Get the processed and sorted results from your helper
+        $results = ClassPositionHelper::getClassResults($this->students, $this->selectedExam);
+
+        // 2. Get additional data for the PDF header
+        $exam = Exam::find($this->selectedExam);
+        $class = SchoolClass::find($this->selectedClass);
+        $section = ClassSection::find($this->selectedSection);
+        $session = AcademicSession::find($this->selectedSession);
+        $department = $this->selectedDepartment ? Department::find($this->selectedDepartment) : null;
+
+
+        // 3. Load the view and generate the PDF
+        $pdf = Pdf::loadView('backend.result.merit-list-pdf', [
+            'results' => $results,
+            'exam' => $exam,
+            'class' => $class,
+            'section' => $section,
+            'session' => $session,
+            'department' => $department,
+        ])->setPaper('a4', 'portrait'); // Or 'landscape' if needed
+
+        // 4. Create a filename and stream the download
+        $fileName = "Merit-List-{$class->name}-{$section->name}.pdf";
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $fileName);
+    }
+
+
+
+    // vvv ADD THIS ENTIRE NEW FUNCTION vvv
+    public function downloadTabulationSheetPdf()
+    {
+        if ($this->students->isEmpty()) {
+            session()->flash('error', 'No students found for the selected criteria.');
+            return;
+        }
+
+        $examId = $this->selectedExam;
+        $classId = $this->selectedClass;
+
+        // *** NEW: Fetch all possible mark distributions to build table columns ***
+        $markDistributions = MarkDistribution::whereHas('subjectMarkDistributions', function ($query) use ($classId) {
+            $query->where('school_class_id', $classId);
+        })->orderBy('id')->get();
+
+        // Fetch subjects for the header
+        $subjects = ClassSubjectAssign::with('subject')
+            ->where('academic_session_id', $this->selectedSession)
+            ->where('school_class_id', $this->selectedClass)
+            ->where('class_section_id', $this->selectedSection)
+            ->when($this->selectedDepartment, fn($q) => $q->where('department_id', $this->selectedDepartment))
+            ->get();
+
+        // *** PASS the $markDistributions to the helper ***
+        $results = ClassPositionHelper::getTabulationSheetResults($this->students, $this->selectedExam, $markDistributions);
+        $resultsCollection = collect($results);
+
+        // Get additional data for the PDF header
+        $exam = Exam::find($examId);
+        $class = SchoolClass::find($classId);
+        $section = ClassSection::find($this->selectedSection);
+        $session = AcademicSession::find($this->selectedSession);
+        $department = $this->selectedDepartment ? Department::find($this->selectedDepartment) : null;
+
+        // Summary calculations
+        $totalStudents = $this->students->count();
+        $totalPass = $resultsCollection->where('is_fail', false)->count();
+        $passPercentage = $totalStudents > 0 ? number_format(($totalPass / $totalStudents) * 100, 2) : 0;
+        $gradeCounts = $resultsCollection->pluck('final_grade')->countBy();
+        $highestMark = $resultsCollection->max('total_marks');
+        
+
+        $pdf = Pdf::loadView('backend.result.tabulation-sheet-pdf', [
+            'results' => $results,
+            'subjects' => $subjects,
+            'markDistributions' => $markDistributions, // <-- PASS distributions to the view
+            'exam' => $exam,
+            'class' => $class,
+            'section' => $section,
+            'session' => $session,
+            'department' => $department,
+            'gradeCounts' => $gradeCounts,
+            'totalStudents' => $totalStudents,
+            'totalPass' => $totalPass,
+            'totalFail' => $totalStudents - $totalPass,
+            'passPercentage' => $passPercentage,
+            'highestMark' => $highestMark,
+        ])->setPaper('legal', 'landscape');
+
+        $departmentName = $department ? "-{$department->name}" : '';
+        $fileName = "Tabulation-Sheet-{$class->name}-{$section->name}{$departmentName}.pdf";
+
+        return response()->streamDownload(fn() => print($pdf->output()), $fileName);
     }
 
     public function render()

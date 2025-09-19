@@ -66,13 +66,33 @@
 
     {{-- vvv ADD THIS BUTTON vvv --}}
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4>Student List ({{ $students->count() }})</h4>
-            <button wire:click="downloadAllPdfs" wire:loading.attr="disabled" class="btn btn-info">
-                {{-- Show spinner only while dispatching the job --}}
-                <span wire:loading wire:target="downloadAllPdfs" class="spinner-border spinner-border-sm"></span>
-                Download All Reports
-            </button>
+        <div class="card-header bg-primary d-flex justify-content-between align-items-center">
+            <h4 class="text-white">Student List ({{ $students->count() }})</h4>
+
+            <div class="d-flex">
+
+                <button wire:click="downloadMeritListPdf" wire:loading.attr="disabled" class="btn btn-light me-2">
+                    <span wire:loading wire:target="downloadMeritListPdf" class="spinner-border spinner-border-sm"></span>
+                    Download Merit List
+                </button>
+
+                <button wire:click="downloadSummaryPdf" wire:loading.attr="disabled" class="btn btn-light me-2">
+                    <span wire:loading wire:target="downloadSummaryPdf" class="spinner-border spinner-border-sm"></span>
+                    Download Summary
+                </button>
+
+                {{-- ADD THIS NEW BUTTON --}}
+                <button wire:click="downloadTabulationSheetPdf" class="btn btn-light me-2">
+                    <span wire:loading wire:target="downloadTabulationSheetPdf" class="spinner-border spinner-border-sm"></span>
+                    <i class="fas fa-table"></i> Download Tabulation Sheet
+                </button>
+
+                <button wire:click="downloadAllPdfs" wire:loading.attr="disabled" class="btn btn-light">
+                    {{-- Show spinner only while dispatching the job --}}
+                    <span wire:loading wire:target="downloadAllPdfs" class="spinner-border spinner-border-sm"></span>
+                    Download All Reports
+                </button>
+            </div>
         </div>
         <div class="card-body table-responsive">
             @if($jobStatusMessage)
@@ -96,8 +116,8 @@
                         <td>{{ $student->email }}</td>
                         <td>{{ $student->phone }}</td>
                         <td>
-                            @if($student->schoolClass['numeric_name'] >= 6)
-                            <a href="{{ route('admin.result.high-school', [
+
+                            <a href="{{ route('admin.result.show', [
     'studentId' => $student->id,
     'examId' => $selectedExam,
     'classId' => $selectedClass,
@@ -120,22 +140,7 @@
                                 </span>
                             </button>
 
-                            @else
-                            <a href="{{ route('admin.result.show', [
-    'studentId' => $student->id,
-    'examId' => $selectedExam,
-    'classId' => $selectedClass,
-    'sectionId' => $selectedSection,
-    'sessionId' => $selectedSession,
-]) }}" class="btn btn-sm btn-info" target="_blank">View Result</a>
 
-
-                            <a href="{{ route('admin.result.download', ['studentId' => $student->id, 'examId' => $selectedExam]) }}"
-                                class="btn btn-primary btn-sm"
-                                target="_blank">
-                                <i class="fas fa-download me-1"></i> Download Result PDF
-                            </a>
-                            @endif
 
                         </td>
                     </tr>

@@ -16,4 +16,10 @@ class MarkDistribution extends Model
     protected $fillable = [
         'name'
     ];
+
+    // subjectmarkdistributions relationship
+    public function subjectMarkDistributions()
+    {
+        return $this->hasMany(SubjectMarkDistribution::class);
+    }
 }
