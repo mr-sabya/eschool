@@ -17,3 +17,13 @@ Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index'])-
 
 // teacher list
 Route::get('/teachers', [App\Http\Controllers\Frontend\StaffController::class, 'teacherList'])->name('teacher.index');
+
+
+// login routes
+Route::get('/login', [App\Http\Controllers\Frontend\AuthController::class, 'showLoginForm'])->name('login');
+
+// profile
+// auth middleware
+Route::middleware(['auth'])->group(function () {
+    Route::get('/student/profile', [App\Http\Controllers\Frontend\Student\ProfileController::class, 'index'])->name('student.profile.index');
+});

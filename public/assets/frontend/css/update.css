@@ -1,3 +1,12 @@
+/* public/css/dashboard-style.css */
+:root {
+    --kcgs-primary-blue: #0082CF;
+    --kcgs-maroon: #035788;
+    --kcgs-light: #f4f7fc;
+    --kcgs-white: #ffffff;
+    --kcgs-dark-text: #333;
+}
+
 section {
     padding: 30px;
 }
@@ -118,7 +127,7 @@ section {
 
 
 .navbar .navbar-nav .nav-item .nav-link {
-    padding: 5px 15px;
+    padding: 5px 11px;
 }
 
 .navbar .navbar-nav .nav-item .active {
@@ -357,10 +366,112 @@ section {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-.teacher-card .staff-image{
+.teacher-card .staff-image {
     width: 150px;
     height: 150px;
     object-fit: cover;
     border-radius: 50%;
     margin-bottom: 15px;
+}
+
+
+
+/* --- Sidebar Styles --- */
+#wrapper {
+    display: flex;
+}
+
+#sidebar-wrapper {
+    min-height: 100%;
+    margin-left: -15rem;
+    transition: margin 0.25s ease-out;
+    background-color: var(--kcgs-primary-blue);
+    color: var(--kcgs-white);
+    width: 15rem;
+}
+
+#sidebar-wrapper .sidebar-heading {
+    border-bottom: 1px solid #4e5e79;
+}
+
+#sidebar-wrapper .list-group-item {
+    background-color: var(--kcgs-primary-blue);
+    color: var(--kcgs-white);
+    border: none;
+    padding: 1rem 1.5rem;
+}
+
+#sidebar-wrapper .list-group-item:hover {
+    background-color: var(--kcgs-maroon);
+    color: var(--kcgs-white);
+}
+
+#sidebar-wrapper .list-group-item.active {
+    background-color: var(--kcgs-maroon);
+    font-weight: bold;
+}
+
+/* --- Page Content Styles --- */
+#page-content-wrapper {
+    flex: 1;
+    width: calc(100% - 15rem);
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+}
+
+#menu-toggle {
+    cursor: pointer;
+}
+
+/* --- Professional Card & Text Styling --- */
+.primary-text {
+    color: var(--kcgs-primary-blue);
+}
+
+.secondary-text {
+    color: var(--kcgs-maroon);
+}
+
+.rounded-full {
+    border-radius: 100%;
+}
+
+.card {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+.card-header {
+    background-color: var(--kcgs-white);
+    border-bottom: 1px solid #e0e0e0;
+    color: var(--kcgs-primary-blue);
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--kcgs-maroon);
+    border-color: var(--kcgs-maroon);
+}
+
+.btn-primary:hover {
+    background-color: #6d0000;
+    border-color: #6d0000;
+}
+
+/* --- Responsive Adjustments --- */
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+    }
+
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+    }
 }

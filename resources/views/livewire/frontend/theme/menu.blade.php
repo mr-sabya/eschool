@@ -101,7 +101,13 @@
              </nav>
              <!-- login -->
              <div class="login">
-                 <a href="#" class="login-btn">Login</a>
+                 @if (Route::has('login'))
+                 @auth
+                 <a href="{{ route('student.profile.index') }}" wire:navigate class="login-btn">Profile</a>
+                 @else
+                 <a href="{{ route('login') }}" wire:naviagte class="login-btn">Login</a>
+                 @endauth
+                 @endif
              </div>
 
          </div>
