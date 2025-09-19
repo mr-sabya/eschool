@@ -25,7 +25,6 @@
 
         @page {
             margin: 20px;
-            size: a3 landscape;
         }
 
         body {
@@ -43,7 +42,7 @@
         .main-table th,
         .main-table td {
             border: 1px solid #333;
-            padding: 10px 2px;
+            padding: 10px 3px;
             text-align: center;
             vertical-align: middle;
         }
@@ -89,29 +88,30 @@
 
         /* --- NEW STYLES FOR VERTICAL TEXT --- */
         .vertical-header {
-            height: 80px;
-            /* This sets the fixed height for the header cell */
+            height: 70px;
+            /* Sets the fixed height for the header cell */
             padding: 0;
-            /* Reset cell padding */
-            vertical-align: bottom;
-            /* Align inner content to the bottom */
+            /* The cell itself has no padding */
             position: relative;
-            /* Needed for positioning the inner div */
+            /* Establishes a positioning context for the div */
         }
 
-        .vertical-header>div {
+        .vertical-header .vertical-text {
             position: absolute;
-            /* Position the div relative to the cell */
-            bottom: 2px;
-            /* Small space from the bottom border */
+            /* Lifts the div out of the normal flow */
+
+            /* The Centering Trick: */
             left: 50%;
-            /* Center the div horizontally */
-            transform: translateX(-50%) rotate(-90deg);
-            /* Center, then rotate */
+            /* Moves the div's left edge to the middle of the cell */
+            transform: translateX(-40%) rotate(-90deg);
+            /* Shifts the div back by half its own width, then rotates */
+
             transform-origin: center bottom;
-            /* This makes it rotate "up" from the bottom */
+            /* Rotates "up" from the bottom edge */
             white-space: nowrap;
-            font-size: 7.5px;
+            font-size: 8px;
+            bottom: 50%;
+            /* A small margin from the bottom of the cell */
         }
     </style>
 </head>
@@ -139,7 +139,7 @@
                 <td colspan="{{ (int)($total_columns * 0.25) }}"><strong>Total Student:</strong> {{ $totalStudents }}</td>
                 <td colspan="{{ (int)($total_columns * 0.25) }}"><strong>Class:</strong> {{ $class->name }}</td>
                 <td colspan="{{ (int)($total_columns * 0.5) }}" rowspan="3" class="school-name" style="vertical-align: middle;">
-                    {{ config('app.name', 'Khalishpur Collegiate Girls\' School') }}
+                    Khalishpur Collegiate Girls' School
                 </td>
             </tr>
             <tr>
@@ -164,10 +164,10 @@
                 <th colspan="{{ $subject_colspan }}">{{ $subject->subject->name }}</th>
                 @endforeach
                 <th rowspan="2" class="vertical-header" style="width: 3%;">
-                    <div>Total Mark</div>
+                    <div class="vertical-text">Total Mark</div>
                 </th>
                 <th rowspan="2" class="vertical-header" style="width: 3%;">
-                    <div>Result</div>
+                    <div class="vertical-text">Result</div>
                 </th>
                 <th colspan="2">Position</th>
             </tr>
@@ -175,17 +175,17 @@
                 @foreach($subjects as $subject)
                 <th colspan="{{ $dist_count }}">Hall Mark</th>
                 <th rowspan="2" class="vertical-header">
-                    <div>Total</div>
+                    <div class="vertical-text">Total</div>
                 </th>
                 <th rowspan="2" class="vertical-header">
-                    <div>Grade Point</div>
+                    <div class="vertical-text">Grade Point</div>
                 </th>
                 @endforeach
                 <th rowspan="2" class="vertical-header">
-                    <div>Section</div>
+                    <div class="vertical-text">Section</div>
                 </th>
                 <th rowspan="2" class="vertical-header">
-                    <div>Class</div>
+                    <div class="vertical-text">Class</div>
                 </th>
             </tr>
             <tr>
@@ -196,7 +196,7 @@
                 @foreach($subjects as $subject)
                 @foreach($markDistributions as $dist)
                 <th class="vertical-header">
-                    <div>{{ $dist->name }}</div>
+                    <div class="vertical-text">{{ $dist->name }}</div>
                 </th>
                 @endforeach
                 @endforeach
@@ -237,9 +237,7 @@
         </tbody>
     </table>
 
-    @if (!$loop->last)
-    <div class="page-break"></div>
-    @else
+
     <table style="width: 100%; margin-top: 30px;">
         <tbody>
             <tr>
@@ -248,7 +246,7 @@
             </tr>
         </tbody>
     </table>
-    @endif
+
     @endforeach
     @else
     <p style="text-align: center; padding: 50px;">No students found for the selected criteria.</p>

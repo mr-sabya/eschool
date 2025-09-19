@@ -234,19 +234,11 @@ class Index extends Component
     public function downloadTabulationSheetPdf()
     {
         if ($this->students->isEmpty()) {
-            session()->flash('error', 'No students found for the selected criteria.');
+            session()->flash('error', 'No students found to generate a tabulation sheet.');
             return;
         }
 
-        $examId = $this->selectedExam;
-        $classId = $this->selectedClass;
-
-        // *** NEW: Fetch all possible mark distributions to build table columns ***
-        $markDistributions = MarkDistribution::whereHas('subjectMarkDistributions', function ($query) use ($classId) {
-            $query->where('school_class_id', $classId);
-        })->orderBy('id')->get();
-
-        // Fetch subjects for the header
+        // Fetch the subjects list first, as we need to count them.
         $subjects = ClassSubjectAssign::with('subject')
             ->where('academic_session_id', $this->selectedSession)
             ->where('school_class_id', $this->selectedClass)
@@ -254,29 +246,43 @@ class Index extends Component
             ->when($this->selectedDepartment, fn($q) => $q->where('department_id', $this->selectedDepartment))
             ->get();
 
-        // *** PASS the $markDistributions to the helper ***
-        $results = ClassPositionHelper::getTabulationSheetResults($this->students, $this->selectedExam, $markDistributions);
-        $resultsCollection = collect($results);
+        $markDistributions = MarkDistribution::whereHas('subjectMarkDistributions', fn($q) => $q->where('school_class_id', $this->selectedClass))
+            ->orderBy('id')->get();
 
-        // Get additional data for the PDF header
-        $exam = Exam::find($examId);
-        $class = SchoolClass::find($classId);
+        // Call the helper to get the results
+        $results = ClassPositionHelper::getTabulationSheetResults($this->students, $this->selectedExam, $markDistributions);
+
+        // --- DYNAMIC PAPER SIZE LOGIC ---
+        $subjectsCount = $subjects->count();
+        $paperSize = 'a4'; // Default size
+
+        // Define your thresholds here. These numbers are just examples.
+        if ($subjectsCount > 7 && $subjectsCount <= 10) {
+            $paperSize = 'legal'; // Use Legal for a medium number of subjects
+        } elseif ($subjectsCount > 10) {
+            $paperSize = 'a3'; // Use A3 for a large number of subjects
+        }
+        // --- END OF LOGIC ---
+
+        // Fetch all the other necessary data for the header
+        $resultsCollection = collect($results);
+        $exam = Exam::find($this->selectedExam);
+        $class = SchoolClass::find($this->selectedClass);
+        // ... (rest of your data fetching remains the same)
         $section = ClassSection::find($this->selectedSection);
         $session = AcademicSession::find($this->selectedSession);
         $department = $this->selectedDepartment ? Department::find($this->selectedDepartment) : null;
-
-        // Summary calculations
         $totalStudents = $this->students->count();
         $totalPass = $resultsCollection->where('is_fail', false)->count();
         $passPercentage = $totalStudents > 0 ? number_format(($totalPass / $totalStudents) * 100, 2) : 0;
         $gradeCounts = $resultsCollection->pluck('final_grade')->countBy();
         $highestMark = $resultsCollection->max('total_marks');
-        
+
 
         $pdf = Pdf::loadView('backend.result.tabulation-sheet-pdf', [
             'results' => $results,
-            'subjects' => $subjects,
-            'markDistributions' => $markDistributions, // <-- PASS distributions to the view
+            'subjects' => $subjects, // Pass the subjects you already fetched
+            'markDistributions' => $markDistributions,
             'exam' => $exam,
             'class' => $class,
             'section' => $section,
@@ -288,11 +294,11 @@ class Index extends Component
             'totalFail' => $totalStudents - $totalPass,
             'passPercentage' => $passPercentage,
             'highestMark' => $highestMark,
-        ])->setPaper('legal', 'landscape');
+        ])->setPaper($paperSize, 'landscape'); // <-- Use the dynamic $paperSize variable
 
+        // ... (rest of the function for filename and download remains the same) ...
         $departmentName = $department ? "-{$department->name}" : '';
         $fileName = "Tabulation-Sheet-{$class->name}-{$section->name}{$departmentName}.pdf";
-
         return response()->streamDownload(fn() => print($pdf->output()), $fileName);
     }
 
