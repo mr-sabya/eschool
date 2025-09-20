@@ -111,9 +111,7 @@
         <tbody>
             @foreach($results as $res)
             {{-- Skip failed students from the merit list view --}}
-            @if($res['final_result'] === 'Fail')
-            @continue
-            @endif
+            
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $res['student']->id ?? 'N/A' }}</td>

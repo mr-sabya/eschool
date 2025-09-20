@@ -172,7 +172,7 @@ class ResultController extends Controller
             'class' => $class,
             'section' => $section,
             'session' => $session,
-            'department' => 'null', // Assuming no department for now
+            'department' => null, // Assuming no department for now
             'gradeCounts' => $gradeCounts,
             'totalStudents' => $totalStudents,
             'totalPass' => $totalPass,

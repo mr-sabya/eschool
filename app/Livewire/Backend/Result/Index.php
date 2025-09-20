@@ -238,6 +238,8 @@ class Index extends Component
             return;
         }
 
+        
+
         // Fetch the subjects list first, as we need to count them.
         $subjects = ClassSubjectAssign::with('subject')
             ->where('academic_session_id', $this->selectedSession)
@@ -278,6 +280,7 @@ class Index extends Component
         $gradeCounts = $resultsCollection->pluck('final_grade')->countBy();
         $highestMark = $resultsCollection->max('total_marks');
 
+        
 
         $pdf = Pdf::loadView('backend.result.tabulation-sheet-pdf', [
             'results' => $results,
