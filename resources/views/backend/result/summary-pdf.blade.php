@@ -59,14 +59,36 @@
             font-weight: bold;
             padding: 10px 0 5px 0;
         }
+
+        .school-info {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .school-info .logo {
+            width: 100%;
+            text-align: center;
+        }
+
+        .school-info .logo img {
+            width: 120px;
+            max-width: 120px;
+            height: auto;
+        } 
     </style>
 </head>
 
 <body>
 
+    <div class="school-info">
+        <div class="logo">
+            <img src="{{ public_path('assets/frontend/images/kcgs-logo.png') }}" alt="School Logo">
+        </div>
+        <h1 style="text-align: center; margin: 0; padding: 0;">{{ $settings->school_name ?? 'School Name' }}</h1>
+        <p style="text-align: center; margin: 0; padding: 0;">{{ $settings->address ?? 'School Address' }}</p>
+        <p style="text-align: center; margin: 0; padding: 0;">Phone: {{ $settings->phone ?? 'School Phone' }}, Email: {{ $settings->email ?? 'School Email' }}</p>
+    </div>
+    
     <div class="header">
-        <h1>Your School Name</h1>
-        <h3>Result Summary</h3>
         <p>
             <strong>Exam:</strong> {{ $exam->examCategory->name ?? 'N/A' }} <br>
             <strong>Session:</strong> {{ $session->name ?? 'N/A' }} |

@@ -8,8 +8,8 @@
                              <img src="{{ url('assets/frontend/images/kcgs-logo.png') }}" alt="">
                          </div>
                          <div class="text">
-                             <h4>Khalishpur Collegiate Girls' School</h4>
-                             <p>Khalishpur, Khulna</p>
+                             <h4>{{ $settings->school_name ?? 'School Name' }}</h4>
+                             <p>{{ $settings->school_address ?? 'School Address' }}</p>
                          </div>
                      </div>
                  </a>

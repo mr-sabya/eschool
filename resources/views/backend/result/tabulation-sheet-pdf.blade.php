@@ -21,6 +21,12 @@
             .page-break {
                 page-break-after: always;
             }
+
+            .signature-table {
+                break-after: page;
+                /* Modern standard */
+                page-break-after: always;
+            }
         }
 
         @page {
@@ -29,32 +35,104 @@
 
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 10px;
+            font-size: 11px;
             color: #000;
         }
 
+        /* --- START: HEADER TABLE STYLES (NO FLEXBOX) --- */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #000;
+        }
+
+        .header-table>tbody>tr>td {
+            padding: 0;
+            vertical-align: top;
+            border-left: 1px solid #000;
+        }
+
+        .header-table>tbody>tr>td:first-child {
+            border-left: 0;
+        }
+
+        .nested-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .nested-table td {
+            border: 1px solid #333;
+            padding: 4px 8px;
+            text-align: center;
+        }
+
+        .stats-section .label {
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .school-details {
+            text-align: center;
+            padding: 4px;
+        }
+
+        .school-details .school-name {
+            font-weight: bold;
+            font-size: 1.5em;
+            padding: 2px;
+            border-bottom: 1px solid #000;
+        }
+
+        .school-details .exam-name {
+            font-size: 1.2em;
+            padding: 4px;
+            border-bottom: 1px solid #000;
+            margin-bottom: 4px;
+        }
+
+        .school-details .sheet-title {
+            padding: 2px;
+            display: inline-block;
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        .dates-cell {
+            padding: 8px 10px;
+            border-right: 1px solid #000;
+            vertical-align: middle;
+        }
+
+        .dates-cell span {
+            display: block;
+        }
+
+        .dates-cell span:first-child {
+            margin-bottom: 20px;
+        }
+
+        /* --- END: HEADER TABLE STYLES --- */
+
+
+        /* main table */
         .main-table {
             width: 100%;
             border-collapse: collapse;
-            border: 2px solid #000;
+            border: 1px solid #000;
+            border-top: 0;
         }
 
         .main-table th,
         .main-table td {
             border: 1px solid #333;
-            padding: 10px 3px;
+            padding: 8px 3px;
             text-align: center;
             vertical-align: middle;
         }
 
         .main-table th {
             font-weight: bold;
-        }
-
-        .school-name {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
         }
 
         .exam-title {
@@ -73,45 +151,41 @@
         .student-name {
             text-align: left !important;
             padding-left: 3px !important;
-            white-space: nowrap;
+            /* white-space: nowrap; */
         }
 
         .fail-text,
         .fail-row {
             color: red !important;
-            font-weight: bold;
+            /* font-weight: bold; */
         }
 
         .font-bold {
-            font-weight: bold;
+            /* font-weight: bold; */
         }
 
-        /* --- NEW STYLES FOR VERTICAL TEXT --- */
+        /* --- STYLES FOR VERTICAL TEXT --- */
         .vertical-header {
-            height: 70px;
-            /* Sets the fixed height for the header cell */
+            height: 50px;
             padding: 0;
-            /* The cell itself has no padding */
             position: relative;
-            /* Establishes a positioning context for the div */
         }
 
         .vertical-header .vertical-text {
             position: absolute;
-            /* Lifts the div out of the normal flow */
-
-            /* The Centering Trick: */
             left: 50%;
-            /* Moves the div's left edge to the middle of the cell */
             transform: translateX(-40%) rotate(-90deg);
-            /* Shifts the div back by half its own width, then rotates */
-
             transform-origin: center bottom;
-            /* Rotates "up" from the bottom edge */
             white-space: nowrap;
             font-size: 8px;
             bottom: 50%;
-            /* A small margin from the bottom of the cell */
+        }
+
+        .fixed-height-row td,
+        .fixed-height-row th {
+            height: 35px;
+            vertical-align: middle;
+            /* Or top, bottom */
         }
     </style>
 </head>
@@ -124,6 +198,102 @@
     @endphp
 
     @foreach($resultChunks as $pageIndex => $chunk)
+
+    <!-- HEADER SECTION - REBUILT WITH TABLES -->
+    <table class="header-table">
+        <tr>
+            <!-- Left Section: Stats -->
+            <td style="width: 25%;">
+                <table class="nested-table stats-section">
+                    <tr style="background-color: #e0e0e0;">
+                        <td class="label" style="border-top:0; border-left:0;">Total Student</td>
+                        <td style="border-top:0; border-right:0;"><strong>{{ $totalStudents }}</strong></td>
+                    </tr>
+                    <tr style="background-color: #e0e0e0;">
+                        <td class="label" style="border-left:0;">Total Pass and Fail</td>
+                        <td style="padding:0; border-right:0;">
+                            <table class="nested-table">
+                                <tr>
+                                    <td style="width: 50%; border:0; border-right: 1px solid #333;"><strong>{{ $totalPass }}</strong></td>
+                                    <td style="width: 50%; border:0;"><strong>{{ $totalFail }}</strong></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #e0e0e0;">
+                        <td class="label" style="border-left:0; border-bottom:0;">Percentage of Pass</td>
+                        <td style="border-right:0; border-bottom:0;"><strong>{{ $passPercentage }}%</strong></td>
+                    </tr>
+                </table>
+            </td>
+
+            <!-- Middle Section: School Info -->
+            <td style="width: 40%;">
+                <table class="nested-table">
+                    <tr>
+                        <td style="width: 35%; padding:0; border:0; vertical-align:top;">
+                            <table class="nested-table">
+                                <tr style="background-color: #e0e0e0;">
+                                    <td style="border-top:0; border-left:0;">Class/Section</td>
+                                    <td style="border-top:0; border-right:0;">{{ $section->name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-bottom:0; border-left:0;">{{ $class->name }}</td>
+                                    <td style="border-bottom:0; border-right:0;">@if($department){{ $department->name }}@else General @endif</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="school-details" style="border:0; border-left:1px solid #000;">
+                            <div class="school-name">{{ $settings->school_name }}</div>
+                            <div class="exam-name">{{ $exam->examCategory['name'] }} - {{ $session->name }}</div>
+                            <div class="sheet-title">Tabulation Sheet</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+
+            <!-- Right Section: Grades & Dates -->
+            <td style="width: 35%;">
+                <table class="nested-table">
+                    <tr>
+                        <td class="dates-cell" style="width: 80px; border:0; border-right: 1px solid #000;">
+                            <span>{{ \Carbon\Carbon::parse($exam->start_date)->format('d-M-Y') }}</span>
+                            <span>{{ \Carbon\Carbon::parse($exam->end_date)->format('d-M-Y') }}</span>
+                        </td>
+                        <td style="padding:0; border:0; vertical-align:top;">
+                            <table class="nested-table">
+                                <tr style="background-color: #e0e0e0;">
+                                    <td style="border-top:0; border-left:0;">A+</td>
+                                    <td>A</td>
+                                    <td>A-</td>
+                                    <td>B</td>
+                                    <td>C</td>
+                                    <td>F</td>
+                                    <td style="border-right:0;">Total</td>
+                                </tr>
+                                <tr>
+                                    <td style="border-left:0;">{{ $gradeCounts['A+'] ?? 0 }}</td>
+                                    <td>{{ $gradeCounts['A'] ?? 0 }}</td>
+                                    <td>{{ $gradeCounts['A-'] ?? 0 }}</td>
+                                    <td>{{ $gradeCounts['B'] ?? 0 }}</td>
+                                    <td>{{ $gradeCounts['C'] ?? 0 }}</td>
+                                    <td>{{ $gradeCounts['F'] ?? 0 }}</td>
+                                    <td style="border-right:0;">{{ $totalStudents }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" style="text-align:left; border-left:0; border-bottom:0; padding-left: 10px;">Class/Section Highest Number</td>
+                                    <td colspan="3" style="border-right:0; border-bottom:0;"><strong>{{ $highestMark }}</strong></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <!-- END OF HEADER SECTION -->
+
+
     <table class="main-table">
         <thead>
             @php
@@ -134,32 +304,12 @@
             $total_columns = 4 + $total_subject_cols + 4;
             @endphp
 
-            <!-- Top Header Rows (Inside the single table) -->
-            <tr>
-                <td colspan="{{ (int)($total_columns * 0.25) }}"><strong>Total Student:</strong> {{ $totalStudents }}</td>
-                <td colspan="{{ (int)($total_columns * 0.25) }}"><strong>Class:</strong> {{ $class->name }}</td>
-                <td colspan="{{ (int)($total_columns * 0.5) }}" rowspan="3" class="school-name" style="vertical-align: middle;">
-                    Khalishpur Collegiate Girls' School
-                </td>
-            </tr>
-            <tr>
-                <td><strong>Total Pass and Fail:</strong> {{ $totalPass }} / {{ $totalFail }}</td>
-                <td><strong>Section:</strong> {{ $section->name }}</td>
-            </tr>
-            <tr>
-                <td colspan="2"><strong>Percentage of Pass:</strong> {{ $passPercentage }}%</td>
-            </tr>
-            <tr>
-                <td colspan="{{ $total_columns / 2 }}" class="exam-title" style="border-right: none;">Annual Exam '{{ \Carbon\Carbon::parse($exam->start_at)->format('y') }} (primary)</td>
-                <td colspan="{{ $total_columns / 2 }}" class="sheet-title" style="border-left: none;">Tabulation Sheet</td>
-            </tr>
-
             <!-- Main Column Headers with NEW vertical text method -->
             <tr>
                 <th rowspan="2" style="width: 2%;">SL. No.</th>
                 <th rowspan="2" style="width: 2%;">ID</th>
                 <th rowspan="2" style="width: 2%;">Roll No</th>
-                <th rowspan="2" style="width: 8%;">Student Name</th>
+                <th rowspan="2" style="width: 10%;">Student Name</th>
                 @foreach($subjects as $subject)
                 <th colspan="{{ $subject_colspan }}">{{ $subject->subject->name }}</th>
                 @endforeach
@@ -169,7 +319,9 @@
                 <th rowspan="2" class="vertical-header" style="width: 3%;">
                     <div class="vertical-text">Result</div>
                 </th>
-                <th colspan="2">Position</th>
+                <th colspan="2" class="vertical-header">
+                    <div class="vertical-text">Position</div>
+                </th>
             </tr>
             <tr>
                 @foreach($subjects as $subject)
@@ -202,13 +354,12 @@
                 @endforeach
                 <th style="border:none;"></th>
                 <th style="border:none;"></th>
-                <th style="border:none;"></th>
-                <th style="border:none;"></th>
+
             </tr>
         </thead>
         <tbody>
             @foreach($chunk as $result)
-            <tr class="{{ $result['is_fail'] ? 'fail-row' : '' }}">
+            <tr class="fixed-height-row {{ $result['is_fail'] ? 'fail-row' : '' }}">
                 <td>{{ ($pageIndex * 7) + $loop->iteration }}</td>
                 <td>{{ $result['student']->id ?? '' }}</td>
                 <td>{{ $result['student']->roll_number }}</td>
@@ -222,7 +373,9 @@
                 <td>@php $mark = $subjectResult['obtained_marks_by_distribution'][$dist->id] ?? '-'; @endphp {{ is_null($mark) ? '' : $mark }}</td>
                 @endforeach
                 <td class="font-bold">{{ round($subjectResult['total_calculated_marks']) }}</td>
-                <td class="font-bold">@if($subjectResult['is_fail']) F(Fail) @else {{ $subjectResult['grade_name'] }} @endif</td>
+                <td class="font-bold">
+                    @if($subjectResult['is_fail']) F @else {{ $subjectResult['grade_name'] }} @endif
+                </td>
                 @else
                 @for ($i = 0; $i < $subject_colspan; $i++)<td>
                     </td>@endfor
@@ -237,15 +390,28 @@
         </tbody>
     </table>
 
+    <div style="clear: both;"></div>
+    <div class="signature-table">
+        <table style="width: 100%; margin-top: 40px; border-collapse: collapse; border: none; margin-bottom: 20px;">
+            <tbody>
+                <tr>
+                    <!-- Left Cell -->
+                    <td style="text-align: left; border: none;">
+                        <span style="border-top: 1px solid #000; padding-top: 5px; font-weight: bold; display: inline-block;">
+                            Class Teacher
+                        </span>
+                    </td>
 
-    <table style="width: 100%; margin-top: 30px;">
-        <tbody>
-            <tr>
-                <td style="text-align: left; border-top: 1px solid #000; padding-top: 5px; font-weight: bold;">Class Teacher</td>
-                <td style="text-align: right; border-top: 1px solid #000; padding-top: 5px; font-weight: bold;">Principal</td>
-            </tr>
-        </tbody>
-    </table>
+                    <!-- Right Cell -->
+                    <td style="text-align: right; border: none;">
+                        <span style="border-top: 1px solid #000; padding-top: 5px; font-weight: bold; display: inline-block;">
+                            Principal
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     @endforeach
     @else

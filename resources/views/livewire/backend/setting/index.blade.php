@@ -69,10 +69,6 @@
                             @error('registration_no') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
-
-
-
-
                         <button type="submit" class="btn btn-primary">Save Settings</button>
                     </div>
                 </div>
@@ -87,9 +83,15 @@
                         {{-- Timezone --}}
                         <div class="mb-3">
                             <label for="timezone">Timezone *</label>
-                            <input type="text" id="timezone" class="form-control @error('timezone') is-invalid @enderror" wire:model.defer="timezone">
+                            <select id="timezone" class="form-control @error('timezone') is-invalid @enderror" wire:model.defer="timezone">
+                                <option value="">Select Timezone</option>
+                                @foreach($allTimezones as $tz)
+                                <option value="{{ $tz }}">{{ $tz }}</option>
+                                @endforeach
+                            </select>
                             @error('timezone') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+
 
                         {{-- Copyright --}}
                         <div class="mb-3">

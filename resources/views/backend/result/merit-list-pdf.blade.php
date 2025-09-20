@@ -50,10 +50,34 @@
             text-align: center;
             margin-bottom: 20px;
         }
+
+        .school-info {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .school-info .logo {
+            width: 100%;
+            text-align: center;
+        }
+
+        .school-info .logo img {
+            width: 120px;
+            max-width: 120px;
+            height: auto;
+        }   
     </style>
 </head>
 
 <body>
+
+    <div class="school-info">
+        <div class="logo">
+            <img src="{{ public_path('assets/frontend/images/kcgs-logo.png') }}" alt="School Logo">
+        </div>
+        <h1 style="text-align: center; margin: 0; padding: 0;">{{ $settings->school_name ?? 'School Name' }}</h1>
+        <p style="text-align: center; margin: 0; padding: 0;">{{ $settings->address ?? 'School Address' }}</p>
+        <p style="text-align: center; margin: 0; padding: 0;">Phone: {{ $settings->phone ?? 'School Phone' }}, Email: {{ $settings->email ?? 'School Email' }}</p>
+    </div>
     <div class="header">
         <h2 style="text-align: center; margin: 0; padding: 0;">Merit List</h2>
         <table class="header-table">

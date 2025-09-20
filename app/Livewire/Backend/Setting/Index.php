@@ -6,6 +6,7 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use DateTimeZone;
 
 class Index extends Component
 {
@@ -31,8 +32,11 @@ class Index extends Component
     public $new_logo;       // temporary uploaded file for logo
     public $new_favicon;    // temporary uploaded file for favicon
 
+    public $allTimezones;
+
     public function mount()
     {
+        $this->allTimezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
         $this->setting = Setting::find(1);
 
         if ($this->setting) {

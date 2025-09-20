@@ -166,7 +166,7 @@
 
             // This helper will now work correctly because the component provides the $students variable
             $studentResult = App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
-            $classPosition = $studentResult['position_in_class'] ? $studentResult['position_in_class'] : 0;
+            $classPosition = $studentResult['position'] ? $studentResult['position'] : 0;
             @endphp
 
             <table class="info-table">

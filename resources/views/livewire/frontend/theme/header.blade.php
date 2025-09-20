@@ -18,9 +18,9 @@
 
             <div class="col-lg-6 col-md-6 col-sm-6">
                 <div class="top-header-right">
-                    <p>EIIN No: <strong>123415</strong></p>
-                    <p>School Code: <strong>123415</strong></p>
-                    <p>Reg. No: <strong>1213145167</strong></p>
+                    <p>EIIN No: <strong>{{ $settings->eiin_no ?? 'EIIN No' }}</strong></p>
+                    <p>School Code: <strong>{{ $settings->school_code ?? 'School Code' }}</strong></p>
+                    <p>Reg. No: <strong>{{ $settings->reg_no ?? 'Reg. No' }}</strong></p>
                 </div>
             </div>
 

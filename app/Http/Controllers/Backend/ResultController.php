@@ -5,8 +5,12 @@ namespace App\Http\Controllers\Backend;
 use App\Helpers\ClassPositionHelper;
 use App\Helpers\ResultHelper;
 use App\Http\Controllers\Controller;
+use App\Models\AcademicSession;
+use App\Models\ClassSection;
 use App\Models\ClassSubjectAssign;
 use App\Models\Exam;
+use App\Models\MarkDistribution;
+use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\SubjectMarkDistribution;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -87,7 +91,7 @@ class ResultController extends Controller
                 'students' => $students,
                 'subjects' => $subjects,
                 'markdistributions' => $markdistributions,
-            ])->setPaper('A4', 'landscape');
+            ])->setPaper('A6', 'landscape');
         } else {
 
             // Generate PDF
@@ -97,7 +101,7 @@ class ResultController extends Controller
                 'students' => $students,
                 'subjects' => $subjects,
                 'markdistributions' => $markdistributions,
-            ])->setPaper('A4', 'landscape');
+            ])->setPaper('A6', 'landscape');
         }
 
         // Return as download
@@ -109,16 +113,80 @@ class ResultController extends Controller
     // show result position
     public function showResultPosition()
     {
-        $students = Student::with(['schoolClass', 'classSection'])
-            ->where('school_class_id', 4)
-            ->where('class_section_id', 4)
+
+
+        // Step 2: Fetch the students based on the validated input
+        $students = Student::where('academic_session_id', 1)
+            ->where('school_class_id', 6)
+            ->where('class_section_id', 6)
             ->get();
 
-        $examId = 1; // Example exam ID, replace with actual logic to get the exam ID
+        // Step 3: Handle the case where no students are found
+        if ($students->isEmpty()) {
+            return redirect()->back()->with('error', 'No students found to generate a tabulation sheet.');
+        }
 
-        $resuls = ClassPositionHelper::getClassResults($students, $examId);
+        // Step 6: Fetch related data (subjects, mark distributions, etc.)
+        $subjects = ClassSubjectAssign::with('subject')
+            ->where('academic_session_id', 1)
+            ->where('school_class_id', 6)
+            ->where('class_section_id', 6)
+            ->get();
 
-        return $resuls;
+        $markDistributions = MarkDistribution::whereHas('subjectMarkDistributions', fn($q) => $q->where('school_class_id', 6))
+            ->orderBy('id')->get();
+
+        // Step 5: Process the results using your helper
+        $results = ClassPositionHelper::getTabulationSheetResults($students, 1, $markDistributions);
+
+        // --- DYNAMIC PAPER SIZE LOGIC (This remains the same) ---
+        $subjectsCount = $subjects->count();
+        $paperSize = 'a6'; // Default size
+
+        if ($subjectsCount > 7 && $subjectsCount <= 10) {
+            $paperSize = 'legal';
+        } elseif ($subjectsCount > 10) {
+            $paperSize = 'a3';
+        }
+        // --- END OF LOGIC ---
+
+        // Step 6: Gather all data needed for the PDF view
+        $resultsCollection = collect($results);
+        $exam = Exam::find(1);
+        $class = SchoolClass::find(6);
+        $section = ClassSection::find(6);
+        $session = AcademicSession::find(1);
+
+        $totalStudents = $students->count();
+        $totalPass = $resultsCollection->where('is_fail', false)->count();
+        $passPercentage = $totalStudents > 0 ? number_format(($totalPass / $totalStudents) * 100, 2) : 0;
+        $gradeCounts = $resultsCollection->pluck('final_grade')->countBy();
+        $highestMark = $resultsCollection->max('total_marks');
+
+        // Step 7: Generate the PDF
+        return view('backend.result.tabulation-sheet-pdf', [
+            'results' => $results,
+            'subjects' => $subjects,
+            'markDistributions' => $markDistributions,
+            'exam' => $exam,
+            'class' => $class,
+            'section' => $section,
+            'session' => $session,
+            'department' => 'null', // Assuming no department for now
+            'gradeCounts' => $gradeCounts,
+            'totalStudents' => $totalStudents,
+            'totalPass' => $totalPass,
+            'totalFail' => $totalStudents - $totalPass,
+            'passPercentage' => $passPercentage,
+            'highestMark' => $highestMark,
+        ]);
+
+        // Step 8: Prepare the filename and stream the download
+        $departmentName = 'null'; // Assuming no department for now
+        $fileName = "Tabulation-Sheet-{$class->name}-{$section->name}-{$departmentName}.pdf";
+
+        return $pdf->stream($fileName);
+        // An alternative for direct download: return $pdf->download($fileName);
     }
 
     // tabulation index

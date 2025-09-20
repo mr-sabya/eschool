@@ -319,6 +319,14 @@
                 </li>
                 @endif
 
+                <!-- setting -->
+                <li class="{{ Route::is('admin.setting.index') ? 'mm-active' : '' }}">
+                    <a href="{{ route('admin.setting.index') }}" class="waves-effect {{ Route::is('admin.setting.index') ? 'active' : '' }}" wire:navigate>
+                        <i class="ri-settings-2-line"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+
             </ul>
         </div>
     </div>
