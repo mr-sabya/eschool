@@ -75,8 +75,8 @@
             <img src="{{ public_path('assets/frontend/images/kcgs-logo.png') }}" alt="School Logo">
         </div>
         <h1 style="text-align: center; margin: 0; padding: 0;">{{ $settings->school_name ?? 'School Name' }}</h1>
-        <p style="text-align: center; margin: 0; padding: 0;">{{ $settings->address ?? 'School Address' }}</p>
-        <p style="text-align: center; margin: 0; padding: 0;">Phone: {{ $settings->phone ?? 'School Phone' }}, Email: {{ $settings->email ?? 'School Email' }}</p>
+        <p style="text-align: center; margin: 0; padding: 0;">{{ $settings->school_address ?? 'School Address' }}</p>
+        <p style="text-align: center; margin: 0; padding: 0;">Phone: {{ $settings->school_phone ?? 'School Phone' }}, Email: {{ $settings->school_email ?? 'School Email' }}</p>
     </div>
     <div class="header">
         <h2 style="text-align: center; margin: 0; padding: 0;">Merit List</h2>
