@@ -55,6 +55,7 @@
             text-align: center;
             margin-bottom: 10px;
         }
+
         .school-info .logo {
             width: 100%;
             text-align: center;
@@ -64,7 +65,13 @@
             width: 120px;
             max-width: 120px;
             height: auto;
-        }   
+        }
+
+        .fail-row {
+            color: red !important;
+            /* You can also add a light red background if you like */
+            /* background-color: #ffe5e5; */
+        }
     </style>
 </head>
 
@@ -110,9 +117,8 @@
         </thead>
         <tbody>
             @foreach($results as $res)
-            {{-- Skip failed students from the merit list view --}}
-            
-            <tr>
+            {{-- This class will be added only if the final_result is 'Fail' --}}
+            <tr class="{{ $res['final_result'] === 'Fail' ? 'fail-row' : '' }}">
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $res['student']->id ?? 'N/A' }}</td>
                 <td class="name">{{ $res['student']->user->name ?? 'N/A' }}</td>
