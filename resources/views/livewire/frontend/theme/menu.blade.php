@@ -54,7 +54,7 @@
                          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                              @foreach($classes as $class)
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">Class {{ $class->name }}</a>
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('student.index', $class->numeric_name) }}" wire:navigate>Class {{ $class->name }}</a>
                              </li>
                              @endforeach
                          </ul>
@@ -66,10 +66,10 @@
                          </a>
                          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">ভর্তি তথ্য</a>
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('admission.info') }}" wire:navigate>ভর্তি তথ্য</a>
                              </li>
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">ভর্তি ফরম</a>
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('admission.form') }}" wire:navigate>ভর্তি ফরম</a>
                              </li>
                          </ul>
                      </li>
@@ -105,7 +105,7 @@
                  @auth
                  <a href="{{ route('student.profile.index') }}" wire:navigate class="login-btn">Profile</a>
                  @else
-                 <a href="{{ route('login') }}" wire:naviagte class="login-btn">Login</a>
+                 <a href="{{ route('login') }}" wire:navigate class="login-btn">Login</a>
                  @endauth
                  @endif
              </div>

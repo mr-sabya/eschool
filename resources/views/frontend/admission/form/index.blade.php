@@ -2,6 +2,6 @@
 
 @section('content')
 
-<livewire:frontend.student.index classId="{{ $class->id }}" />
+<livewire:frontend.admission-form.index />
 
 @endsection

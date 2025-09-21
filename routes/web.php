@@ -22,6 +22,15 @@ Route::get('/teachers', [App\Http\Controllers\Frontend\StaffController::class, '
 // login routes
 Route::get('/login', [App\Http\Controllers\Frontend\AuthController::class, 'showLoginForm'])->name('login');
 
+// student list by class
+Route::get('/students/class/{numeric}', [App\Http\Controllers\Frontend\StudentController::class, 'index'])->name('student.index');
+
+// admission info
+Route::get('/admission/info', [App\Http\Controllers\Frontend\AdmissionController::class, 'info'])->name('admission.info');
+
+// admission form
+Route::get('/admission/form', [App\Http\Controllers\Frontend\AdmissionController::class, 'form'])->name('admission.form');
+
 // profile
 // auth middleware
 Route::middleware(['auth'])->group(function () {
