@@ -222,4 +222,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('website/notices', [App\Http\Controllers\Backend\Website\NoticeController::class, 'index'])->name('website.notice.index');
     Route::get('website/notices/create', [App\Http\Controllers\Backend\Website\NoticeController::class, 'create'])->name('website.notice.create');
     Route::get('website/notices/{id}/edit', [App\Http\Controllers\Backend\Website\NoticeController::class, 'edit'])->name('website.notice.edit');
+
+    // routine - day
+    Route::get('routine/days', [App\Http\Controllers\Backend\RoutineController::class, 'day'])->name('routine.day.index');
+
+    // routine - time slot
+    Route::get('routine/time-slots', [App\Http\Controllers\Backend\RoutineController::class, 'timeSlot'])->name('routine.time-slot.index');
+
+    // routine - routine
+    Route::get('routine', [App\Http\Controllers\Backend\RoutineController::class, 'index'])->name('routine.index');
 });

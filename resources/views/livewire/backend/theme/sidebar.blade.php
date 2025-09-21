@@ -318,6 +318,28 @@
                     </ul>
                 </li>
                 @endif
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Marks -->
+                <li class="{{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index') ? 'active' : '' }}">
+                        <i class="ri-wallet-line"></i>
+                        <span>Routine</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.routine.day.index') }}" class="{{ Route::is('admin.routine.day.index') ? 'active' : '' }}" wire:navigate>Days</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.routine.time-slot.index') }}" class="{{ Route::is('admin.routine.time-slot.index') ? 'active' : '' }}" wire:navigate>Time Slots</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.routine.index') }}" class="{{ Route::is('admin.routine.index') ? 'active' : '' }}" wire:navigate>Class Routine</a>
+                        </li>
+
+                    </ul>
+                </li>
+                @endif
 
                 <!-- setting -->
                 <li class="{{ Route::is('admin.setting.index') ? 'mm-active' : '' }}">
