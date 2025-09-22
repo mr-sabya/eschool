@@ -24,4 +24,10 @@ class RoutineController extends Controller
     {
         return view('backend.routine.routine.index');
     }
+
+    // exam routine
+    public function examRoutine()
+    {
+        return view('backend.routine.exam-routine.index');
+    }
 }

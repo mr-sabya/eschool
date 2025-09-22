@@ -67,6 +67,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('students', [App\Http\Controllers\Backend\StudentController::class, 'index'])->name('student.index');
     Route::get('students/create', [App\Http\Controllers\Backend\StudentController::class, 'create'])->name('student.create');
     Route::get('students/edit/{id}', [App\Http\Controllers\Backend\StudentController::class, 'edit'])->name('student.edit');
+    
+    // admit card
+    Route::get('students/admit-card', [App\Http\Controllers\Backend\StudentController::class, 'admitCardGenerate'])->name('student.admit-card.index');
+    Route::get('/students/admit-card/generate', [App\Http\Controllers\Backend\AdmitCardController::class, 'generate'])->name('student.admit-card.generate');
 
 
     // import students
@@ -231,4 +235,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // routine - routine
     Route::get('routine', [App\Http\Controllers\Backend\RoutineController::class, 'index'])->name('routine.index');
+
+    // routine - exam routine
+    Route::get('routine/exam-routine', [App\Http\Controllers\Backend\RoutineController::class, 'examRoutine'])->name('routine.exam-routine.index');
 });

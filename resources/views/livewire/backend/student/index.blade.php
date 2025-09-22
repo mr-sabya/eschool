@@ -50,8 +50,19 @@
                 </select>
                 <span>Records per page</span>
             </div>
-            <div class="w-25">
-                <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search...">
+            <div class="d-flex gap-2"> <!-- Wrap search and export in a flex container -->
+                <div> <!-- Let search take available width -->
+                    <input type="text" class="form-control form-control-sm" wire:model.live.debounce.300ms="search" placeholder="Search by name, roll, phone...">
+                </div>
+
+                <!-- ADD THIS EXPORT BUTTON -->
+                <button type="button" wire:click="export" class="btn btn-sm btn-success">
+                    <span wire:loading wire:target="export">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                    <i class="ri-file-excel-2-line" wire:loading.remove wire:target="export"></i>
+                    Export
+                </button>
             </div>
         </div>
 

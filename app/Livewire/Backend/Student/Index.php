@@ -2,17 +2,20 @@
 
 namespace App\Livewire\Backend\Student;
 
+use App\Exports\StudentsExport;
 use App\Models\ClassSection;
 use App\Models\Department;
 use App\Models\SchoolClass;
 use App\Models\User;
 use Livewire\Component;
+use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
 {
 
-    use WithPagination;
+    use WithPagination, WithoutUrlPagination;
 
     public $search = '';
     public $sortField = 'id';
@@ -75,6 +78,21 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function export()
+    {
+        $filename = 'students-' . now()->format('Y-m-d') . '.xlsx';
+
+        // We use the component's current properties directly
+        return Excel::download(
+            new StudentsExport(
+                $this->search,
+                $this->filter_class_id,
+                $this->filter_section_id,
+                $this->filter_department_id
+            ),
+            $filename
+        );
+    }
 
     public function render()
     {

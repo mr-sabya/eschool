@@ -86,6 +86,9 @@
                         <li>
                             <a href="{{ route('admin.student.create') }}" class="{{ Route::is('admin.student.create') ? 'active' : '' }}" wire:navigate>Add New Student</a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.student.admit-card.index') }}" class="{{ Route::is('admin.student.admit-card.index') ? 'active' : '' }}" wire:navigate>Generate Admit Card</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -320,8 +323,8 @@
                 @endif
                 @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- Dropdown Menu: Marks -->
-                <li class="{{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index') ? 'mm-active' : '' }}">
-                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index') ? 'active' : '' }}">
+                <li class="{{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index', 'admin.routine.index', 'admin.routine.exam-routine.index') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index', 'admin.routine.index', 'admin.routine.exam-routine.index') ? 'active' : '' }}">
                         <i class="ri-wallet-line"></i>
                         <span>Routine</span>
                     </a>
@@ -335,6 +338,10 @@
 
                         <li>
                             <a href="{{ route('admin.routine.index') }}" class="{{ Route::is('admin.routine.index') ? 'active' : '' }}" wire:navigate>Class Routine</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('admin.routine.exam-routine.index') }}" class="{{ Route::is('admin.routine.exam-routine.index') ? 'active' : '' }}" wire:navigate>Exam Routine</a>
                         </li>
 
                     </ul>

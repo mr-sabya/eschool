@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Exports\StudentsExport;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentController extends Controller
 {
@@ -56,5 +58,11 @@ class StudentController extends Controller
         return Response::download($filePath, 'student_import_template.xlsx', [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    // admit card generate
+    public function admitCardGenerate()
+    {
+        return view('backend.student.admit-card');
     }
 }
