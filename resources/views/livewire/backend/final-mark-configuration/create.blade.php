@@ -8,6 +8,22 @@
             <div class="row">
                 <div class="col-lg-4">
                     <div class="mb-3">
+                        <label class="form-label">Select Exam<span class="text-danger">*</span></label>
+                        <select class="form-select" wire:model="exam_id">
+                            <option value="">-- Select Exam --</option>
+                            @foreach($exams as $exam)
+                            <option value="{{ $exam->id }}">
+                                {{ $exam->examCategory->name ?? 'Exam' }} ({{ \Carbon\Carbon::parse($exam->start_at)->format('d M, Y') }})
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('exam_id') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+
+                <div class="col-lg-4">
+                    <div class="mb-3">
                         <label class="form-label">Select Class<span class="text-danger">*</span> </label>
                         <select class="form-select" wire:model="school_class_id">
                             <option value="">-- Select Class --</option>

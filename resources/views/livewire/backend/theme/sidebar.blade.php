@@ -170,15 +170,14 @@
                         <li>
                             <a href="{{ route('admin.student-mark.create') }}" class="{{ Route::is('admin.student-mark.create') ? 'active' : '' }}">Add Student Marks</a>
                         </li>
+                        @if(Auth::check() && Auth::user()->isAdmin())
                         <li>
                             <a href="{{ route('admin.result.index') }}" class="{{ Route::is('admin.result.index') ? 'active' : '' }}">Student Results</a>
                         </li>
+                        @endif
                         <!-- <li><a href="{{ route('admin.result.generate.pdf') }}" class="{{ Route::is('admin.result.generate.pdf') ? 'active' : '' }}">Generate PDF</a></li> -->
 
-                        <!-- generate tabulation -->
-                        <li>
-                            <a href="{{ route('admin.result.tabulation.index') }}" class="{{ Route::is('admin.result.tabulation.index') ? 'active' : '' }}">Generate Tabulation Sheet</a>
-                        </li>
+                        
                     </ul>
                 </li>
                 @endif

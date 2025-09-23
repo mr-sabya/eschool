@@ -20,7 +20,7 @@ class Login extends Component
     {
         $this->validate();
 
-        if (Auth::attempt(['username' => $this->username, 'password' => $this->password, 'is_admin' => true], $this->remember)) {
+        if (Auth::attempt(['username' => $this->username, 'password' => $this->password, 'is_staff' => true], $this->remember)) {
             // Redirect on successful login
             return $this->redirect(route('admin.dashboard'), navigate: true);
         }

@@ -22,4 +22,12 @@ class MarkDistribution extends Model
     {
         return $this->hasMany(SubjectMarkDistribution::class);
     }
+
+    /**
+     * The exams that use this mark distribution type.
+     */
+    public function exams()
+    {
+        return $this->belongsToMany(Exam::class, 'exam_mark_distribution');
+    }
 }

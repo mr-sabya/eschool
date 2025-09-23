@@ -192,14 +192,14 @@
 
 <body>
 
-    @if(count($results) > 0)
+    @if(isset($results) && count($results) > 0)
     @php
-    $resultChunks = collect($results)->chunk(7);
+    $resultChunks = collect($results)->chunk(7); // Adjust chunk size as needed
     @endphp
 
     @foreach($resultChunks as $pageIndex => $chunk)
 
-    <!-- HEADER SECTION - REBUILT WITH TABLES -->
+    <!-- HEADER SECTION -->
     <table class="header-table">
         <tr>
             <!-- Left Section: Stats -->
@@ -226,7 +226,6 @@
                     </tr>
                 </table>
             </td>
-
             <!-- Middle Section: School Info -->
             <td style="width: 40%;">
                 <table class="nested-table">
@@ -244,21 +243,20 @@
                             </table>
                         </td>
                         <td class="school-details" style="border:0; border-left:1px solid #000;">
-                            <div class="school-name">{{ $settings->school_name }}</div>
+                            <div class="school-name">{{ $settings->school_name ?? 'School Name Not Set' }}</div>
                             <div class="exam-name">{{ $exam->examCategory['name'] }} - {{ $session->name }}</div>
                             <div class="sheet-title">Tabulation Sheet</div>
                         </td>
                     </tr>
                 </table>
             </td>
-
             <!-- Right Section: Grades & Dates -->
             <td style="width: 35%;">
                 <table class="nested-table">
                     <tr>
                         <td class="dates-cell" style="width: 80px; border:0; border-right: 1px solid #000;">
-                            <span>{{ \Carbon\Carbon::parse($exam->start_date)->format('d-M-Y') }}</span>
-                            <span>{{ \Carbon\Carbon::parse($exam->end_date)->format('d-M-Y') }}</span>
+                            <span>{{ \Carbon\Carbon::parse($exam->start_at)->format('d-M-Y') }}</span>
+                            <span>{{ \Carbon\Carbon::parse($exam->end_at)->format('d-M-Y') }}</span>
                         </td>
                         <td style="padding:0; border:0; vertical-align:top;">
                             <table class="nested-table">
@@ -282,7 +280,7 @@
                                 </tr>
                                 <tr>
                                     <td colspan="4" style="text-align:left; border-left:0; border-bottom:0; padding-left: 10px;">Class/Section Highest Number</td>
-                                    <td colspan="3" style="border-right:0; border-bottom:0;"><strong>{{ $highestMark }}</strong></td>
+                                    <td colspan="3" style="border-right:0; border-bottom:0;"><strong>{{ round($highestMark) }}</strong></td>
                                 </tr>
                             </table>
                         </td>
@@ -291,41 +289,43 @@
             </td>
         </tr>
     </table>
-    <!-- END OF HEADER SECTION -->
-
 
     <table class="main-table">
         <thead>
             @php
+            // $markDistributions is now the pre-filtered list allowed by the exam.
             $dist_count = count($markDistributions);
-            $subject_colspan = $dist_count + 2;
-            $subjects_count = count($subjects);
-            $total_subject_cols = $subjects_count * $subject_colspan;
-            $total_columns = 4 + $total_subject_cols + 4;
+            // The number of columns per subject is the count of distributions + 2 (for Total and Grade Point).
+            // If there are no distributions, it's just 2.
+            $subject_colspan = $dist_count > 0 ? ($dist_count + 2) : 2;
             @endphp
 
-            <!-- Main Column Headers with NEW vertical text method -->
+            <!-- Row 1: Main Headers -->
             <tr>
-                <th rowspan="2" style="width: 2%;">SL. No.</th>
-                <th rowspan="2" style="width: 2%;">ID</th>
-                <th rowspan="2" style="width: 2%;">Roll No</th>
-                <th rowspan="2" style="width: 10%;">Student Name</th>
+                <th rowspan="3">SL</th>
+                <th rowspan="3">ID</th>
+                <th rowspan="3">Roll</th>
+                <th rowspan="3" style="width: 10%;">Student Name</th>
                 @foreach($subjects as $subject)
                 <th colspan="{{ $subject_colspan }}">{{ $subject->subject->name }}</th>
                 @endforeach
-                <th rowspan="2" class="vertical-header" style="width: 3%;">
+                <th rowspan="3" class="vertical-header">
                     <div class="vertical-text">Total Mark</div>
                 </th>
-                <th rowspan="2" class="vertical-header" style="width: 3%;">
+                <th rowspan="3" class="vertical-header">
                     <div class="vertical-text">Result</div>
                 </th>
-                <th colspan="2" class="vertical-header">
-                    <div class="vertical-text">Position</div>
-                </th>
+                <th colspan="2" rowspan="2">Position</th>
             </tr>
+            <!-- Row 2: Sub Headers -->
             <tr>
                 @foreach($subjects as $subject)
+                {{-- ============================ MODIFICATION START ============================ --}}
+                {{-- Only show the "Hall Mark" header if there are distributions to display for it. --}}
+                @if($dist_count > 0)
                 <th colspan="{{ $dist_count }}">Hall Mark</th>
+                @endif
+                {{-- ============================ MODIFICATION END ============================ --}}
                 <th rowspan="2" class="vertical-header">
                     <div class="vertical-text">Total</div>
                 </th>
@@ -333,28 +333,19 @@
                     <div class="vertical-text">Grade Point</div>
                 </th>
                 @endforeach
-                <th rowspan="2" class="vertical-header">
-                    <div class="vertical-text">Section</div>
-                </th>
-                <th rowspan="2" class="vertical-header">
-                    <div class="vertical-text">Class</div>
-                </th>
             </tr>
+            <!-- Row 3: Vertical Distribution Headers -->
             <tr>
-                <th style="border:none;"></th>
-                <th style="border:none;"></th>
-                <th style="border:none;"></th>
-                <th style="border:none;"></th>
                 @foreach($subjects as $subject)
+                {{-- This loop now only shows headers for the mark distributions allowed by the exam. --}}
                 @foreach($markDistributions as $dist)
                 <th class="vertical-header">
                     <div class="vertical-text">{{ $dist->name }}</div>
                 </th>
                 @endforeach
                 @endforeach
-                <th style="border:none;"></th>
-                <th style="border:none;"></th>
-
+                <th>Sec</th>
+                <th>Class</th>
             </tr>
         </thead>
         <tbody>
@@ -365,24 +356,26 @@
                 <td>{{ $result['student']->roll_number }}</td>
                 <td class="student-name">{{ $result['student']->user->name }}</td>
                 @foreach($subjects as $header_subject)
-                @php
-                $subjectResult = collect($result['subjects'])->firstWhere('subject_id', $header_subject->subject_id);
-                @endphp
+                @php $subjectResult = collect($result['subjects'])->firstWhere('subject_id', $header_subject->subject_id); @endphp
                 @if($subjectResult)
+                {{-- This data loop automatically aligns with the allowed headers --}}
                 @foreach($markDistributions as $dist)
-                <td>@php $mark = $subjectResult['obtained_marks_by_distribution'][$dist->id] ?? '-'; @endphp {{ is_null($mark) ? '' : $mark }}</td>
+                <td>
+                    @php $mark = $subjectResult['obtained_marks_by_distribution'][$dist->id] ?? '-'; @endphp
+                    {{-- Check for null which means not applicable for this subject --}}
+                    {{ is_null($mark) ? '' : $mark }}
+                </td>
                 @endforeach
                 <td class="font-bold">{{ round($subjectResult['total_calculated_marks']) }}</td>
-                <td class="font-bold">
-                    @if($subjectResult['is_fail']) F @else {{ $subjectResult['grade_name'] }} @endif
-                </td>
+                <td class="font-bold">{{ $subjectResult['grade_name'] }}</td>
                 @else
+                {{-- Renders empty cells for subjects a student doesn't have --}}
                 @for ($i = 0; $i < $subject_colspan; $i++)<td>
                     </td>@endfor
                     @endif
                     @endforeach
                     <td class="font-bold">{{ round($result['total_marks']) }}</td>
-                    <td class="font-bold">@if($result['is_fail']) Fail @else {{ $result['final_grade'] }}({{ number_format($result['final_gpa'], 2) }}) @endif</td>
+                    <td class="font-bold">@if($result['is_fail']) Fail @else {{ $result['final_grade'] }} ({{ number_format($result['final_gpa'], 2) }}) @endif</td>
                     <td class="font-bold">{{ $result['position_in_section'] }}</td>
                     <td class="font-bold">{{ $result['position_in_class'] }}</td>
             </tr>
@@ -390,28 +383,18 @@
         </tbody>
     </table>
 
-    <div style="clear: both;"></div>
     <div class="signature-table">
         <table style="width: 100%; margin-top: 40px; border-collapse: collapse; border: none; margin-bottom: 20px;">
-            <tbody>
-                <tr>
-                    <!-- Left Cell -->
-                    <td style="text-align: left; border: none;">
-                        <span style="border-top: 1px solid #000; padding-top: 5px; font-weight: bold; display: inline-block;">
-                            Class Teacher
-                        </span>
-                    </td>
-
-                    <!-- Right Cell -->
-                    <td style="text-align: right; border: none;">
-                        <span style="border-top: 1px solid #000; padding-top: 5px; font-weight: bold; display: inline-block;">
-                            Principal
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
+            <tr>
+                <td style="text-align: left; border: none;"><span>Class Teacher</span></td>
+                <td style="text-align: right; border: none;"><span>Principal</span></td>
+            </tr>
         </table>
     </div>
+
+    @if(!$loop->last)
+    <div class="page-break"></div>
+    @endif
 
     @endforeach
     @else

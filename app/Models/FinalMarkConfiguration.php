@@ -10,6 +10,7 @@ class FinalMarkConfiguration extends Model
     use HasFactory;
 
     protected $fillable = [
+        'exam_id',   // ✅ added here
         'school_class_id',
         'department_id',
         'subject_id',
@@ -33,5 +34,10 @@ class FinalMarkConfiguration extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class);
     }
 }

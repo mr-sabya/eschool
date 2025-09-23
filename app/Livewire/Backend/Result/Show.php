@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Backend\Result;
 
+use App\Helpers\ClassPositionHelper; // Keep if you use the position helper in the view
 use App\Models\ClassSubjectAssign;
 use App\Models\Exam;
 use App\Models\FinalMarkConfiguration;
@@ -39,6 +40,10 @@ class Show extends Component
     public $marks = [];
     public $fourthSubjectMarks;
 
+    // Flags to control the visibility of calculated columns in the view.
+    public $hasClassTest = false;
+    public $hasOtherMarks = false;
+
     public $readyToLoad = false;
 
     public function mount($studentId, $examId, $classId, $sectionId, $sessionId)
@@ -52,11 +57,11 @@ class Show extends Component
 
     public function loadReport()
     {
-        // 1. Fetch core data with eager loading for efficiency
+        // 1. Fetch core data
         $this->student = Student::with(['user', 'schoolClass', 'classSection'])->findOrFail($this->studentId);
-        $this->exam = Exam::with(['examCategory', 'academicSession'])->findOrFail($this->examId);
+        $this->exam = Exam::with(['examCategory', 'academicSession', 'markDistributionTypes'])->findOrFail($this->examId);
 
-        // Fetch all students in the class and make it available to the view
+        // Fetch all students in the class
         $this->students = Student::where('school_class_id', $this->classId)
             ->where('class_section_id', $this->sectionId)
             ->when($this->student->department_id, function ($query) {
@@ -65,7 +70,7 @@ class Show extends Component
             ->get();
         $studentIds = $this->students->pluck('id');
 
-        // 2. Fetch all assigned subjects for the class
+        // 2. Fetch all subjects and their distribution configurations
         $allAssignedSubjects = ClassSubjectAssign::with('subject')
             ->where('academic_session_id', $this->sessionId)
             ->where('school_class_id', $this->classId)
@@ -74,14 +79,12 @@ class Show extends Component
             ->get();
         $allAssignedSubjectIds = $allAssignedSubjects->pluck('subject_id');
 
-        // Fetch the mark distributions for these subjects
         $subjectMarkDistributions = SubjectMarkDistribution::with('markDistribution')
             ->where('school_class_id', $this->classId)
             ->whereIn('subject_id', $allAssignedSubjectIds)
             ->get();
 
         $configuredSubjectIds = $subjectMarkDistributions->pluck('subject_id')->unique();
-
         $this->subjects = $allAssignedSubjects->whereIn('subject_id', $configuredSubjectIds);
 
         if ($this->subjects->isEmpty()) {
@@ -91,19 +94,27 @@ class Show extends Component
 
         $finalMarkConfigs = FinalMarkConfiguration::where('school_class_id', $this->classId)
             ->whereIn('subject_id', $configuredSubjectIds)
-            ->get()
-            ->keyBy('subject_id');
+            ->get()->keyBy('subject_id');
 
-        $this->markdistributions = $subjectMarkDistributions->pluck('markDistribution')->unique('name')->values();
+        // 3. Determine the final, visible headers for the report table
+        // A column is visible only if it's configured for a subject AND allowed by the exam.
+        $allConfiguredDistributions = $subjectMarkDistributions->pluck('markDistribution')->unique('id')->values();
+        $allowedExamDistributionIds = $this->exam->markDistributionTypes->pluck('id');
+        $this->markdistributions = $allConfiguredDistributions->whereIn('id', $allowedExamDistributionIds);
 
-        // 3. The SINGLE most important query: Get all marks for all students only for configured subjects
+        // Set the new flags based on the final, visible distribution headers.
+        $this->hasClassTest = $this->markdistributions->contains('name', 'Class Test');
+        $this->hasOtherMarks = $this->markdistributions->where('name', '!=', 'Class Test')->isNotEmpty();
+
+        // 4. Fetch all student marks
         $allStudentMarks = StudentMark::where('exam_id', $this->examId)
             ->whereIn('student_id', $studentIds)
             ->whereIn('subject_id', $configuredSubjectIds)
-            ->get()
-            ->groupBy(['student_id', 'subject_id']);
+            ->get()->groupBy(['student_id', 'subject_id']);
 
-        // 4. Pre-process and calculate totals for ALL students in memory
+        $allowedDistributionIdsForCalculation = $this->exam->markDistributionTypes->pluck('id');
+
+        // 5. Pre-process results for all students
         $resultsByStudent = collect();
         foreach ($this->students as $currentStudent) {
             $studentResults = collect();
@@ -112,13 +123,13 @@ class Show extends Component
                 $config = $finalMarkConfigs->get($subject->subject_id);
 
                 if ($config) {
-                    $studentResults->put($subject->subject_id, $this->calculateSubjectResult($studentMarksForSubject, $config, $subjectMarkDistributions));
+                    $studentResults->put($subject->subject_id, $this->calculateSubjectResult($studentMarksForSubject, $config, $subjectMarkDistributions, $allowedDistributionIdsForCalculation));
                 }
             }
             $resultsByStudent->put($currentStudent->id, $studentResults);
         }
 
-        // 5. Determine the highest mark for each subject
+        // 6. Determine highest marks for each subject
         $highestMarks = collect();
         foreach ($configuredSubjectIds as $subjectId) {
             $highestMarks[$subjectId] = $resultsByStudent->max(function ($studentResults) use ($subjectId) {
@@ -126,7 +137,7 @@ class Show extends Component
             });
         }
 
-        // 6. Assemble the final marks for the specific student being viewed
+        // 7. Assemble the final marks for the specific student being viewed
         $targetStudentResults = $resultsByStudent->get($this->studentId) ?? collect();
 
         foreach ($targetStudentResults as $subjectId => $result) {
@@ -144,8 +155,11 @@ class Show extends Component
         $this->readyToLoad = true;
     }
 
-    private function calculateSubjectResult(Collection $studentMarks, FinalMarkConfiguration $config, Collection $allSubjectDistributions)
+    private function calculateSubjectResult(Collection $studentMarks, FinalMarkConfiguration $config, Collection $allSubjectDistributions, Collection $allowedDistributionIds)
     {
+        // Only keep marks where the distribution type is allowed for this exam.
+        $validStudentMarks = $studentMarks->whereIn('mark_distribution_id', $allowedDistributionIds);
+
         $failedAnyDistribution = false;
         $totalCalculatedMark = 0;
         $otherPartsTotal = 0;
@@ -154,27 +168,20 @@ class Show extends Component
         $obtainedMarksArray = [];
 
         $ctMarkDistributionId = MarkDistribution::where('name', 'Class Test')->first()->id ?? null;
-        $marksByDistribution = $studentMarks->keyBy('mark_distribution_id');
+        $marksByDistribution = $validStudentMarks->keyBy('mark_distribution_id');
 
-        // Loop through all possible distributions for the table header consistency
+        // This loop iterates over the final, doubly-filtered list of headers ($this->markdistributions)
         foreach ($this->markdistributions as $distribution) {
-
-            // --- NEW LOGIC START ---
-            // First, check if this distribution is actually assigned to THIS specific subject.
             $subjectDistributionConfig = $allSubjectDistributions
                 ->where('subject_id', $config->subject_id)
                 ->where('mark_distribution_id', $distribution->id)
                 ->first();
 
-            // If it's NOT assigned, we ignore any potential StudentMark.
-            // We add a placeholder for the table column and skip to the next distribution.
             if (!$subjectDistributionConfig) {
                 $obtainedMarksArray[] = '-';
                 continue;
             }
-            // --- NEW LOGIC END ---
 
-            // If the distribution is valid for the subject, proceed with mark calculation.
             $passMark = $subjectDistributionConfig->pass_mark ?? 0;
             $mark = $marksByDistribution->get($distribution->id);
 
@@ -183,9 +190,7 @@ class Show extends Component
                 $isPass = $marksObtained >= $passMark;
 
                 if ($mark->is_absent) {
-                    if ($distribution->id != $ctMarkDistributionId) {
-                        $failedAnyDistribution = true;
-                    }
+                    if ($distribution->id != $ctMarkDistributionId) $failedAnyDistribution = true;
                     $obtainedMarksArray[] = '<span style="color:red;">Absent</span>';
                 } elseif (!$isPass) {
                     $failedAnyDistribution = true;
@@ -200,7 +205,6 @@ class Show extends Component
                     $otherPartsTotal += $marksObtained;
                 }
             } else {
-                // If the distribution is assigned but the student has no mark entry, show a hyphen.
                 $obtainedMarksArray[] = '-';
             }
         }

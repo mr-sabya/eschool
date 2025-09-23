@@ -29,7 +29,7 @@
 
         .header {
             text-align: center;
-            
+
             padding-bottom: 10px;
         }
 
@@ -89,7 +89,7 @@
 
         .signature {
             /* float: right; */
-            
+
             margin-top: 40px;
         }
 
@@ -98,6 +98,7 @@
             display: inline-block;
             padding-top: 10px;
         }
+
         .signature strong::after {
             content: "";
             position: absolute;
@@ -120,7 +121,14 @@
         </div>
         <div class="header-border"></div>
         <div class="image-box">
-            <img src="{{ public_path('storage/'.$student->profile_picture) }}" class="student-photo" alt="Photo">
+            @if ($student->profile_picture && file_exists(public_path('storage/' . $student->profile_picture)))
+            <img src="{{ public_path('storage/' . $student->profile_picture) }}" class="student-photo" alt="Photo">
+            @else
+            {{-- If no photo, display a styled placeholder box --}}
+            <div class="student-photo" style="text-align: center; padding-top: 50px; background-color: #f0f0f0;">
+                No Photo
+            </div>
+            @endif
         </div>
 
         <div class="student-info">

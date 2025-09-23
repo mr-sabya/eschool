@@ -5,6 +5,7 @@ namespace App\Livewire\Backend\Exam;
 use App\Models\AcademicSession;
 use App\Models\Exam;
 use App\Models\ExamCategory;
+use App\Models\MarkDistribution; // Import the MarkDistribution model
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -14,6 +15,10 @@ class Index extends Component
     use WithPagination, WithoutUrlPagination;
 
     public $academic_session_id, $exam_category_id, $start_at, $end_at, $examId;
+
+    // Property to hold the selected Mark Distribution IDs
+    public $selectedMarkDistributions = [];
+
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
@@ -27,6 +32,9 @@ class Index extends Component
             'exam_category_id' => 'required|exists:exam_categories,id',
             'start_at' => 'required|date',
             'end_at' => 'required|date|after_or_equal:start_at',
+            // Add validation for our new property
+            'selectedMarkDistributions' => 'nullable|array',
+            'selectedMarkDistributions.*' => 'exists:mark_distributions,id',
         ];
     }
 
@@ -40,12 +48,18 @@ class Index extends Component
         $data = $this->validate();
 
         if ($this->examId) {
-            Exam::findOrFail($this->examId)->update($data);
+            $exam = Exam::findOrFail($this->examId);
+            $exam->update($data);
             $message = 'Exam updated successfully.';
         } else {
-            Exam::create($data);
+            $exam = Exam::create($data);
             $message = 'Exam created successfully.';
         }
+
+        // Sync the selected mark distributions with the pivot table
+        // The sync() method is perfect for many-to-many relationships.
+        // It automatically adds/removes records from the pivot table to match the given array.
+        $exam->markDistributionTypes()->sync($this->selectedMarkDistributions);
 
         $this->dispatch('notify', ['type' => 'success', 'message' => $message]);
         $this->resetForm();
@@ -53,12 +67,16 @@ class Index extends Component
 
     public function edit($id)
     {
-        $exam = Exam::findOrFail($id);
+        // Eager load the relationship to improve performance
+        $exam = Exam::with('markDistributionTypes')->findOrFail($id);
         $this->examId = $exam->id;
         $this->academic_session_id = $exam->academic_session_id;
         $this->exam_category_id = $exam->exam_category_id;
         $this->start_at = $exam->start_at;
         $this->end_at = $exam->end_at;
+
+        // Populate the selectedMarkDistributions array with the IDs of the currently associated types
+        $this->selectedMarkDistributions = $exam->markDistributionTypes->pluck('id')->toArray();
     }
 
     public function confirmDelete($id)
@@ -76,7 +94,8 @@ class Index extends Component
 
     public function resetForm()
     {
-        $this->reset(['academic_session_id', 'exam_category_id', 'start_at', 'end_at', 'examId']);
+        // Add the new property to the reset list
+        $this->reset(['academic_session_id', 'exam_category_id', 'start_at', 'end_at', 'examId', 'selectedMarkDistributions']);
     }
 
     public function sortBy($field)
@@ -92,11 +111,13 @@ class Index extends Component
     public function render()
     {
         $exams = Exam::with(['academicSession', 'examCategory'])
-            ->whereHas('academicSession', function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%');
-            })
-            ->orWhereHas('examCategory', function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%');
+            ->where(function ($query) {
+                $query->whereHas('academicSession', function ($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%');
+                })
+                    ->orWhereHas('examCategory', function ($q) {
+                        $q->where('name', 'like', '%' . $this->search . '%');
+                    });
             })
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
@@ -105,6 +126,8 @@ class Index extends Component
             'exams' => $exams,
             'academicSessions' => AcademicSession::orderBy('name')->get(),
             'examCategories' => ExamCategory::orderBy('name')->get(),
+            // Pass all available mark distribution types to the view
+            'markDistributionTypes' => MarkDistribution::orderBy('name')->get(),
         ]);
     }
 }

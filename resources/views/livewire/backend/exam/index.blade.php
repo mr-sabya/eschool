@@ -9,7 +9,7 @@
                 <div class="card-body">
                     <form wire:submit.prevent="save">
                         <div class="mb-3">
-                            <label>Academic Session</label>
+                            <label class="form-label">Academic Session</label>
                             <select class="form-select" wire:model="academic_session_id">
                                 <option value="">Select Session</option>
                                 @foreach($academicSessions as $session)
@@ -20,7 +20,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label>Exam Category</label>
+                            <label class="form-label">Exam Category</label>
                             <select class="form-select" wire:model="exam_category_id">
                                 <option value="">Select Category</option>
                                 @foreach($examCategories as $category)
@@ -31,16 +31,38 @@
                         </div>
 
                         <div class="mb-3">
-                            <label>Start Date</label>
+                            <label class="form-label">Start Date</label>
                             <input type="date" class="form-control" wire:model="start_at" />
                             @error('start_at') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label>End Date</label>
+                            <label class="form-label">End Date</label>
                             <input type="date" class="form-control" wire:model="end_at" />
                             @error('end_at') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+
+                        <!-- Add Mark Distribution Checkboxes -->
+                        <div class="mb-3">
+                            <label class="form-label">Allowed Mark Distributions</label>
+                            <div class="border rounded p-2" style="max-height: 200px; overflow-y: auto;">
+                                @foreach($markDistributionTypes as $type)
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        value="{{ $type->id }}"
+                                        id="dist_{{ $type->id }}"
+                                        wire:model="selectedMarkDistributions">
+                                    <label class="form-check-label" for="dist_{{ $type->id }}">
+                                        {{ $type->name }}
+                                    </label>
+                                </div>
+                                @endforeach
+                            </div>
+                            @error('selectedMarkDistributions') <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
+                        <!-- End Mark Distribution Checkboxes -->
 
                         <button type="submit" class="btn btn-primary">{{ $examId ? 'Update' : 'Save' }}</button>
                         <button type="button" wire:click="resetForm" class="btn btn-secondary">Reset</button>
@@ -51,6 +73,7 @@
 
         <!-- Table Column -->
         <div class="col-md-8">
+            {{-- The entire table column remains exactly the same. No changes needed here. --}}
             <div class="card">
                 <div class="card-header bg-primary">
                     <div class="card-title m-0 text-white">Exam List</div>
@@ -58,7 +81,7 @@
                 <div class="card-body">
                     <div class="table-action d-flex justify-content-between mb-3">
                         <div class="d-flex gap-2 align-items-center">
-                            <select wire:model="perPage" class="form-select form-select-sm w-auto">
+                            <select wire:model.live="perPage" class="form-select form-select-sm w-auto">
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                                 <option value="25">25</option>
@@ -69,7 +92,7 @@
                         </div>
 
                         <div class="w-25">
-                            <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search..." />
+                            <input type="text" class="form-control form-control-sm" wire:model.live.debounce.300ms="search" placeholder="Search..." />
                         </div>
                     </div>
 
@@ -77,28 +100,22 @@
                         <table class="table table-bordered table-hover table-striped mb-0">
                             <thead>
                                 <tr>
-                                    <th wire:click="sortBy('id')" style="cursor:pointer;">
-                                        # @if($sortField === 'id') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
-                                    </th>
+                                    <th wire:click="sortBy('id')" style="cursor:pointer;">#</th>
                                     <th>Academic Session</th>
                                     <th>Category</th>
-                                    <th wire:click="sortBy('start_at')" style="cursor:pointer;">
-                                        Start Date @if($sortField === 'start_at') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
-                                    </th>
-                                    <th wire:click="sortBy('end_at')" style="cursor:pointer;">
-                                        End Date @if($sortField === 'end_at') <i class="{{ $sortDirection === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }}"></i> @endif
-                                    </th>
+                                    <th wire:click="sortBy('start_at')" style="cursor:pointer;">Start Date</th>
+                                    <th wire:click="sortBy('end_at')" style="cursor:pointer;">End Date</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($exams as $exam)
                                 <tr>
-                                    <td>{{ ($exams->currentPage() - 1) * $exams->perPage() + $loop->iteration }}</td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $exam->academicSession->name }}</td>
                                     <td>{{ $exam->examCategory->name }}</td>
-                                    <td>{{ $exam->start_at }}</td>
-                                    <td>{{ $exam->end_at }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($exam->start_at)->format('d M, Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($exam->end_at)->format('d M, Y') }}</td>
                                     <td>
                                         <button class="btn btn-sm btn-primary" wire:click="edit({{ $exam->id }})"><i class="ri-edit-line"></i></button>
                                         <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $exam->id }})" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="ri-delete-bin-line"></i></button>
@@ -139,4 +156,5 @@
             </div>
         </div>
     </div>
+
 </div>

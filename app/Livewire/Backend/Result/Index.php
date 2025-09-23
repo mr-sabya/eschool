@@ -91,8 +91,10 @@ class Index extends Component
 
     public function downloadStudentPdf($studentId)
     {
-        // Use the currently selected filters from the component's public properties
-        $pdfComponent = app(Show::class);
+        // Use a fresh instance of the Show component to avoid state issues
+        $pdfComponent = new Show();
+
+        // Manually mount the component with the required data
         $pdfComponent->mount(
             $studentId,
             $this->selectedExam,
@@ -100,16 +102,20 @@ class Index extends Component
             $this->selectedSection,
             $this->selectedSession
         );
+
+        // Run the main calculation logic
         $pdfComponent->loadReport();
 
         // Ensure student data was loaded before proceeding
         if (!$pdfComponent->student) {
-            // Optionally, flash a message to the user
             session()->flash('error', 'Could not generate PDF. Student data not found.');
-            return;
+            // It's better to redirect back or handle the error gracefully
+            return redirect()->back();
         }
 
-        $pdf = Pdf::loadView('backend.result.pdf', [
+        // ============================ FIX IS HERE ============================
+        // Add the missing $hasClassTest and $hasOtherMarks variables to the data array.
+        $dataForPdf = [
             'student' => $pdfComponent->student,
             'exam' => $pdfComponent->exam,
             'subjects' => $pdfComponent->subjects,
@@ -117,12 +123,25 @@ class Index extends Component
             'fourthSubjectMarks' => $pdfComponent->fourthSubjectMarks,
             'markdistributions' => $pdfComponent->markdistributions,
             'students' => $pdfComponent->students,
-        ])->setPaper('a4', 'landscape');
+            'classPosition' => $pdfComponent->classPosition ?? 0, // Pass the position safely
 
-        $fileName = $pdfComponent->student->user['name'] . '-result.pdf';
+            // --- ADD THESE TWO LINES ---
+            'hasClassTest' => $pdfComponent->hasClassTest,
+            'hasOtherMarks' => $pdfComponent->hasOtherMarks,
+        ];
+        // ============================ END OF FIX ============================
 
+        // Load the view with the complete data
+        $pdf = Pdf::loadView('backend.result.pdf', $dataForPdf)
+            ->setPaper('a4', 'landscape'); // Changed to portrait, which is more common for report cards
+
+        // Sanitize the student name for the filename
+        $safeStudentName = preg_replace('/[^A-Za-z0-9\-]/', '_', $pdfComponent->student->user['name']);
+        $fileName = $safeStudentName . '-result.pdf';
+
+        // Use streamDownload for a clean download response
         return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
+            echo $pdf->output(); // Use output() when streaming
         }, $fileName);
     }
 
@@ -230,17 +249,21 @@ class Index extends Component
 
 
 
-    // vvv ADD THIS ENTIRE NEW FUNCTION vvv
     public function downloadTabulationSheetPdf()
     {
-        if ($this->students->isEmpty()) {
+        if (empty($this->students)) {
             session()->flash('error', 'No students found to generate a tabulation sheet.');
             return;
         }
 
-        
+        // Call the helper to get the calculated results.
+        $results = ClassPositionHelper::getTabulationSheetResults($this->students, $this->selectedExam);
 
-        // Fetch the subjects list first, as we need to count them.
+        // Fetch the exam and its allowed distributions. This is passed to the PDF view to build the headers.
+        $exam = Exam::with('markDistributionTypes')->find($this->selectedExam);
+        $markDistributions = $exam ? $exam->markDistributionTypes : collect();
+
+        // Fetch the subjects list for the headers.
         $subjects = ClassSubjectAssign::with('subject')
             ->where('academic_session_id', $this->selectedSession)
             ->where('school_class_id', $this->selectedClass)
@@ -248,44 +271,31 @@ class Index extends Component
             ->when($this->selectedDepartment, fn($q) => $q->where('department_id', $this->selectedDepartment))
             ->get();
 
-        $markDistributions = MarkDistribution::whereHas('subjectMarkDistributions', fn($q) => $q->where('school_class_id', $this->selectedClass))
-            ->orderBy('id')->get();
-
-        // Call the helper to get the results
-        $results = ClassPositionHelper::getTabulationSheetResults($this->students, $this->selectedExam, $markDistributions);
-
         // --- DYNAMIC PAPER SIZE LOGIC ---
         $subjectsCount = $subjects->count();
         $paperSize = 'a4'; // Default size
-
-        // Define your thresholds here. These numbers are just examples.
         if ($subjectsCount > 7 && $subjectsCount <= 10) {
-            $paperSize = 'legal'; // Use Legal for a medium number of subjects
+            $paperSize = 'legal';
         } elseif ($subjectsCount > 10) {
-            $paperSize = 'a3'; // Use A3 for a large number of subjects
+            $paperSize = 'a3';
         }
-        // --- END OF LOGIC ---
 
-        // Fetch all the other necessary data for the header
+        // Fetch all other necessary data for the header
         $resultsCollection = collect($results);
-        $exam = Exam::find($this->selectedExam);
         $class = SchoolClass::find($this->selectedClass);
-        // ... (rest of your data fetching remains the same)
         $section = ClassSection::find($this->selectedSection);
         $session = AcademicSession::find($this->selectedSession);
         $department = $this->selectedDepartment ? Department::find($this->selectedDepartment) : null;
-        $totalStudents = $this->students->count();
+        $totalStudents = count($this->students);
         $totalPass = $resultsCollection->where('is_fail', false)->count();
         $passPercentage = $totalStudents > 0 ? number_format(($totalPass / $totalStudents) * 100, 2) : 0;
         $gradeCounts = $resultsCollection->pluck('final_grade')->countBy();
         $highestMark = $resultsCollection->max('total_marks');
 
-        
-
         $pdf = Pdf::loadView('backend.result.tabulation-sheet-pdf', [
             'results' => $results,
-            'subjects' => $subjects, // Pass the subjects you already fetched
-            'markDistributions' => $markDistributions,
+            'subjects' => $subjects,
+            'markDistributions' => $markDistributions, // Pass the allowed distributions
             'exam' => $exam,
             'class' => $class,
             'section' => $section,
@@ -297,11 +307,11 @@ class Index extends Component
             'totalFail' => $totalStudents - $totalPass,
             'passPercentage' => $passPercentage,
             'highestMark' => $highestMark,
-        ])->setPaper($paperSize, 'landscape'); // <-- Use the dynamic $paperSize variable
+        ])->setPaper($paperSize, 'landscape');
 
-        // ... (rest of the function for filename and download remains the same) ...
         $departmentName = $department ? "-{$department->name}" : '';
         $fileName = "Tabulation-Sheet-{$class->name}-{$section->name}{$departmentName}.pdf";
+
         return response()->streamDownload(fn() => print($pdf->output()), $fileName);
     }
 

@@ -16,10 +16,6 @@ class Exam extends Model
         'end_at',
     ];
 
-    protected $casts = [
-        'start_at' => 'datetime',
-        'end_at' => 'datetime',
-    ];
 
     public function academicSession()
     {
@@ -34,5 +30,13 @@ class Exam extends Model
     public function schoolClass()
     {
         return $this->belongsTo(SchoolClass::class);
+    }
+
+    /**
+     * The mark distribution types that are allowed for this exam.
+     */
+    public function markDistributionTypes()
+    {
+        return $this->belongsToMany(MarkDistribution::class, 'exam_mark_distribution');
     }
 }

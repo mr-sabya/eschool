@@ -25,14 +25,30 @@
                     </select>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-2">
+                    <select wire:change="changeExam($event.target.value)" class="form-select">
+                        <option value="">All Exams</option>
+                        @foreach($exams as $exam)
+                        <option value="{{ $exam->id }}" @selected($filterExam==$exam->id)>{{ $exam->examCategory->name ?? 'Exam' }} ({{ \Carbon\Carbon::parse($exam->start_at)->format('d M, Y') }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-lg-6 d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-secondary" wire:click="resetFilters">
                         Reset Filters
                     </button>
+                    {{-- Add Duplicate Button --}}
+                    @if($showResults && $configs->total() > 0)
+                    <button type="button" class="btn btn-info" wire:click="duplicate" wire:navigate>
+                        <i class="fas fa-copy me-1"></i> Duplicate These Results
+                    </button>
+                    @endif
                 </div>
             </div>
         </div>
 
+        @if($showResults)
         <div class="table-action d-flex justify-content-between mb-3">
             <div class="d-flex gap-2 align-items-center">
                 <select wire:change="changePerPage($event.target.value)" class="form-select form-select-sm w-auto">
@@ -53,6 +69,7 @@
             <thead>
                 <tr>
                     <th wire:click="sortBy('id')" style="cursor: pointer">#</th>
+                    <th wire:click="sortBy('exam_id')" style="cursor: pointer">Exam</th>
                     <th wire:click="sortBy('school_class_id')" style="cursor: pointer">Class</th>
                     <th wire:click="sortBy('department_id')" style="cursor: pointer">Department</th>
                     <th wire:click="sortBy('subject_id')" style="cursor: pointer">Subject</th>
@@ -69,6 +86,9 @@
                 @forelse($configs as $config)
                 <tr>
                     <td>{{ $config->id }}</td>
+                    <td>
+                        {{ $config->exam->examCategory->name ?? 'Exam' }} ({{ \Carbon\Carbon::parse($config->exam->start_at)->format('d M, Y') }})
+                    </td>
                     <td>{{ $config->schoolClass->name ?? '-' }}</td>
                     <td>{{ $config->department->name ?? '-' }}</td>
                     <td>{{ $config->subject->name ?? '-' }}</td>
@@ -86,38 +106,43 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="text-center text-muted">No records found.</td>
+                    <td colspan="11" class="text-center text-muted">No records found.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
-    </div>
 
-    <div class="card-footer d-flex justify-content-between">
-        <small>
-            Showing {{ $configs->firstItem() ?? 0 }} to {{ $configs->lastItem() ?? 0 }} of {{ $configs->total() }} entries
-        </small>
-        {{ $configs->links() }}
-    </div>
+        <div class="card-footer d-flex justify-content-between">
+            <small>
+                Showing {{ $configs->firstItem() ?? 0 }} to {{ $configs->lastItem() ?? 0 }} of {{ $configs->total() }} entries
+            </small>
+            {{ $configs->links() }}
+        </div>
+        @else
+        <div class="alert alert-info">
+            Please apply filters to see Final Mark Configurations.
+        </div>
+        @endif
 
-    <!-- Delete Confirmation Modal -->
-    @if($confirmingDeleteId)
-    <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" wire:click="$set('confirmingDeleteId', null)"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this entry? This action cannot be undone.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" wire:click="$set('confirmingDeleteId', null)">Cancel</button>
-                    <button type="button" class="btn btn-danger" wire:click="deleteConfirmed">Delete</button>
+        <!-- Delete Confirmation Modal -->
+        @if($confirmingDeleteId)
+        <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Confirm Delete</h5>
+                        <button type="button" class="btn-close" wire:click="$set('confirmingDeleteId', null)"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this entry? This action cannot be undone.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" wire:click="$set('confirmingDeleteId', null)">Cancel</button>
+                        <button type="button" class="btn btn-danger" wire:click="deleteConfirmed">Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
+        @endif
     </div>
-    @endif
 </div>
