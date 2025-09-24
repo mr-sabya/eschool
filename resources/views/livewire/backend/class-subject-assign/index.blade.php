@@ -4,6 +4,57 @@
             <div class="card-title m-0 text-white">Subject Assignments List</div>
         </div>
 
+        <!-- START: NEW FILTER SECTION -->
+        <div class="card-body border-bottom">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Session</label>
+                    <select wire:model="selectedSessionId" class="form-select">
+                        <option value="">All Sessions</option>
+                        @foreach($sessions as $session)
+                        <option value="{{ $session->id }}">{{ $session->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Class</label>
+                    <select wire:model="selectedClassId" class="form-select">
+                        <option value="">All Classes</option>
+                        @foreach($classes as $class)
+                        <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- These dropdowns will only show up if a class is selected --}}
+                @if(!empty($selectedClassId))
+                <div class="col-md-2">
+                    <label class="form-label">Section</label>
+                    <select wire:model="selectedSectionId" class="form-select">
+                        <option value="">All Sections</option>
+                        @foreach($sections as $section)
+                        <option value="{{ $section->id }}">{{ $section->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Department</label>
+                    <select wire:model="selectedDepartmentId" class="form-select">
+                        <option value="">All Departments</option>
+                        @foreach($departments as $department)
+                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
+                <div class="col-md-2">
+                    <button wire:click="resetFilters" class="btn btn-secondary w-100">Reset</button>
+                </div>
+            </div>
+        </div>
+        <!-- END: NEW FILTER SECTION -->
+
         <div class="card-body">
 
             <div class="table-action d-flex justify-content-between mb-3">
@@ -18,7 +69,7 @@
                     <span>Records per page</span>
                 </div>
                 <div class="w-25">
-                    <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search...">
+                    <input type="text" class="form-control form-control-sm" wire:model.debounce.500ms="search" placeholder="Search by class, subject, etc...">
                 </div>
             </div>
 
@@ -28,39 +79,37 @@
                         <th wire:click="sortBy('id')" style="cursor: pointer;">
                             #
                             @if($sortField === 'id')
-                            <i class="{{ $sortAsc === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
+                            <i class="{{ $sortAsc ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
                             @endif
                         </th>
                         <th wire:click="sortBy('academic_session_id')" style="cursor: pointer;">
                             Session
                             @if($sortField === 'academic_session_id')
-                            <i class="{{ $sortAsc === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
+                            <i class="{{ $sortAsc ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
                             @endif
                         </th>
                         <th wire:click="sortBy('school_class_id')" style="cursor: pointer;">
                             Class
                             @if($sortField === 'school_class_id')
-                            <i class="{{ $sortAsc === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
+                            <i class="{{ $sortAsc ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
                             @endif
                         </th>
                         <th wire:click="sortBy('class_section_id')" style="cursor: pointer;">
                             Section
                             @if($sortField === 'class_section_id')
-                            <i class="{{ $sortAsc === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
+                            <i class="{{ $sortAsc ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
                             @endif
                         </th>
                         <th wire:click="sortBy('department_id')" style="cursor: pointer;">
                             Department
                             @if($sortField === 'department_id')
-                            <i class="{{ $sortAsc === 'asc' ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
+                            <i class="{{ $sortAsc ? 'ri-arrow-up-s-fill' : 'ri-arrow-down-s-fill' }} ms-1"></i>
                             @endif
                         </th>
                         <th>Subject</th>
 
                         <th>Action</th>
                     </tr>
-
-
                 </thead>
                 <tbody>
                     @forelse($subjectAssigns as $assign)
@@ -69,7 +118,7 @@
                         <td>{{ $assign->academicSession->name ?? '-' }}</td>
                         <td>{{ $assign->schoolClass->name ?? '-' }}</td>
                         <td>{{ $assign->classSection->name ?? '-' }}</td>
-                        <td>{{ $assign->department->name ?? '-' }}</td>
+                        <td>{{ $assign->department->name ?? 'General' }}</td> {{-- Display General if null --}}
                         <td>{{ $assign->subject->name ?? '-' }}</td>
                         <td>
                             <a href="{{ route('admin.class-subject-assign.edit', $assign->id) }}" class="btn btn-sm btn-primary">Edit</a>
@@ -78,7 +127,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted">No subject assignments found.</td>
+                        <td colspan="7" class="text-center text-muted">No subject assignments found.</td> {{-- Colspan updated to 7 --}}
                     </tr>
                     @endforelse
                 </tbody>

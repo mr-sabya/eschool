@@ -289,12 +289,16 @@
                     <td>{!! $fourthSubjectMarks['final_result'] !!}</td>
                 </tr>
                 @php
-                $totalObtainedMarks += $fourthSubjectMarks['total_calculated_marks'];
-                if($fourthSubjectMarks['grade_point'] >= 2.0 && !$fourthSubjectMarks['fail_any_distribution']) {
-                $totalGradePoints += ($fourthSubjectMarks['grade_point'] - 2.0);
-                }
-                @endphp
-                @endif
+                $checkIfGPA5 = $totalGradePoints / $gpaSubjectCount;
+                $totalObtainedMarks +=$fourthSubjectMarks['total_calculated_marks'];
+                if($checkIfGPA5 < 5.0){
+                    if($fourthSubjectMarks['grade_point']>= 2.0 && !$fourthSubjectMarks['fail_any_distribution'])
+                    {
+                    $totalGradePoints += ($fourthSubjectMarks['grade_point'] - 2.0);
+                    }
+                    }
+                    @endphp
+                    @endif
             </tbody>
         </table>
 

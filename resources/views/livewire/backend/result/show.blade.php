@@ -123,6 +123,7 @@
                 $totalGradePoints += $mark['grade_point'];
                 $gpaSubjectCount++;
                 }
+
                 @endphp
                 @empty
                 <tr>
@@ -139,7 +140,7 @@
                 }
                 @endphp
                 <tr style="background-color: #f0f0f0;">
-                    <td>{{ $fourthSubjectMarks['subject_name'] }} (4th Subject)</td>
+                    <td>{{ $fourthSubjectMarks['subject_name'] }} (4th Subject) </td>
                     <td>{{ $fourthSubjectMarks['full_mark'] }}</td>
                     @foreach ($fourthSubjectMarks['obtained_marks'] as $obtainedMark)
                     <td>{!! $obtainedMark !!}</td>
@@ -160,18 +161,26 @@
                     <td>{!! $fourthSubjectMarks['final_result'] !!}</td>
                 </tr>
                 @php
-                $totalObtainedMarks += $fourthSubjectMarks['total_calculated_marks'];
-                if($fourthSubjectMarks['grade_point'] >= 2.0 && !$fourthSubjectMarks['fail_any_distribution']) {
-                $totalGradePoints += ($fourthSubjectMarks['grade_point'] - 2.0);
-                }
-                @endphp
-                @endif
+                $checkIfGPA5 = $totalGradePoints / $gpaSubjectCount;
+                $totalObtainedMarks +=$fourthSubjectMarks['total_calculated_marks'];
+                if($checkIfGPA5 < 5.0){
+                    if($fourthSubjectMarks['grade_point']>= 2.0 && !$fourthSubjectMarks['fail_any_distribution'])
+                    {
+                    $totalGradePoints += ($fourthSubjectMarks['grade_point'] - 2.0);
+                    }
+                    }
+                    @endphp
+                    @endif
             </tbody>
         </table>
 
         @php
         $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
-        $finalGrade = App\Models\Grade::where('start_marks', '<=', ($finalgpa * 20)) // Assuming a 100-mark scale where GPA 5=100
+        // Force minimum GPA = 5 if total grade points < 5
+            if ($totalGradePoints > 5 && $finalgpa > 5) {
+                $finalgpa = 5.00;
+            }
+            $finalGrade = App\Models\Grade::where('start_marks', '<=', ($finalgpa * 20)) // Assuming a 100-mark scale where GPA 5=100
             ->where('end_marks', '>=', ($finalgpa * 20))
             ->where('grading_scale', 100)
             ->first();

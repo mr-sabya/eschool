@@ -82,9 +82,10 @@ class Create extends Component
                     'exam_id' => $this->exam_id,
                     'school_class_id' => $this->school_class_id,
                     'subject_id' => $row['subject_id'],
+                    'department_id' => $this->department_id, // MOVED to the lookup keys
                 ],
                 [
-                    'department_id' => $this->department_id,
+                    // department_id is no longer needed here as it's part of the lookup
                     'class_test_total' => $row['class_test_total'],
                     'other_parts_total' => $row['other_parts_total'],
                     'final_result_weight_percentage' => $row['final_result_weight_percentage'],

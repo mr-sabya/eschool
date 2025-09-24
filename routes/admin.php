@@ -238,4 +238,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // routine - exam routine
     Route::get('routine/exam-routine', [App\Http\Controllers\Backend\RoutineController::class, 'examRoutine'])->name('routine.exam-routine.index');
+
+    // notifications
+    Route::get('notifications', [App\Http\Controllers\Backend\NotificationController::class, 'index'])->name('notification.index');
 });

@@ -1,4 +1,4 @@
-<div class="dropdown d-inline-block" wire:poll.5s="loadNotifications">
+<div class="dropdown d-inline-block" wire:poll.60s="loadNotifications">
     <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
         data-bs-toggle="dropdown" aria-expanded="false">
         <i class="ri-notification-3-line"></i>
@@ -14,7 +14,7 @@
                     <h6 class="m-0"> Notifications </h6>
                 </div>
                 <div class="col-auto">
-                    <a href="#!" class="small"> View All</a>
+                    <a href="{{ route('admin.notification.index') }}" wire:navigate class="small"> View All</a>
                 </div>
             </div>
         </div>

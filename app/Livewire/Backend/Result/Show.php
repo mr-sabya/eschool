@@ -55,102 +55,102 @@ class Show extends Component
         $this->sessionId = $sessionId;
     }
 
-    public function loadReport()
+       public function loadReport()
     {
         // 1. Fetch core data
         $this->student = Student::with(['user', 'schoolClass', 'classSection'])->findOrFail($this->studentId);
         $this->exam = Exam::with(['examCategory', 'academicSession', 'markDistributionTypes'])->findOrFail($this->examId);
 
-        // Fetch all students in the class
+        // Fetch all students in the class for highest mark calculation
         $this->students = Student::where('school_class_id', $this->classId)
             ->where('class_section_id', $this->sectionId)
-            ->when($this->student->department_id, function ($query) {
-                $query->where('department_id', $this->student->department_id);
-            })
+            ->when($this->student->department_id, fn ($q) => $q->where('department_id', $this->student->department_id))
             ->get();
         $studentIds = $this->students->pluck('id');
 
-        // 2. Fetch all subjects and their distribution configurations
+        // 2. Fetch all student marks for the entire class, this is our source of truth.
+        $allStudentMarks = StudentMark::where('exam_id', $this->examId)
+            ->whereIn('student_id', $studentIds)
+            ->get()->groupBy(['student_id', 'subject_id']);
+
+        // 3. Get all assigned subjects and their configurations for the class
         $allAssignedSubjects = ClassSubjectAssign::with('subject')
             ->where('academic_session_id', $this->sessionId)
             ->where('school_class_id', $this->classId)
             ->where('class_section_id', $this->sectionId)
-            ->where('department_id', $this->student->department_id)
             ->get();
         $allAssignedSubjectIds = $allAssignedSubjects->pluck('subject_id');
 
+        $finalMarkConfigs = FinalMarkConfiguration::where('school_class_id', $this->classId)
+            ->whereIn('subject_id', $allAssignedSubjectIds)
+            ->when($this->student->department_id, function ($query) {
+                $query->where(fn($subQuery) =>
+                    $subQuery->where('department_id', $this->student->department_id)->orWhereNull('department_id')
+                );
+            }, fn($query) => $query->whereNull('department_id'))
+            ->get()->keyBy('subject_id');
+        
         $subjectMarkDistributions = SubjectMarkDistribution::with('markDistribution')
             ->where('school_class_id', $this->classId)
             ->whereIn('subject_id', $allAssignedSubjectIds)
             ->get();
+        
+        // This makes sure we have subject names available for the final report.
+        $this->subjects = $allAssignedSubjects;
 
-        $configuredSubjectIds = $subjectMarkDistributions->pluck('subject_id')->unique();
-        $this->subjects = $allAssignedSubjects->whereIn('subject_id', $configuredSubjectIds);
-
-        if ($this->subjects->isEmpty()) {
-            $this->readyToLoad = true;
-            return;
-        }
-
-        $finalMarkConfigs = FinalMarkConfiguration::where('school_class_id', $this->classId)
-            ->whereIn('subject_id', $configuredSubjectIds)
-            ->get()->keyBy('subject_id');
-
-        // 3. Determine the final, visible headers for the report table
-        // A column is visible only if it's configured for a subject AND allowed by the exam.
-        $allConfiguredDistributions = $subjectMarkDistributions->pluck('markDistribution')->unique('id')->values();
+        // 4. Determine visible headers for the table
         $allowedExamDistributionIds = $this->exam->markDistributionTypes->pluck('id');
-        $this->markdistributions = $allConfiguredDistributions->whereIn('id', $allowedExamDistributionIds);
-
-        // Set the new flags based on the final, visible distribution headers.
+        $this->markdistributions = $subjectMarkDistributions->pluck('markDistribution')->whereIn('id', $allowedExamDistributionIds)->unique('id')->values();
         $this->hasClassTest = $this->markdistributions->contains('name', 'Class Test');
         $this->hasOtherMarks = $this->markdistributions->where('name', '!=', 'Class Test')->isNotEmpty();
 
-        // 4. Fetch all student marks
-        $allStudentMarks = StudentMark::where('exam_id', $this->examId)
-            ->whereIn('student_id', $studentIds)
-            ->whereIn('subject_id', $configuredSubjectIds)
-            ->get()->groupBy(['student_id', 'subject_id']);
 
-        $allowedDistributionIdsForCalculation = $this->exam->markDistributionTypes->pluck('id');
+        // ============================ START: REWRITTEN LOGIC ============================
 
-        // 5. Pre-process results for all students
+        // 5. Pre-process results for all students to find the highest marks
         $resultsByStudent = collect();
-        foreach ($this->students as $currentStudent) {
+        foreach ($allStudentMarks as $sId => $subjects) {
             $studentResults = collect();
-            foreach ($this->subjects as $subject) {
-                $studentMarksForSubject = $allStudentMarks->get($currentStudent->id)?->get($subject->subject_id) ?? collect();
-                $config = $finalMarkConfigs->get($subject->subject_id);
-
+            foreach ($subjects as $subjectId => $marks) {
+                $config = $finalMarkConfigs->get($subjectId);
                 if ($config) {
-                    $studentResults->put($subject->subject_id, $this->calculateSubjectResult($studentMarksForSubject, $config, $subjectMarkDistributions, $allowedDistributionIdsForCalculation));
+                    // Note: 'calculateSubjectResult' doesn't use the student object, so this is safe
+                    $studentResults->put($subjectId, $this->calculateSubjectResult($marks, $config, $subjectMarkDistributions, $allowedExamDistributionIds));
                 }
             }
-            $resultsByStudent->put($currentStudent->id, $studentResults);
+            $resultsByStudent->put($sId, $studentResults);
         }
 
-        // 6. Determine highest marks for each subject
+        // 6. Determine highest marks using the processed results
         $highestMarks = collect();
-        foreach ($configuredSubjectIds as $subjectId) {
-            $highestMarks[$subjectId] = $resultsByStudent->max(function ($studentResults) use ($subjectId) {
-                return $studentResults->get($subjectId)['total_calculated_marks'] ?? 0;
-            });
+        foreach ($allAssignedSubjectIds as $subjectId) {
+            $highestMarks[$subjectId] = $resultsByStudent->max(fn ($studentResults) => $studentResults->get($subjectId)['total_calculated_marks'] ?? 0);
         }
 
-        // 7. Assemble the final marks for the specific student being viewed
-        $targetStudentResults = $resultsByStudent->get($this->studentId) ?? collect();
+        // 7. Assemble the final report for the specific student being viewed
+        // This is the most critical part of the fix. We start from the student's actual marks.
+        $marksForThisStudent = $allStudentMarks->get($this->studentId);
 
-        foreach ($targetStudentResults as $subjectId => $result) {
-            $result['highest_mark'] = $highestMarks->get($subjectId, 0);
+        if ($marksForThisStudent) {
+            // Loop through ONLY the subjects that the student has marks for.
+            foreach ($marksForThisStudent as $subjectId => $studentMarksForSubject) {
+                $result = $resultsByStudent->get($this->studentId)?->get($subjectId);
 
-            $isFourthSubject = $allStudentMarks->get($this->studentId)?->get($subjectId)?->first()?->is_fourth_subject ?? false;
+                // If a result was successfully calculated, process it.
+                if ($result) {
+                    $result['highest_mark'] = $highestMarks->get($subjectId, 0);
+                    $isFourthSubject = $studentMarksForSubject->first()->is_fourth_subject ?? false;
 
-            if ($isFourthSubject) {
-                $this->fourthSubjectMarks = $result;
-            } else {
-                $this->marks[] = $result;
+                    if ($isFourthSubject) {
+                        $this->fourthSubjectMarks = $result;
+                    } else {
+                        $this->marks[] = $result;
+                    }
+                }
             }
         }
+        
+        // ============================ END: REWRITTEN LOGIC ============================
 
         $this->readyToLoad = true;
     }
@@ -236,7 +236,6 @@ class Show extends Component
             'fail_any_distribution'  => $failedAnyDistribution,
         ];
     }
-
     public function render()
     {
         return view('livewire.backend.result.show');

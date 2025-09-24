@@ -194,7 +194,11 @@
 
     @if(isset($results) && count($results) > 0)
     @php
+    if($subjectsCount > 10){
+    $resultChunks = collect($results)->chunk(13); // Adjust chunk size as needed
+    }else{
     $resultChunks = collect($results)->chunk(7); // Adjust chunk size as needed
+    }
     @endphp
 
     @foreach($resultChunks as $pageIndex => $chunk)
@@ -386,8 +390,14 @@
     <div class="signature-table">
         <table style="width: 100%; margin-top: 40px; border-collapse: collapse; border: none; margin-bottom: 20px;">
             <tr>
-                <td style="text-align: left; border: none;"><span>Class Teacher</span></td>
-                <td style="text-align: right; border: none;"><span>Principal</span></td>
+                <td style="text-align: left; border: none;">
+                    {{-- MODIFICATION: Added style for a border-top --}}
+                    <span style="border-top: 1px solid #000; padding-top: 2px;">Class Teacher</span>
+                </td>
+                <td style="text-align: right; border: none;">
+                    {{-- MODIFICATION: Added style for a border-top --}}
+                    <span style="border-top: 1px solid #000; padding-top: 2px;">Principal</span>
+                </td>
             </tr>
         </table>
     </div>

@@ -307,6 +307,7 @@ class Index extends Component
             'totalFail' => $totalStudents - $totalPass,
             'passPercentage' => $passPercentage,
             'highestMark' => $highestMark,
+            'subjectsCount' => $subjectsCount,
         ])->setPaper($paperSize, 'landscape');
 
         $departmentName = $department ? "-{$department->name}" : '';
