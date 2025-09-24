@@ -216,7 +216,9 @@
             </table>
 
             <div class="section-title">Class Teacher's Comment</div>
-            <div class="comment-box"></div>
+            <div class="comment-box">
+                {{ $finalGrade->remarks ?? '' }}
+            </div>
 
             <table class="info-table">
                 <tr>
