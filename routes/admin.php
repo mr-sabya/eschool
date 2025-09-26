@@ -73,6 +73,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/students/admit-card/generate', [App\Http\Controllers\Backend\AdmitCardController::class, 'generate'])->name('student.admit-card.generate');
 
 
+    Route::get('/students/id-card', [App\Http\Controllers\Backend\StudentController::class, 'stduentIdCard'])->name('student.id-card');
+
+
     // import students
     Route::get('students/import', [App\Http\Controllers\Backend\StudentController::class, 'import'])->name('student.import');
 
@@ -241,4 +244,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // notifications
     Route::get('notifications', [App\Http\Controllers\Backend\NotificationController::class, 'index'])->name('notification.index');
+    
+    // reports
+    Route::get('/reports/financial', [App\Http\Controllers\Backend\ReportController::class, 'finalcialReports'])->name('reports.financial');
+
+    // fee collection
+    Route::get('/reports/fee-collection', [App\Http\Controllers\Backend\ReportController::class, 'feeCollectionReports'])->name('reports.fee-collection');
+
+    // daily attendance
+    Route::get('/reports/daily-attendance', [App\Http\Controllers\Backend\ReportController::class, 'dailyAttendaceReports'])->name('reports.daily-attendance');
+
+    // 
+    Route::get('/reports/subject-attendance', [App\Http\Controllers\Backend\ReportController::class, 'subjectAttendaceReports'])->name('reports.subject-attendance');
+
 });

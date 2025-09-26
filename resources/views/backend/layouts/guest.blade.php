@@ -7,7 +7,7 @@
     <!-- contact developer : https://www.facebook.com/sabya.info/ -->
 
     <meta charset="utf-8" />
-    <title>@yield('title') | Team Track</title>
+    <title>@yield('title') | {{ $settings->school_name ?? 'Your School Name'}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Team Track" name="description" />
     <meta content="Themesdesign" name="author" />

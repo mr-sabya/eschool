@@ -16,7 +16,7 @@
                 <!-- Dropdown Menu: Academic -->
                 <li class="{{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.class-subject-assign.*', 'admin.classroom.index', 'admin.academic-session.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.class.index', 'admin.section.index', 'admin.shift.index', 'admin.subject.index', 'admin.subject-assign.index', 'admin.classroom.index', 'admin.academic-session.index') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-book-read-line"></i> <!-- Icon Changed -->
                         <span>Academic</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -49,7 +49,7 @@
                 @if(Auth::check() && Auth::user()->isAdmin())
                 <li class="{{ Route::is('admin.designation.index', 'admin.department.index', 'admin.gender.index', 'admin.blood.index', 'admin.religion.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.designation.index', 'admin.department.index', 'admin.gender.index', 'admin.blood.index', 'admin.religion.index') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-list-settings-line"></i> <!-- Icon Changed -->
                         <span>App Setting</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -76,7 +76,7 @@
                 <!-- Dropdown Menu: Students -->
                 <li class="{{ Route::is('admin.student.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.student.*') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-team-line"></i> <!-- Icon Changed -->
                         <span>Students</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -89,6 +89,9 @@
                         <li>
                             <a href="{{ route('admin.student.admit-card.index') }}" class="{{ Route::is('admin.student.admit-card.index') ? 'active' : '' }}" wire:navigate>Generate Admit Card</a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.student.id-card') }}" class="{{ Route::is('admin.student.id-card') ? 'active' : '' }}" wire:navigate>Generate ID Card</a>
+                        </li>
                     </ul>
                 </li>
                 @endif
@@ -97,7 +100,7 @@
                 <!-- Dropdown Menu: Guardians -->
                 <li class="{{ Route::is('admin.guardian.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.guardian.*') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-parent-line"></i> <!-- Icon Changed -->
                         <span>Guardians</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -115,7 +118,7 @@
                 <!-- Dropdown Menu: Staffs -->
                 <li class="{{ Route::is('admin.staff.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.staff.*') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-briefcase-4-line"></i> <!-- Icon Changed -->
                         <span>Staffs</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -133,7 +136,7 @@
                 <!-- Dropdown Menu: Exams -->
                 <li class="{{ Route::is('admin.exam-category.index', 'admin.exam.index', 'admin.mark-distribution.index', 'admin.subject-mark-distribution.*', 'admin.final-mark-configuration.*', 'admin.grade.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.exam-category.index', 'admin.exam.index', 'admin.mark-distribution.index', 'admin.subject-mark-distribution.index', 'admin.final-mark-configuration.index', 'admin.grade.index') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-file-edit-line"></i> <!-- Icon Changed -->
                         <span>Exams</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -163,7 +166,7 @@
                 <!-- Dropdown Menu: Marks -->
                 <li class="{{ Route::is('admin.student-mark.create', 'admin.result.index', 'admin.result.generate.pdf') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.student-mark.create', 'admin.result.index', 'admin.result.generate.pdf') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-bar-chart-2-line"></i> <!-- Icon Changed -->
                         <span>Marks</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -175,18 +178,15 @@
                             <a href="{{ route('admin.result.index') }}" class="{{ Route::is('admin.result.index') ? 'active' : '' }}">Student Results</a>
                         </li>
                         @endif
-                        <!-- <li><a href="{{ route('admin.result.generate.pdf') }}" class="{{ Route::is('admin.result.generate.pdf') ? 'active' : '' }}">Generate PDF</a></li> -->
-
-                        
                     </ul>
                 </li>
                 @endif
 
                 @if(Auth::check() && Auth::user()->isAdmin())
-                <!-- Dropdown Menu: Marks -->
+                <!-- Dropdown Menu: Website -->
                 <li class="{{ Route::is('admin.website.banner.*', 'admin.website.notice.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.website.banner.*', 'admin.website.notice.*') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-global-line"></i> <!-- Icon Changed -->
                         <span>Website</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -197,44 +197,39 @@
                         <li>
                             <a href="{{ route('admin.website.notice.index') }}" class="{{ Route::is('admin.website.notice.index') ? 'active' : '' }}" wire:navigate>Notice Board</a>
                         </li>
-
                     </ul>
                 </li>
                 @endif
 
-
                 @if(Auth::check() && Auth::user()->isAdmin())
-                <!-- Dropdown Menu: Marks -->
+                <!-- Dropdown Menu: Attendance -->
                 <li class="{{ Route::is('admin.subject-attendance.*', 'admin.daily-attendance.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.subject-attendance.*', 'admin.daily-attendance.*') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-calendar-check-line"></i> <!-- Icon Changed -->
                         <span>Attendance</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li>
                             <a href="{{ route('admin.subject-attendance.manage') }}" class="{{ Route::is('admin.subject-attendance.manage') ? 'active' : '' }}" wire:navigate>Subject Attendance</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.daily-attendance.manage') }}" class="{{ Route::is('admin.daily-attendance.manage') ? 'active' : '' }}" wire:navigate>Daily Attendance</a>
                         </li>
-
                     </ul>
                 </li>
                 @endif
 
                 @if(Auth::check() && Auth::user()->isAdmin())
-                <!-- Dropdown Menu: Marks -->
+                <!-- Dropdown Menu: Leave -->
                 <li class="{{ Route::is('admin.leave.type.index', 'admin.leave.student.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.leave.type.index', 'admin.leave.student.index') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-calendar-todo-line"></i> <!-- Icon Changed -->
                         <span>Leave</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
                         <li>
                             <a href="{{ route('admin.leave.type.index') }}" class="{{ Route::is('admin.leave.type.index') ? 'active' : '' }}" wire:navigate>Leave Type</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.leave.student.index') }}" class="{{ Route::is('admin.leave.student.index') ? 'active' : '' }}" wire:navigate>Student Leave</a>
                         </li>
@@ -243,10 +238,10 @@
                 @endif
 
                 @if(Auth::check() && Auth::user()->isAdmin())
-                <!-- Dropdown Menu: Marks -->
+                <!-- Dropdown Menu: Fee -->
                 <li class="{{ Route::is('admin.fee.type.index', 'admin.fee.list.index', 'admin.fee.collection.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.fee.type.index', 'admin.fee.list.index', 'admin.fee.collection.*') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-money-dollar-circle-line"></i> <!-- Icon Changed -->
                         <span>Fee</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -259,16 +254,15 @@
                         <li>
                             <a href="{{ route('admin.fee.collection.index') }}" class="{{ Route::is('admin.fee.collection.index') ? 'active' : '' }}" wire:navigate>Fee Collection</a>
                         </li>
-
                     </ul>
                 </li>
                 @endif
 
                 @if(Auth::check() && Auth::user()->isAdmin())
-                <!-- Dropdown Menu: Marks -->
+                <!-- Dropdown Menu: Library -->
                 <li class="{{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index', 'admin.library.member.*', 'admin.library.book-issue.*') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.library.book-category.index', 'admin.library.book.*', 'admin.library.member-category.index', 'admin.library.member.*', 'admin.library.book-issue.*') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-book-3-line"></i> <!-- Icon Changed -->
                         <span>Library</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -278,27 +272,24 @@
                         <li>
                             <a href="{{ route('admin.library.book.index') }}" class="{{ Route::is('admin.library.book.index') ? 'active' : '' }}" wire:navigate>Books</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.library.member-category.index') }}" class="{{ Route::is('admin.library.member-category.index') ? 'active' : '' }}" wire:navigate>Member Categories</a>
                         </li>
                         <li>
                             <a href="{{ route('admin.library.member.index') }}" class="{{ Route::is('admin.library.member.index') ? 'active' : '' }}" wire:navigate>Members</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.library.book-issue.index') }}" class="{{ Route::is('admin.library.book-issue.index') ? 'active' : '' }}" wire:navigate>Book Issues</a>
                         </li>
-
                     </ul>
                 </li>
                 @endif
 
                 @if(Auth::check() && Auth::user()->isAdmin())
-                <!-- Dropdown Menu: Marks -->
+                <!-- Dropdown Menu: Income & Expense -->
                 <li class="{{ Route::is('admin.accounts.income-head.index', 'admin.accounts.income.index', 'admin.accounts.expense-head.index', 'admin.accounts.expense.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.accounts.income-head.index', 'admin.accounts.income.index', 'admin.accounts.expense-head.index', 'admin.accounts.expense.index') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-exchange-dollar-line"></i> <!-- Icon Changed -->
                         <span>Income & Expense</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -308,23 +299,21 @@
                         <li>
                             <a href="{{ route('admin.accounts.income.index') }}" class="{{ Route::is('admin.accounts.income.index') ? 'active' : '' }}" wire:navigate>Income</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.accounts.expense-head.index') }}" class="{{ Route::is('admin.accounts.expense-head.index') ? 'active' : '' }}" wire:navigate>Expense Heads</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.accounts.expense.index') }}" class="{{ Route::is('admin.accounts.expense.index') ? 'active' : '' }}" wire:navigate>Expense</a>
                         </li>
-
                     </ul>
                 </li>
                 @endif
+
                 @if(Auth::check() && Auth::user()->isAdmin())
-                <!-- Dropdown Menu: Marks -->
+                <!-- Dropdown Menu: Routine -->
                 <li class="{{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index', 'admin.routine.index', 'admin.routine.exam-routine.index') ? 'mm-active' : '' }}">
                     <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.routine.day.index', 'admin.routine.time-slot.index', 'admin.routine.index', 'admin.routine.exam-routine.index') ? 'active' : '' }}">
-                        <i class="ri-wallet-line"></i>
+                        <i class="ri-time-line"></i> <!-- Icon Changed -->
                         <span>Routine</span>
                     </a>
                     <ul class="sub-menu" aria-expanded="false">
@@ -334,19 +323,42 @@
                         <li>
                             <a href="{{ route('admin.routine.time-slot.index') }}" class="{{ Route::is('admin.routine.time-slot.index') ? 'active' : '' }}" wire:navigate>Time Slots</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.routine.index') }}" class="{{ Route::is('admin.routine.index') ? 'active' : '' }}" wire:navigate>Class Routine</a>
                         </li>
-
                         <li>
                             <a href="{{ route('admin.routine.exam-routine.index') }}" class="{{ Route::is('admin.routine.exam-routine.index') ? 'active' : '' }}" wire:navigate>Exam Routine</a>
                         </li>
-
                     </ul>
                 </li>
                 @endif
 
+                @if(Auth::check() && Auth::user()->isAdmin())
+                <!-- Dropdown Menu: Reports -->
+                <li class="{{ Route::is('admin.reports.financial', 'admin.reports.fee-collection', 'admin.reports.daily-attendance', 'admin.reports.subject-attendance') ? 'mm-active' : '' }}">
+                    <a href="javascript:void(0);" class="has-arrow waves-effect {{ Route::is('admin.reports.financial', 'admin.reports.fee-collection', 'admin.reports.daily-attendance', 'admin.reports.subject-attendance') ? 'active' : '' }}">
+                        <i class="ri-file-chart-line"></i> <!-- Icon Changed -->
+                        <span>Reports</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li>
+                            <a href="{{ route('admin.reports.financial') }}" class="{{ Route::is('admin.reports.financial') ? 'active' : '' }}" wire:navigate>Financial Reports</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.reports.fee-collection') }}" class="{{ Route::is('admin.reports.fee-collection') ? 'active' : '' }}" wire:navigate>Fee Collection Reports</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.reports.daily-attendance') }}" class="{{ Route::is('admin.reports.daily-attendance') ? 'active' : '' }}" wire:navigate>Daily Attendance Reports</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.reports.subject-attendance') }}" class="{{ Route::is('admin.reports.subject-attendance') ? 'active' : '' }}" wire:navigate>Subject Attendance Reports</a>
+                        </li>
+                    </ul>
+                </li>
+                @endif
+
+
+                @if(Auth::check() && Auth::user()->isAdmin())
                 <!-- setting -->
                 <li class="{{ Route::is('admin.setting.index') ? 'mm-active' : '' }}">
                     <a href="{{ route('admin.setting.index') }}" class="waves-effect {{ Route::is('admin.setting.index') ? 'active' : '' }}" wire:navigate>
@@ -354,6 +366,7 @@
                         <span>Settings</span>
                     </a>
                 </li>
+                @endif
 
             </ul>
         </div>

@@ -65,4 +65,10 @@ class StudentController extends Controller
     {
         return view('backend.student.admit-card');
     }
+
+    // students id card
+    public function stduentIdCard()
+    {
+        return view('backend.tool.student-id-card');
+    }
 }
