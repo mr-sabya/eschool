@@ -92,6 +92,9 @@
                         <li>
                             <a href="{{ route('admin.student.id-card') }}" class="{{ Route::is('admin.student.id-card') ? 'active' : '' }}" wire:navigate>Generate ID Card</a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.student.promot') }}" class="{{ Route::is('admin.student.promot') ? 'active' : '' }}" wire:navigate>Promote Students</a>
+                        </li>
                     </ul>
                 </li>
                 @endif

@@ -1,5 +1,16 @@
 <div class="mx-3">
 
+    {{-- Session Messages --}}
+    @if (session()->has('success'))
+    <div class="alert alert-success text-center">
+        {{ session('success') }}
+    </div>
+    @elseif (session()->has('error'))
+    <div class="alert alert-danger text-center">
+        {{ session('error') }}
+    </div>
+    @endif
+
     <form class="form-horizontal mt-3 " action="" wire:submit.prevent="login">
 
         <div class="form-group mb-3">

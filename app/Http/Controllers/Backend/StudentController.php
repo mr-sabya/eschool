@@ -39,6 +39,11 @@ class StudentController extends Controller
         return view('backend.student.edit', compact('student'));
     }
 
+    // promot
+    public function promot()
+    {
+        return view('backend.student.promote');
+    }
 
     // import students
     public function import()

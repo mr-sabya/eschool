@@ -78,9 +78,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // import students
     Route::get('students/import', [App\Http\Controllers\Backend\StudentController::class, 'import'])->name('student.import');
-
+    
     // download sample import file
     Route::get('students/download-sample', [App\Http\Controllers\Backend\StudentController::class, 'download'])->name('student.download.sample');
+
+    // promot
+    Route::get('students/promot', [App\Http\Controllers\Backend\StudentController::class, 'promot'])->name('student.promot');
 
     // guardian management
     Route::get('guardians', [App\Http\Controllers\Backend\GuardianController::class, 'index'])->name('guardian.index');

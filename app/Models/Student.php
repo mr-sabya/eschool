@@ -43,6 +43,7 @@ class Student extends Model
         'previous_school_document',
         'is_active',
         'notes',
+        'is_passed_out'
     ];
 
     protected $casts = [

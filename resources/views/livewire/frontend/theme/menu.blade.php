@@ -15,7 +15,7 @@
                  </a>
              </div>
 
-             <nav class="menu navbar">
+             <nav class="menu navbar" id="main_menu">
                  <ul class="navbar-nav">
                      <li class="nav-item menu-item">
                          <a class="nav-link {{ Route::is('home') ? 'active' : '' }}" href="{{ route('home') }}" wire:navigate>প্রচ্ছদ</a>
@@ -109,6 +109,8 @@
                  @endauth
                  @endif
              </div>
+
+             <button class="menu-btn ms-2" id="menu_button"><i class="ri-menu-line"></i></button>
 
          </div>
      </div>
