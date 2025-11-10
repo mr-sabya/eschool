@@ -36,7 +36,7 @@ class AdmitCardController extends Controller
 
         // return view('backend.student.admit-card-pdf', compact('exam', 'students', 'examRoutines'));
 
-        $pdf = Pdf::loadView('backend.student.admit-card-pdf', compact('exam', 'students', 'examRoutines'));
+        $pdf = Pdf::loadView('backend.student.admit-card-pdf', compact('exam', 'students', 'examRoutines'))->setPaper('a4', 'landscape');
 
         return $pdf->download('admit-cards-' . $exam->name . '-' . now()->format('Y-m-d') . '.pdf');
     }
