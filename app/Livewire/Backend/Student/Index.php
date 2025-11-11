@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Backend\Student;
 
+// ADD the new SeatPlanExport class to the use statements
+use App\Exports\SeatPlanExport;
 use App\Exports\StudentsExport;
 use App\Models\ClassSection;
 use App\Models\Department;
@@ -55,10 +57,7 @@ class Index extends Component
     {
         if ($this->deleteId) {
             $user = User::findOrFail($this->deleteId);
-
-            // ✅ Delete user, related student will cascade delete
             $user->delete();
-
             $this->dispatch('notify', 'Student deleted successfully!');
             $this->confirmingDelete = false;
             $this->deleteId = null;
@@ -70,7 +69,7 @@ class Index extends Component
         if ($this->filter_class_id) {
             return ClassSection::where('school_class_id', $this->filter_class_id)->get();
         }
-        return collect(); // return empty collection if no class selected
+        return collect();
     }
 
     public function departmentFilter()
@@ -81,8 +80,6 @@ class Index extends Component
     public function export()
     {
         $filename = 'students-' . now()->format('Y-m-d') . '.xlsx';
-
-        // We use the component's current properties directly
         return Excel::download(
             new StudentsExport(
                 $this->search,
@@ -93,6 +90,24 @@ class Index extends Component
             $filename
         );
     }
+
+    // ✅ ADD THIS NEW METHOD FOR SEAT PLAN EXPORT
+    public function exportSeatPlan()
+    {
+        $filename = 'seat-plan-' . now()->format('Y-m-d') . '.xlsx';
+
+        // Use the new SeatPlanExport class
+        return Excel::download(
+            new SeatPlanExport(
+                $this->search,
+                $this->filter_class_id,
+                $this->filter_section_id,
+                $this->filter_department_id
+            ),
+            $filename
+        );
+    }
+
 
     public function render()
     {
@@ -115,7 +130,7 @@ class Index extends Component
         return view('livewire.backend.student.index', [
             'students' => $students,
             'allClasses' => SchoolClass::all(),
-            'departments' => Department::all(),  // pass departments for filter dropdown
+            'departments' => Department::all(),
         ]);
     }
 }

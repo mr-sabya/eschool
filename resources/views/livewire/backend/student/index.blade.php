@@ -63,6 +63,15 @@
                     <i class="ri-file-excel-2-line" wire:loading.remove wire:target="export"></i>
                     Export
                 </button>
+
+                <!-- ✅ ADD THIS NEW BUTTON FOR SEAT PLAN -->
+                <button type="button" wire:click="exportSeatPlan" class="btn btn-sm btn-info">
+                    <span wire:loading wire:target="exportSeatPlan">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </span>
+                    <i class="ri-file-list-2-line" wire:loading.remove wire:target="exportSeatPlan"></i>
+                    Seat Plan
+                </button>
             </div>
         </div>
 

@@ -8,7 +8,7 @@
     <title>Admit Cards</title>
     <style>
         @page {
-            margin: 15px;
+            /* margin: 15px; */
             /* Standard page margin for printing */
         }
 
@@ -20,21 +20,22 @@
 
         /* The main table for the 2x2 grid layout */
         .layout-table {
-            width: 95%;
-            border-collapse: separate;
+            width: 100%;
+            border-collapse: collapse;
             /* This is crucial for creating gaps */
-            border-spacing: 15px;
+            /* border-spacing: 15px; */
             /* This creates the horizontal and vertical gap between cards */
         }
 
         .card-cell {
-     
+            width: 50%;
             padding: 0;
             /* Padding is no longer needed here */
             vertical-align: top;
+            padding: 20px 30px;
         }
 
-        .admit-card {
+        .admit-card .card {
             border: 2px solid #000;
             padding: 15px;
             box-sizing: border-box;
@@ -137,45 +138,47 @@
 
             <td class="card-cell">
                 <div class="admit-card">
-                    <div class="header">
-                        <div class="school-name">{{ $settings->school_name ?? 'School Name'}}</div>
-                        <div class="school-address">{{ $settings->school_address ?? 'School Address' }}</div>
-                        <div class="exam-name">ADMIT CARD - {{ $exam->examCategory['name'] }} ({{ $exam->academicSession->name }})</div>
-                    </div>
+                    <div class="card">
+                        <div class="header">
+                            <div class="school-name">{{ $settings->school_name ?? 'School Name'}}</div>
+                            <div class="school-address">{{ $settings->school_address ?? 'School Address' }}</div>
+                            <div class="exam-name">ADMIT CARD - {{ $exam->examCategory['name'] }} ({{ $exam->academicSession->name }})</div>
+                        </div>
 
-                    <div class="student-info">
-                        <table>
-                            <tr>
-                                <td><strong>Student Name:</strong></td>
-                                <td>{{ $student->user->name }}</td>
-                                <td style="font-weight: bold; width: 15%;"><strong>Roll No:</strong></td>
-                                <td style="width: 15%;">{{ $student->roll_number }}</td>
-                            </tr>
-                            <tr>
-                                <td><strong>Class:</strong></td>
-                                <td>{{ $student->schoolClass->name }} ({{ $student->classSection->name }})</td>
-                                <td style="font-weight: bold;"><strong>Student ID:</strong></td>
-                                <td>{{ $student->id_no }}</td>
-                            </tr>
-                            @if($student->department)
-                            <tr>
-                                <td><strong>Department:</strong></td>
-                                <td colspan="3">{{ $student->department->name }}</td>
-                            </tr>
-                            @endif
-                        </table>
-                    </div>
+                        <div class="student-info">
+                            <table>
+                                <tr>
+                                    <td><strong>Student Name:</strong></td>
+                                    <td>{{ $student->user->name }}</td>
+                                    <td style="font-weight: bold; width: 15%;"><strong>Roll No:</strong></td>
+                                    <td style="width: 15%;">{{ $student->roll_number }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Class:</strong></td>
+                                    <td>{{ $student->schoolClass->name }} ({{ $student->classSection->name }})</td>
+                                    <td style="font-weight: bold;"><strong>Student ID:</strong></td>
+                                    <td>{{ $student->id }}</td>
+                                </tr>
+                                @if($student->department)
+                                <tr>
+                                    <td><strong>Department:</strong></td>
+                                    <td colspan="3">{{ $student->department->name }}</td>
+                                </tr>
+                                @endif
+                            </table>
+                        </div>
 
-                    <div class="footer">
-                        <p><strong>Instructions:</strong></p>
-                        <ol>
-                            <li>Students must carry this admit card to the examination hall.</li>
-                            <li>Reporting time is 30 minutes before the commencement of the exam.</li>
-                            <li>No electronic devices are allowed in the examination hall.</li>
-                        </ol>
-                        <div class="signature">
-                            <div class="signature-line"></div>
-                            <strong>Principal's Signature</strong>
+                        <div class="footer">
+                            <p><strong>Instructions:</strong></p>
+                            <ol>
+                                <li>Students must carry this admit card to the examination hall.</li>
+                                <li>Reporting time is 30 minutes before the commencement of the exam.</li>
+                                <li>No electronic devices are allowed in the examination hall.</li>
+                            </ol>
+                            <div class="signature">
+                                <div class="signature-line"></div>
+                                <strong>Principal's Signature</strong>
+                            </div>
                         </div>
                     </div>
                 </div>
