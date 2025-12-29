@@ -149,15 +149,14 @@
                             <table>
                                 <tr>
                                     <td><strong>Student Name:</strong></td>
-                                    <td>{{ $student->user->name }}</td>
-                                    <td style="font-weight: bold; width: 15%;"><strong>Roll No:</strong></td>
-                                    <td style="width: 15%;">{{ $student->roll_number }}</td>
+                                    <td colspan="3">{{ $student->user->name }}</td>
+
                                 </tr>
                                 <tr>
                                     <td><strong>Class:</strong></td>
                                     <td>{{ $student->schoolClass->name }} ({{ $student->classSection->name }})</td>
-                                    <td style="font-weight: bold;"><strong>Student ID:</strong></td>
-                                    <td>{{ $student->id }}</td>
+                                    <td style="font-weight: bold; width: 15%;"><strong>Roll No:</strong></td>
+                                    <td style="width: 15%;">{{ $student->roll_number }}</td>
                                 </tr>
                                 @if($student->department)
                                 <tr>
@@ -175,10 +174,24 @@
                                 <li>Reporting time is 30 minutes before the commencement of the exam.</li>
                                 <li>No electronic devices are allowed in the examination hall.</li>
                             </ol>
-                            <div class="signature">
-                                <div class="signature-line"></div>
-                                <strong>Principal's Signature</strong>
-                            </div>
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td>
+                                        <div class="signature">
+                                            <div class="signature-line"></div>
+                                            <strong>Principal's Signature</strong>
+                                        </div>
+                                    </td>
+
+                                    <td style="text-align: right;">
+                                        <div class="signature">
+                                            <div class="signature-line" style="margin-left: auto;"></div>
+                                            <strong>Teacher's Signature</strong>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
                         </div>
                     </div>
                 </div>

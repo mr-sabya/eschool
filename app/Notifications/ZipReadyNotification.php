@@ -26,6 +26,7 @@ class ZipReadyNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
+            'type'    => 'zip_ready',
             'title' => 'Your Result ZIP is Ready!',
             'message' => 'The zip file with all student reports has been generated successfully.',
             'download_url' => $this->downloadUrl,

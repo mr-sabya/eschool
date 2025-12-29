@@ -33,7 +33,7 @@
                     </div>
                     @endif
                     <div class="flex-1">
-                        <h6 class="mb-1">{{ $notification->data['title'] }}</h6>
+                        <h6 class="mb-1">{{ $notification->data['title'] ?? 'Notification' }}</h6>
                         <div class="font-size-12 text-muted">
                             <p class="mb-1">{{ $notification->data['message'] }}</p>
                             <p class="mb-0"><i class="mdi mdi-clock-outline"></i> {{ $notification->created_at->diffForHumans() }}</p>

@@ -2,9 +2,7 @@
 
 namespace App\Livewire\Backend\Notification;
 
-
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,80 +11,77 @@ class Index extends Component
     use WithPagination;
 
     public $showNewNotificationAlert = false;
+    public $lastCount;
 
-    /**
-     * Listen for a global event to show an alert on the page.
-     */
+    // Listeners for manual triggers
     protected $listeners = ['new-notification' => 'showNewNotificationAlert'];
 
+    public function mount()
+    {
+        // Store initial count to detect changes
+        $this->lastCount = Auth::user()->notifications()->count();
+    }
+
     /**
-     * Shows a non-intrusive alert at the top of the page.
+     * This function runs every 10 seconds via wire:poll
      */
+    public function checkForUpdates()
+    {
+        $currentCount = Auth::user()->notifications()->count();
+
+        // If count increased, show the "Refresh" alert
+        if ($currentCount > $this->lastCount) {
+            $this->showNewNotificationAlert = true;
+            $this->lastCount = $currentCount;
+        }
+    }
+
     public function showNewNotificationAlert()
     {
         $this->showNewNotificationAlert = true;
     }
 
-    /**
-     * Reloads the notifications when the user clicks the alert.
-     */
     public function refreshNotifications()
     {
         $this->showNewNotificationAlert = false;
-        $this->resetPage(); // Go back to the first page to see the new notification
+        $this->resetPage();
     }
 
-    /**
-     * Marks a single notification as read.
-     */
-    public function markAsRead(int $notificationId)
+    public function markAsRead($notificationId)
     {
-        $notification = Notification::find($notificationId);
-        if ($notification && $notification->user_id === Auth::id()) {
-            $notification->update(['read_at' => now()]);
+        $notification = Auth::user()->notifications()->find($notificationId);
+        if ($notification) {
+            $notification->markAsRead();
         }
     }
 
-    /**
-     * Marks all unread notifications for the user as read.
-     */
     public function markAllAsRead()
     {
-        if (Auth::check()) {
-            Auth::user()->notifications()->whereNull('read_at')->update(['read_at' => now()]);
-        }
+        Auth::user()->unreadNotifications->markAsRead();
     }
 
-    /**
-     * Deletes a single notification.
-     */
-    public function delete(int $notificationId)
+    public function delete($notificationId)
     {
-        $notification = Notification::find($notificationId);
-        if ($notification && $notification->user_id === Auth::id()) {
+        $notification = Auth::user()->notifications()->find($notificationId);
+        if ($notification) {
             $notification->delete();
+            $this->lastCount = Auth::user()->notifications()->count();
         }
     }
 
-    /**
-     * Deletes all of the user's notifications.
-     */
     public function deleteAll()
     {
-        if (Auth::check()) {
-            Auth::user()->notifications()->delete();
-        }
+        Auth::user()->notifications()->delete();
+        $this->lastCount = 0;
     }
 
     public function render()
     {
-        $notifications = Auth::user()
-            ->notifications()
-            ->orderBy('created_at', 'desc')
-            ->paginate(15); // Paginate with 15 notifications per page
-
         return view('livewire.backend.notification.index', [
-            'notifications' => $notifications,
+            'notifications' => Auth::user()
+                ->notifications()
+                ->orderBy('created_at', 'desc')
+                ->paginate(15),
         ]);
     }
 }

@@ -196,6 +196,8 @@
     @php
     if($subjectsCount > 10){
     $resultChunks = collect($results)->chunk(13); // Adjust chunk size as needed
+    }elseif($subjectsCount = 10){
+    $resultChunks = collect($results)->chunk(8); // Adjust chunk size as needed
     }else{
     $resultChunks = collect($results)->chunk(7); // Adjust chunk size as needed
     }

@@ -41,6 +41,7 @@ class Show extends Component
     public $fourthSubjectMarks;
 
     // Flags to control the visibility of calculated columns in the view.
+    public $classPosition = 0;
     public $hasClassTest = false;
     public $hasOtherMarks = false;
 
@@ -55,7 +56,7 @@ class Show extends Component
         $this->sessionId = $sessionId;
     }
 
-       public function loadReport()
+    public function loadReport()
     {
         // 1. Fetch core data
         $this->student = Student::with(['user', 'schoolClass', 'classSection'])->findOrFail($this->studentId);
@@ -64,7 +65,7 @@ class Show extends Component
         // Fetch all students in the class for highest mark calculation
         $this->students = Student::where('school_class_id', $this->classId)
             ->where('class_section_id', $this->sectionId)
-            ->when($this->student->department_id, fn ($q) => $q->where('department_id', $this->student->department_id))
+            ->when($this->student->department_id, fn($q) => $q->where('department_id', $this->student->department_id))
             ->get();
         $studentIds = $this->students->pluck('id');
 
@@ -84,17 +85,18 @@ class Show extends Component
         $finalMarkConfigs = FinalMarkConfiguration::where('school_class_id', $this->classId)
             ->whereIn('subject_id', $allAssignedSubjectIds)
             ->when($this->student->department_id, function ($query) {
-                $query->where(fn($subQuery) =>
+                $query->where(
+                    fn($subQuery) =>
                     $subQuery->where('department_id', $this->student->department_id)->orWhereNull('department_id')
                 );
             }, fn($query) => $query->whereNull('department_id'))
             ->get()->keyBy('subject_id');
-        
+
         $subjectMarkDistributions = SubjectMarkDistribution::with('markDistribution')
             ->where('school_class_id', $this->classId)
             ->whereIn('subject_id', $allAssignedSubjectIds)
             ->get();
-        
+
         // This makes sure we have subject names available for the final report.
         $this->subjects = $allAssignedSubjects;
 
@@ -124,7 +126,7 @@ class Show extends Component
         // 6. Determine highest marks using the processed results
         $highestMarks = collect();
         foreach ($allAssignedSubjectIds as $subjectId) {
-            $highestMarks[$subjectId] = $resultsByStudent->max(fn ($studentResults) => $studentResults->get($subjectId)['total_calculated_marks'] ?? 0);
+            $highestMarks[$subjectId] = $resultsByStudent->max(fn($studentResults) => $studentResults->get($subjectId)['total_calculated_marks'] ?? 0);
         }
 
         // 7. Assemble the final report for the specific student being viewed
@@ -149,7 +151,15 @@ class Show extends Component
                 }
             }
         }
-        
+
+        // ADD THIS AT THE VERY END OF loadReport()
+        $studentResult = ClassPositionHelper::getStudentPosition(
+            $this->studentId,
+            $this->students,
+            $this->examId
+        );
+        $this->classPosition = $studentResult['position'] ?? 0;
+
         // ============================ END: REWRITTEN LOGIC ============================
 
         $this->readyToLoad = true;

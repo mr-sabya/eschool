@@ -5,7 +5,8 @@ namespace App\Jobs;
 use App\Livewire\Backend\Result\Show;
 use App\Models\Student;
 use App\Models\User;
-use App\Notifications\ZipReadyNotification; // Assuming you have this notification class
+use App\Notifications\ZipReadyNotification;
+use App\Notifications\ZipProgressNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,92 +15,134 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
+use Throwable;
 
 class GenerateResultZip implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    // Job Properties
-    protected $studentIds;
-    protected $examId;
-    protected $classId;
-    protected $sectionId;
-    protected $sessionId;
-    protected $requestingUser;
+    public $timeout = 600;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct($studentIds, $examId, $classId, $sectionId, $sessionId, User $requestingUser)
-    {
+    protected array $studentIds;
+    protected int $examId;
+    protected int $classId;
+    protected int $sectionId;
+    protected int $sessionId;
+    protected int $requestingUserId;
+
+    public function __construct(
+        array $studentIds,
+        int $examId,
+        int $classId,
+        int $sectionId,
+        int $sessionId,
+        User $requestingUser
+    ) {
         $this->studentIds = $studentIds;
         $this->examId = $examId;
         $this->classId = $classId;
         $this->sectionId = $sectionId;
         $this->sessionId = $sessionId;
-        $this->requestingUser = $requestingUser;
+        $this->requestingUserId = $requestingUser->id;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        $students = Student::with('user')->whereIn('id', $this->studentIds)->orderBy('roll_number')->get();
-        $zipFileName = 'student-reports-' . date('Y-m-d-His') . '-' . uniqid() . '.zip';
-        $zipPath = storage_path('app/public/zips/' . $zipFileName); // Store in a public directory
+        Log::info("GenerateResultZip: Job started for user ID {$this->requestingUserId}");
 
-        // Ensure the directory exists
-        File::ensureDirectoryExists(dirname($zipPath));
+        try {
+            $user = User::findOrFail($this->requestingUserId);
 
-        $zip = new ZipArchive;
+            $students = Student::with('user')
+                ->whereIn('id', $this->studentIds)
+                ->orderBy('roll_number')
+                ->get();
 
-        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
-            // Handle error, maybe notify user of failure
-            // Optional: Log an error or dispatch a failure notification
-            return;
-        }
+            $total = $students->count();
+            Log::info("GenerateResultZip: Found {$total} students");
 
-        foreach ($students as $student) {
-            // Instantiate the component directly, don't use the service container (app()) for stateful components
-            $pdfComponent = new Show();
-            $pdfComponent->mount($student->id, $this->examId, $this->classId, $this->sectionId, $this->sessionId);
-            $pdfComponent->loadReport();
-
-            if ($pdfComponent->student) {
-                // ============================ START: THE FIX ============================
-                // Pass the hasClassTest and hasOtherMarks flags to the PDF view,
-                // exactly like in your single download method.
-                $pdf = Pdf::loadView('backend.result.pdf', [
-                    'student'             => $pdfComponent->student,
-                    'exam'                => $pdfComponent->exam,
-                    'subjects'            => $pdfComponent->subjects,
-                    'marks'               => $pdfComponent->marks,
-                    'fourthSubjectMarks'  => $pdfComponent->fourthSubjectMarks,
-                    'markdistributions'   => $pdfComponent->markdistributions,
-                    'students'            => $pdfComponent->students,
-                    'classPosition'       => $pdfComponent->classPosition ?? null,
-
-                    // --- ADD THESE TWO LINES ---
-                    'hasClassTest'        => $pdfComponent->hasClassTest,
-                    'hasOtherMarks'       => $pdfComponent->hasOtherMarks,
-                ])->setPaper('a4', 'landscape');
-                // ============================ END: THE FIX ============================
-
-                // Sanitize the student name for a safe filename
-                $safeStudentName = preg_replace('/[^A-Za-z0-9\-\(\)]/', '_', $student->user['name']);
-                $pdfFileNameInZip = $student->roll_number . '-' . $safeStudentName . '-result.pdf';
-
-                $zip->addFromString($pdfFileNameInZip, $pdf->output());
+            if ($total === 0) {
+                Log::warning("GenerateResultZip: No students found, aborting job");
+                return;
             }
+
+            $zipFileName = 'reports-' . now()->timestamp . '.zip';
+            $zipPath = storage_path("app/public/zips/{$zipFileName}");
+            File::ensureDirectoryExists(dirname($zipPath));
+
+            $zip = new ZipArchive();
+            if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+                throw new \RuntimeException('Unable to create ZIP file');
+            }
+            Log::info("GenerateResultZip: ZIP file created at {$zipPath}");
+
+            foreach ($students as $index => $student) {
+                Log::info("GenerateResultZip: Processing student ID {$student->id} ({$student->user->name})");
+
+                $component = new Show();
+                $component->mount(
+                    $student->id,
+                    $this->examId,
+                    $this->classId,
+                    $this->sectionId,
+                    $this->sessionId
+                );
+                $component->loadReport();
+
+                if (!$component->student) {
+                    Log::warning("GenerateResultZip: No report generated for student ID {$student->id}");
+                    continue;
+                }
+
+                $pdf = Pdf::loadView('backend.result.pdf', [
+                    'student'            => $component->student,
+                    'exam'               => $component->exam,
+                    'subjects'           => $component->subjects,
+                    'marks'              => $component->marks,
+                    'fourthSubjectMarks' => $component->fourthSubjectMarks,
+                    'markdistributions'  => $component->markdistributions,
+                    'students'           => $component->students,
+                    'classPosition'      => $component->classPosition,
+                    'hasClassTest'       => $component->hasClassTest,
+                    'hasOtherMarks'      => $component->hasOtherMarks,
+                ])->setPaper('a4', 'landscape');
+
+                $safeName = preg_replace('/[^A-Za-z0-9]/', '_', $student->user->name);
+                $pdfName = "{$student->roll_number}-{$safeName}.pdf";
+                $zip->addFromString($pdfName, $pdf->output());
+
+                Log::info("GenerateResultZip: PDF added to ZIP for student ID {$student->id} ({$pdfName})");
+
+                // Progress (every 5 students or last)
+                if (($index + 1) % 5 === 0 || ($index + 1) === $total) {
+                    $percent = (int) round((($index + 1) / $total) * 100);
+                    $user->notify(new ZipProgressNotification(
+                        $percent,
+                        "Processed " . ($index + 1) . " of {$total}"
+                    ));
+                    Log::info("GenerateResultZip: Progress notification sent: {$percent}%");
+                }
+            }
+
+            $zip->close();
+            Log::info("GenerateResultZip: ZIP file closed and saved");
+
+            $url = Storage::url("zips/{$zipFileName}");
+            $user->notify(new ZipReadyNotification($url, $zipFileName));
+            Log::info("GenerateResultZip: ZipReadyNotification sent: {$url}");
+
+        } catch (Throwable $e) {
+            Log::error('GenerateResultZip failed', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            ]);
+
+            throw $e;
         }
 
-        $zip->close();
-
-        // Notify the user that the file is ready for download
-        // Using Storage::url() generates the correct public URL for the file
-        $downloadUrl = Storage::url('zips/' . $zipFileName);
-        $this->requestingUser->notify(new ZipReadyNotification($downloadUrl, $zipFileName));
+        Log::info("GenerateResultZip: Job completed successfully");
     }
 }

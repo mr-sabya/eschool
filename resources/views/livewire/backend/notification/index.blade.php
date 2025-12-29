@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.10s="checkForUpdates"> {{-- Auto updates every 10 seconds --}}
     <div class="card">
         <div class="card-header bg-light border-bottom">
             <div class="d-flex justify-content-between align-items-center">
@@ -10,7 +10,7 @@
                     <button wire:click="markAllAsRead" class="btn btn-sm btn-outline-secondary">
                         <i class="fas fa-check-double me-1"></i> Mark All as Read
                     </button>
-                    <button wire:click="deleteAll" wire:confirm="Are you sure you want to delete ALL notifications? This cannot be undone." class="btn btn-sm btn-outline-danger">
+                    <button wire:click="deleteAll" wire:confirm="Are you sure you want to delete ALL notifications?" class="btn btn-sm btn-outline-danger">
                         <i class="fas fa-trash-alt me-1"></i> Delete All
                     </button>
                 </div>
@@ -18,55 +18,29 @@
         </div>
 
         <div class="card-body p-0">
-
             <!-- "New Notification" Alert -->
             @if($showNewNotificationAlert)
-            <div class="alert alert-info rounded-0 border-start-0 border-end-0 mb-0 d-flex justify-content-between align-items-center" role="alert">
-                <div><i class="fas fa-info-circle me-2"></i> You have new notifications.</div>
-                <button wire:click="refreshNotifications" type="button" class="btn btn-sm btn-info">Refresh Now</button>
+            <div class="alert alert-info rounded-0 border-0 mb-0 d-flex justify-content-between align-items-center" role="alert">
+                <div><i class="fas fa-sync fa-spin me-2"></i> You have new notifications.</div>
+                <button wire:click="refreshNotifications" type="button" class="btn btn-sm btn-info">Update List</button>
             </div>
             @endif
 
-            <!-- List of Notifications using a List Group for better spacing and separation -->
             <ul class="list-group list-group-flush">
                 @forelse($notifications as $notification)
-                {{--
-                        To make this even more dynamic, you could add a 'type' column
-                        (e.g., 'info', 'success', 'warning', 'danger') to your notifications table.
-                        Then you can change the icon and color based on the type.
-                    --}}
                 @php
-                // Default icon and color
+                $data = $notification->data;
+                $isZipProgress = ($data['type'] ?? '') === 'zip_progress';
+
+                // Icon Logic
                 $icon = 'fa-bell';
                 $iconColor = 'bg-primary';
-
-                // Example of dynamic icons based on notification data
-                if (isset($notification->data['download_url'])) {
-                $icon = 'fa-download';
-                $iconColor = 'bg-success';
-                } elseif (isset($notification->data['type'])) {
-                switch($notification->data['type']) {
-                case 'success': $icon = 'fa-check-circle'; $iconColor = 'bg-success'; break;
-                case 'warning': $icon = 'fa-exclamation-triangle'; $iconColor = 'bg-warning'; break;
-                case 'danger': $icon = 'fa-exclamation-circle'; $iconColor = 'bg-danger'; break;
-                default: $icon = 'fa-info-circle'; $iconColor = 'bg-info'; break;
-                }
-                }
+                if (isset($data['download_url'])) { $icon = 'fa-file-archive'; $iconColor = 'bg-success'; }
+                elseif ($isZipProgress) { $icon = 'fa-spinner fa-spin'; $iconColor = 'bg-info'; }
                 @endphp
 
-                <li class="list-group-item p-3">
+                <li class="list-group-item p-3 {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
                     <div class="d-flex align-items-start">
-                        <!-- Unread Indicator Dot -->
-                        <div class="me-3">
-                            @if(is_null($notification->read_at))
-                            <span class="badge bg-primary rounded-pill p-1" title="Unread">
-                                <span class="visually-hidden">Unread</span>
-                            </span>
-                            @else
-                            <span class="badge bg-light rounded-pill p-1"></span>
-                            @endif
-                        </div>
-
                         <!-- Icon -->
                         <div class="me-3">
                             <span class="d-inline-flex align-items-center justify-content-center rounded-circle text-white {{ $iconColor }}" style="width: 40px; height: 40px;">
@@ -74,56 +48,53 @@
                             </span>
                         </div>
 
-                        <!-- Main Content -->
+                        <!-- Content -->
                         <div class="flex-grow-1">
-                            <h6 class="mb-1 {{ is_null($notification->read_at) ? 'fw-bold' : '' }}">{{ $notification->data['title'] }}</h6>
-                            <p class="mb-1 text-muted">{{ $notification->data['message'] }}</p>
-                            <small class="text-muted">{{ $notification->created_at->format('M d, Y \a\t h:i A') }} ({{ $notification->created_at->diffForHumans() }})</small>
+                            <h6 class="mb-1 {{ is_null($notification->read_at) ? 'fw-bold' : '' }}">
+                                {{ $data['title'] ?? 'Notification' }}
+                            </h6>
+                            <p class="mb-1 text-muted">{{ $data['message'] }}</p>
+
+                            <!-- ZIP PROGRESS BAR -->
+                            @if($isZipProgress && isset($data['percentage']))
+                            <div class="mt-2" style="max-width: 300px;">
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                                        role="progressbar"
+                                        style="width: {{ $data['percentage'] }}%"></div>
+                                </div>
+                                <small class="text-info fw-bold">{{ $data['percentage'] }}% processed...</small>
+                            </div>
+                            @endif
+
+                            <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
                         </div>
 
                         <!-- Actions -->
                         <div class="ms-auto text-nowrap">
-                            @if(isset($notification->data['download_url']))
-                            <a href="{{ $notification->data['download_url'] }}" class="btn btn-sm btn-primary">Download</a>
-                            @elseif($notification->link)
-                            <a href="{{ $notification->link }}" class="btn btn-sm btn-primary" wire:click.prevent="markAsRead({{ $notification->id }})">View</a>
+                            @if(isset($data['download_url']))
+                            <a href="{{ $data['download_url'] }}" class="btn btn-sm btn-success" wire:click="markAsRead('{{ $notification->id }}')">
+                                <i class="fas fa-download me-1"></i> Download ZIP
+                            </a>
                             @endif
 
-                            <!-- Ellipsis Dropdown for secondary actions -->
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    @if(is_null($notification->read_at))
-                                    <li><a class="dropdown-item" href="#" wire:click.prevent="markAsRead({{ $notification->id }})">
-                                            <i class="fas fa-check-circle me-2"></i>Mark as Read
-                                        </a></li>
-                                    @endif
-                                    <li><a class="dropdown-item text-danger" href="#" wire:click.prevent="delete({{ $notification->id }})">
-                                            <i class="fas fa-trash-alt me-2"></i>Delete
-                                        </a></li>
-                                </ul>
-                            </div>
+                            <button wire:click="delete('{{ $notification->id }}')" class="btn btn-sm btn-link text-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </li>
                 @empty
-                <!-- Professional Empty State -->
-                <div class="text-center p-5">
-                    <div class="mb-3">
-                        <i class="fas fa-bell-slash fa-4x text-muted"></i>
-                    </div>
-                    <h4>No Notifications Found</h4>
-                    <p class="text-muted">It looks like your notification inbox is empty.</p>
+                <div class="text-center p-5 text-muted">
+                    <i class="fas fa-bell-slash fa-3x mb-3"></i>
+                    <p>No notifications found.</p>
                 </div>
                 @endforelse
             </ul>
         </div>
 
-        <!-- Pagination -->
         @if($notifications->hasPages())
-        <div class="card-footer bg-light">
+        <div class="card-footer">
             {{ $notifications->links() }}
         </div>
         @endif

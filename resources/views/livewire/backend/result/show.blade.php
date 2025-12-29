@@ -175,15 +175,21 @@
         </table>
 
         @php
-        $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
-        // Force minimum GPA = 5 if total grade points < 5
-            if ($totalGradePoints > 5 && $finalgpa > 5) {
-                $finalgpa = 5.00;
-            }
-            $finalGrade = App\Models\Grade::where('start_marks', '<=', ($finalgpa * 20)) // Assuming a 100-mark scale where GPA 5=100
-            ->where('end_marks', '>=', ($finalgpa * 20))
-            ->where('grading_scale', 100)
-            ->first();
+        // Step 1: Calculate GPA
+$finalgpa = $gpaSubjectCount > 0
+    ? round($totalGradePoints / $gpaSubjectCount, 2)
+    : 0.00;
+
+// Step 2: Cap GPA to max 5
+$finalgpa = min((float) $finalgpa, 5.00);
+
+// Step 3: Query final grade
+$finalGrade = App\Models\Grade::where('grading_scale', 100)
+    ->where('grade_point', '<=', $finalgpa)
+    ->orderBy('grade_point', 'desc')
+    ->first();
+    
+            
             $letterGrade = $finalGrade ? $finalGrade->grade_name : 'N/A';
 
             // Override if failed any subject

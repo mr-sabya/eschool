@@ -57,7 +57,7 @@ class Index extends Component
     public function render()
     {
         $staffUsers = User::with('staff.designation')
-            ->where('is_admin', true) // All staff users have is_admin true
+            ->where('is_staff', true) // All staff users have is_admin true
             ->where(function ($q) {
                 $q->where('name', 'like', "%{$this->search}%")
                   ->orWhereHas('staff', function ($q2) {

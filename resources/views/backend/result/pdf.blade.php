@@ -110,16 +110,16 @@
 
         .comment-box {
             border: 1px solid #000;
-            height: 20px;
+            height: 15px;
             padding: 5px;
         }
 
         .footer-signatures-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 30px;
+            margin-top: 20px;
             /* More space for signatures */
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .footer-signatures-table td {
@@ -303,11 +303,19 @@
         </table>
 
         @php
-        $finalgpa = $gpaSubjectCount > 0 ? round($totalGradePoints / $gpaSubjectCount, 2) : 0.00;
-        $finalGrade = \App\Models\Grade::where('start_marks', '<=', ($finalgpa * 20))
-            ->where('end_marks', '>=', ($finalgpa * 20))
-            ->where('grading_scale', 100)
-            ->first();
+        // Step 1: Calculate GPA
+$finalgpa = $gpaSubjectCount > 0
+    ? round($totalGradePoints / $gpaSubjectCount, 2)
+    : 0.00;
+
+// Step 2: Cap GPA to max 5
+$finalgpa = min((float) $finalgpa, 5.00);
+
+// Step 3: Query final grade
+$finalGrade = App\Models\Grade::where('grading_scale', 100)
+    ->where('grade_point', '<=', $finalgpa)
+    ->orderBy('grade_point', 'desc')
+    ->first();
             $letterGrade = $finalGrade ? $finalGrade->grade_name : 'N/A';
 
             if ($finalResult === 'Fail') {
@@ -316,8 +324,8 @@
             }
 
             // This helper will now work correctly because the component provides the $students variable
-            $studentResult = App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
-            $classPosition = $studentResult['position'] ? $studentResult['position'] : 0;
+            // $studentResult = App\Helpers\ClassPositionHelper::getStudentPosition($student->id, $students, $exam->id);
+            // $classPosition = $studentResult['position'] ? $studentResult['position'] : 0;
             @endphp
 
             <table class="info-table">
@@ -334,7 +342,7 @@
                 </tr>
             </table>
 
-            <div class="section-title" style="margin-bottom: 5px;">Class Teacher's Comment</div>
+            <div class="section-title" style="margin-bottom: 3px;">Class Teacher's Comment</div>
             <div class="comment-box">
                 {{ $finalGrade->remarks ?? '' }}
             </div>

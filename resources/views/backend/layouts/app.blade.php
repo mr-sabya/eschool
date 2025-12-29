@@ -58,6 +58,15 @@
         <div class="main-content">
 
             <div class="page-content">
+                <div wire:poll.5s>
+                    @if(isset($notification->data['type']) && $notification->data['type'] === 'zip_progress')
+                    <div class="alert alert-info">
+                        {{ $notification->data['message'] }}
+                        ({{ $notification->data['percentage'] }}%)
+                    </div>
+                    @endif
+                </div>
+
 
                 <!-- start page title -->
                 <div class="container-fluid">
