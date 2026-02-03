@@ -11,23 +11,27 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
 
                         <div class="history row g-3">
+                            @if($history)
                             <div class="col-lg-5">
                                 <div class="card h-100">
-                                    <img src="{{ url('assets/frontend/images/5.jpg') }}" class="attachment-post-thumbnail" alt="" />
+                                    <!-- Use asset() for the image path -->
+                                    <img src="{{ asset('storage/' . $history->image) }}"
+                                        class="attachment-post-thumbnail"
+                                        alt="{{ $history->title }}" />
                                 </div>
                             </div>
                             <div class="col-lg-7">
                                 <div class="card">
                                     <div class="card-body">
-                                        <h4 class="catagory_title underline"> প্রতিষ্ঠানের ইতিহাস</h4>
-                                        <p> {{ $setting->school_history }}</p>
-
-
-
+                                        <h4 class="catagory_title underline">{{ $history->title }}</h4>
+                                        
+                                        <p>{!! $history->description !!}</p>
                                     </div>
                                 </div>
                             </div>
-
+                            @else
+                            <p>No history records found.</p>
+                            @endif
                         </div>
                     </div>
                 </div>

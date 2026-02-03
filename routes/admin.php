@@ -233,6 +233,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('website/notices/create', [App\Http\Controllers\Backend\Website\NoticeController::class, 'create'])->name('website.notice.create');
     Route::get('website/notices/{id}/edit', [App\Http\Controllers\Backend\Website\NoticeController::class, 'edit'])->name('website.notice.edit');
 
+    // hisotry page
+    Route::get('website/school-history', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'history'])->name('website.history.index');
+
+    // quote page
+    Route::get('website/quotes', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'quote'])->name('website.quote.index');
+
     // routine - day
     Route::get('routine/days', [App\Http\Controllers\Backend\RoutineController::class, 'day'])->name('routine.day.index');
 

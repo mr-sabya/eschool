@@ -200,6 +200,15 @@
                         <li>
                             <a href="{{ route('admin.website.notice.index') }}" class="{{ Route::is('admin.website.notice.index') ? 'active' : '' }}" wire:navigate>Notice Board</a>
                         </li>
+
+                        <li>
+                            <a href="{{ route('admin.website.history.index') }}" class="{{ Route::is('admin.website.history.index') ? 'active' : '' }}" wire:navigate>School History</a>    
+                        </li>
+
+                        <!-- quote -->
+                        <li>
+                            <a href="{{ route('admin.website.quote.index') }}" class="{{ Route::is('admin.website.quote.index') ? 'active' : '' }}" wire:navigate>Quotes</a>    
+                        </li>
                     </ul>
                 </li>
                 @endif
