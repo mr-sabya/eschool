@@ -31,6 +31,17 @@ Route::get('/admission/info', [App\Http\Controllers\Frontend\AdmissionController
 // admission form
 Route::get('/admission/form', [App\Http\Controllers\Frontend\AdmissionController::class, 'form'])->name('admission.form');
 
+// photo gallery
+Route::get('/media/photos', [App\Http\Controllers\Frontend\MediaController::class, 'photoGallery'])->name('media.photos');
+// video gallery
+Route::get('/media/videos', [App\Http\Controllers\Frontend\MediaController::class, 'videoGallery'])->name('media.videos');
+
+// governing body
+Route::get('/governing-body', [App\Http\Controllers\Frontend\WebsiteController::class, 'governingBody'])->name('governing-body.index');
+
+// staff
+Route::get('/staff', [App\Http\Controllers\Frontend\WebsiteController::class, 'staff'])->name('staff.index');
+
 // profile
 // auth middleware
 Route::middleware(['auth'])->group(function () {

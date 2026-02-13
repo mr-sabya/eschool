@@ -67,7 +67,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('students', [App\Http\Controllers\Backend\StudentController::class, 'index'])->name('student.index');
     Route::get('students/create', [App\Http\Controllers\Backend\StudentController::class, 'create'])->name('student.create');
     Route::get('students/edit/{id}', [App\Http\Controllers\Backend\StudentController::class, 'edit'])->name('student.edit');
-    
+
     // admit card
     Route::get('students/admit-card', [App\Http\Controllers\Backend\StudentController::class, 'admitCardGenerate'])->name('student.admit-card.index');
     Route::get('/students/admit-card/generate', [App\Http\Controllers\Backend\AdmitCardController::class, 'generate'])->name('student.admit-card.generate');
@@ -78,7 +78,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // import students
     Route::get('students/import', [App\Http\Controllers\Backend\StudentController::class, 'import'])->name('student.import');
-    
+
     // download sample import file
     Route::get('students/download-sample', [App\Http\Controllers\Backend\StudentController::class, 'download'])->name('student.download.sample');
 
@@ -160,15 +160,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('show-result-position', [App\Http\Controllers\Backend\ResultController::class, 'showResultPosition'])
         ->name('result.position.show');
 
-        // tabulation index
+    // tabulation index
     Route::get('tabulation-sheet/index', [App\Http\Controllers\Backend\ResultController::class, 'tabulationIndex'])
         ->name('result.tabulation.index');
 
     // tabulation sheet
     Route::get('tabulation-sheet', [App\Http\Controllers\Backend\ResultController::class, 'tabulationSheet'])
-        ->name('result.tabulation.sheet');  
+        ->name('result.tabulation.sheet');
 
-    
+
     // subject attendance
     Route::get('subject-attendance/manage', [App\Http\Controllers\Backend\AttendanceController::class, 'subjectAttendaceManage'])->name('subject-attendance.manage');
 
@@ -187,7 +187,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // fee list management
     Route::get('fee/lists', [App\Http\Controllers\Backend\FeeController::class, 'feeList'])->name('fee.list.index');
-    
+
     // fee collection
     Route::get('fee/collection', [App\Http\Controllers\Backend\FeeController::class, 'feeCollectionIndex'])->name('fee.collection.index');
     Route::get('fee/collection/create', [App\Http\Controllers\Backend\FeeController::class, 'feeCollectionCreate'])->name('fee.collection.create');
@@ -223,21 +223,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // expense
     Route::get('accounts/expense', [App\Http\Controllers\Backend\ExpenseController::class, 'expense'])->name('accounts.expense.index');
 
-    // website banner
-    Route::get('website/banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('website.banner.index');
-    Route::get('website/banners/create', [App\Http\Controllers\Backend\Website\BannerController::class, 'create'])->name('website.banner.create');
-    Route::get('website/banners/{id}/edit', [App\Http\Controllers\Backend\Website\BannerController::class, 'edit'])->name('website.banner.edit');
-
-    // notice board
-    Route::get('website/notices', [App\Http\Controllers\Backend\Website\NoticeController::class, 'index'])->name('website.notice.index');
-    Route::get('website/notices/create', [App\Http\Controllers\Backend\Website\NoticeController::class, 'create'])->name('website.notice.create');
-    Route::get('website/notices/{id}/edit', [App\Http\Controllers\Backend\Website\NoticeController::class, 'edit'])->name('website.notice.edit');
-
-    // hisotry page
-    Route::get('website/school-history', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'history'])->name('website.history.index');
-
-    // quote page
-    Route::get('website/quotes', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'quote'])->name('website.quote.index');
 
     // routine - day
     Route::get('routine/days', [App\Http\Controllers\Backend\RoutineController::class, 'day'])->name('routine.day.index');
@@ -253,7 +238,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // notifications
     Route::get('notifications', [App\Http\Controllers\Backend\NotificationController::class, 'index'])->name('notification.index');
-    
+
     // reports
     Route::get('/reports/financial', [App\Http\Controllers\Backend\ReportController::class, 'finalcialReports'])->name('reports.financial');
 
@@ -266,4 +251,33 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // 
     Route::get('/reports/subject-attendance', [App\Http\Controllers\Backend\ReportController::class, 'subjectAttendaceReports'])->name('reports.subject-attendance');
 
+
+
+    Route::prefix('website')->name('website.')->group(function () {
+
+        // website banner
+        Route::get('banners', [App\Http\Controllers\Backend\Website\BannerController::class, 'index'])->name('banner.index');
+        Route::get('banners/create', [App\Http\Controllers\Backend\Website\BannerController::class, 'create'])->name('banner.create');
+        Route::get('banners/{id}/edit', [App\Http\Controllers\Backend\Website\BannerController::class, 'edit'])->name('banner.edit');
+
+        // notice board
+        Route::get('notices', [App\Http\Controllers\Backend\Website\NoticeController::class, 'index'])->name('notice.index');
+        Route::get('notices/create', [App\Http\Controllers\Backend\Website\NoticeController::class, 'create'])->name('notice.create');
+        Route::get('notices/{id}/edit', [App\Http\Controllers\Backend\Website\NoticeController::class, 'edit'])->name('notice.edit');
+
+        // history page
+        Route::get('school-history', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'history'])->name('history.index');
+
+        // quote page
+        Route::get('quotes', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'quote'])->name('quote.index');
+
+        // admission info
+        Route::get('admission-info', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'admissionInfo'])->name('admission.index');
+
+        // media management
+        Route::get('media', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'media'])->name('media.index');
+
+        // governing body management
+        Route::get('governing-body', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'governingBody'])->name('governing-body.index');
+    });
 });

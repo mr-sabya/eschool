@@ -569,14 +569,21 @@ section {
         flex-direction: column;
     }
 
-    .menu.navbar.show{
+    .menu.navbar.show {
         left: 0;
     }
-    .top-header .top-header-right{
+
+    .top-header .top-header-right {
         justify-content: center;
     }
 
-    .top-header .top-header-right p{
+    .top-header .top-header-right p {
         font-size: 12px;
     }
+}
+
+.border-dashed {
+    border-style: dashed !important;
+    border-width: 2px !important;
+    background-color: #f8f9fa;
 }

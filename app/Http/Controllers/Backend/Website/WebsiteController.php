@@ -18,4 +18,22 @@ class WebsiteController extends Controller
     {
         return view('backend.website.quote.index');
     }
+
+    // admission info
+    public function admissionInfo()
+    {
+        return view('backend.website.admission.index');
+    }
+
+    // mdeia management is handled in Livewire component
+    public function media()
+    {
+        return view('backend.website.media.index');
+    }
+
+    // govorning body management is handled in Livewire component
+    public function governingBody()
+    {
+        return view('backend.website.governing-body.index');
+    }
 }

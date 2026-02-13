@@ -202,12 +202,27 @@
                         </li>
 
                         <li>
-                            <a href="{{ route('admin.website.history.index') }}" class="{{ Route::is('admin.website.history.index') ? 'active' : '' }}" wire:navigate>School History</a>    
+                            <a href="{{ route('admin.website.history.index') }}" class="{{ Route::is('admin.website.history.index') ? 'active' : '' }}" wire:navigate>School History</a>
                         </li>
 
                         <!-- quote -->
                         <li>
-                            <a href="{{ route('admin.website.quote.index') }}" class="{{ Route::is('admin.website.quote.index') ? 'active' : '' }}" wire:navigate>Quotes</a>    
+                            <a href="{{ route('admin.website.quote.index') }}" class="{{ Route::is('admin.website.quote.index') ? 'active' : '' }}" wire:navigate>Quotes</a>
+                        </li>
+
+                        <!-- admission info -->
+                        <li>
+                            <a href="{{ route('admin.website.admission.index') }}" class="{{ Route::is('admin.website.admission.index') ? 'active' : '' }}" wire:navigate>Admission Info</a>
+                        </li>
+
+                        <!-- media -->
+                        <li>
+                            <a href="{{ route('admin.website.media.index') }}" class="{{ Route::is('admin.website.media.index') ? 'active' : '' }}" wire:navigate>Media</a>
+                        </li>
+
+                        <!-- governing -->
+                        <li>
+                            <a href="{{ route('admin.website.governing-body.index') }}" class="{{ Route::is('admin.website.governing-body.index') ? 'active' : '' }}" wire:navigate>Governing Body</a>
                         </li>
                     </ul>
                 </li>

@@ -31,10 +31,10 @@
                                  <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('teacher.index') }}" wire:navigate>শিক্ষকবৃন্দ</a>
                              </li>
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">পরিচালনা পরিষদ</a>
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('governing-body.index') }}" wire:navigate>পরিচালনা পরিষদ</a>
                              </li>
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">কর্মকর্তা কর্মচারী</a>
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('staff.index') }}" wire:navigate>কর্মকর্তা কর্মচারী</a>
                              </li>
                              <li>
                                  <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">প্রাক্তন প্রধান
@@ -86,10 +86,10 @@
                          </a>
                          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">ফটোগ্যালারী</a>
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('media.photos') }}" wire:navigate>ফটোগ্যালারী</a>
                              </li>
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">ভিডিও গ্যালারী</a>
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('media.videos') }}" wire:navigate>ভিডিও গ্যালারী</a>
                              </li>
                          </ul>
                      </li>
