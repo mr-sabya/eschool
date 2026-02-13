@@ -37,7 +37,7 @@
                                  <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('staff.index') }}" wire:navigate>কর্মকর্তা কর্মচারী</a>
                              </li>
                              <li>
-                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="#">প্রাক্তন প্রধান
+                                 <a class="dropdown-item" title="শিক্ষকবৃন্দ" href="{{ route('former-headmaster.index') }}" wire:navigate>প্রাক্তন প্রধান
                                      শিক্ষক</a>
                              </li>
                              <li>

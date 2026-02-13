@@ -18,4 +18,10 @@ class WebsiteController extends Controller
     {
         return view('frontend.pages.staff');
     }
+
+    // former headmaster
+    public function formerHeadmaster()
+    {
+        return view('frontend.pages.former-headmaster');
+    }
 }

@@ -36,4 +36,10 @@ class WebsiteController extends Controller
     {
         return view('backend.website.governing-body.index');
     }
+
+    // former headmaster management is handled in Livewire component
+    public function formerHeadmaster()
+    {
+        return view('backend.website.former-headmaster.index');
+    }
 }

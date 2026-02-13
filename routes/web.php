@@ -42,6 +42,9 @@ Route::get('/governing-body', [App\Http\Controllers\Frontend\WebsiteController::
 // staff
 Route::get('/staff', [App\Http\Controllers\Frontend\WebsiteController::class, 'staff'])->name('staff.index');
 
+// former-headmaster
+Route::get('/former-headmaster', [App\Http\Controllers\Frontend\WebsiteController::class, 'formerHeadmaster'])->name('former-headmaster.index');
+
 // profile
 // auth middleware
 Route::middleware(['auth'])->group(function () {

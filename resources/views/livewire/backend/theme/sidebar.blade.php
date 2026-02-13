@@ -224,6 +224,11 @@
                         <li>
                             <a href="{{ route('admin.website.governing-body.index') }}" class="{{ Route::is('admin.website.governing-body.index') ? 'active' : '' }}" wire:navigate>Governing Body</a>
                         </li>
+
+                        <!-- former-headmaster -->
+                        <li>
+                            <a href="{{ route('admin.website.former-headmaster.index') }}" class="{{ Route::is('admin.website.former-headmaster.index') ? 'active' : '' }}" wire:navigate>Former Headmasters</a>
+                        </li>
                     </ul>
                 </li>
                 @endif

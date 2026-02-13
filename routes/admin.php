@@ -279,5 +279,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         // governing body management
         Route::get('governing-body', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'governingBody'])->name('governing-body.index');
+
+        // former-headmaster
+        Route::get('former-headmaster', [App\Http\Controllers\Backend\Website\WebsiteController::class, 'formerHeadmaster'])->name('former-headmaster.index');
     });
 });
