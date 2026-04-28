@@ -2,12 +2,13 @@
 
 namespace App\Livewire\Backend\Student;
 
-// ADD the new SeatPlanExport class to the use statements
 use App\Exports\SeatPlanExport;
 use App\Exports\StudentsExport;
 use App\Models\ClassSection;
 use App\Models\Department;
 use App\Models\SchoolClass;
+use App\Models\AcademicSession; // Added
+use App\Models\Student;         // Added
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -16,19 +17,23 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class Index extends Component
 {
-
     use WithPagination, WithoutUrlPagination;
 
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'desc';
     public $perPage = 25;
+    
+    // Modals & IDs
     public $confirmingDelete = false;
     public $deleteId = null;
+    public $confirmingBulkSessionUpdate = false; // Added
 
+    // Filters
     public $filter_class_id = null;
     public $filter_section_id = null;
     public $filter_department_id = null;
+    public $new_session_id = null; // Added for bulk update
 
     protected $listeners = ['student-saved' => '$refresh'];
 
@@ -77,6 +82,50 @@ class Index extends Component
         $this->resetPage();
     }
 
+    // ✅ NEW: Bulk Update Logic
+    public function updateFilteredSessions()
+    {
+        if (!$this->new_session_id) {
+            $this->dispatch('notify', 'Please select a session first.');
+            return;
+        }
+
+        // Build query for Student model based on active filters
+        $query = Student::query();
+
+        if ($this->filter_class_id) {
+            $query->where('school_class_id', $this->filter_class_id);
+        }
+        if ($this->filter_section_id) {
+            $query->where('class_section_id', $this->filter_section_id);
+        }
+        if ($this->filter_department_id) {
+            $query->where('department_id', $this->filter_department_id);
+        }
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('roll_number', 'like', "%{$this->search}%")
+                  ->orWhere('phone', 'like', "%{$this->search}%")
+                  ->orWhereHas('user', function($u) {
+                      $u->where('name', 'like', "%{$this->search}%");
+                  });
+            });
+        }
+
+        $count = $query->count();
+
+        if ($count > 0) {
+            // Bulk update the academic_session_id column
+            $query->update(['academic_session_id' => $this->new_session_id]);
+            
+            $this->dispatch('notify', "Successfully updated $count students to the new session!");
+            $this->confirmingBulkSessionUpdate = false;
+            $this->new_session_id = null;
+        } else {
+            $this->dispatch('notify', 'No students found matching current filters.');
+        }
+    }
+
     public function export()
     {
         $filename = 'students-' . now()->format('Y-m-d') . '.xlsx';
@@ -91,12 +140,9 @@ class Index extends Component
         );
     }
 
-    // ✅ ADD THIS NEW METHOD FOR SEAT PLAN EXPORT
     public function exportSeatPlan()
     {
         $filename = 'seat-plan-' . now()->format('Y-m-d') . '.xlsx';
-
-        // Use the new SeatPlanExport class
         return Excel::download(
             new SeatPlanExport(
                 $this->search,
@@ -107,7 +153,6 @@ class Index extends Component
             $filename
         );
     }
-
 
     public function render()
     {
@@ -131,6 +176,7 @@ class Index extends Component
             'students' => $students,
             'allClasses' => SchoolClass::all(),
             'departments' => Department::all(),
+            'sessions' => AcademicSession::orderBy('id', 'desc')->get(), // Added
         ]);
     }
 }

@@ -77,6 +77,7 @@ class Index extends Component
             'selectedSection' => 'required|exists:class_sections,id',
             'selectedExam' => 'required|exists:exams,id',
         ]);
+        
 
         $this->students = Student::with('user')
             ->where('academic_session_id', $this->selectedSession)

@@ -4,7 +4,7 @@
     </div>
 
     <div class="card-body">
-
+        <!-- 1. Filters Row -->
         <div class="row mb-3 border-bottom pb-3">
             <div class="col-md-3">
                 <select wire:model="filter_class_id" class="form-select" wire:change="getFilteredSectionsProperty">
@@ -34,11 +34,34 @@
             </div>
 
             <div class="col-lg-3">
-                <button class="btn btn-secondary" wire:click="$set('filter_class_id', null); $set('filter_section_id', null);">Reset Filters</button>
-
+                <button class="btn btn-secondary w-100" wire:click="$set('filter_class_id', null); $set('filter_section_id', null);">Reset Filters</button>
             </div>
         </div>
 
+        <!-- ✅ 2. NEW: Bulk Action Row -->
+        <div class="row mb-3 bg-light p-2 rounded border mx-0 align-items-center">
+            <div class="col-md-4">
+                <span class="text-muted fw-bold">Bulk Action:</span>
+                <small class="d-block text-info">Update session for all filtered students</small>
+            </div>
+            <div class="col-md-4">
+                <select wire:model="new_session_id" class="form-select form-select-sm">
+                    <option value="">-- Select New Session --</option>
+                    @foreach($sessions as $session)
+                        <option value="{{ $session->id }}">{{ $session->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-sm btn-warning w-100" 
+                        wire:click="$set('confirmingBulkSessionUpdate', true)"
+                        @if(!$new_session_id) disabled @endif>
+                    Change Academic Session
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. Search and Table Actions -->
         <div class="table-action d-flex justify-content-between mb-3">
             <div class="d-flex gap-2 align-items-center">
                 <select wire:model="perPage" class="form-select form-select-sm w-auto">
@@ -50,37 +73,33 @@
                 </select>
                 <span>Records per page</span>
             </div>
-            <div class="d-flex gap-2"> <!-- Wrap search and export in a flex container -->
-                <div> <!-- Let search take available width -->
+            <div class="d-flex gap-2">
+                <div>
                     <input type="text" class="form-control form-control-sm" wire:model.live.debounce.300ms="search" placeholder="Search by name, roll, phone...">
                 </div>
 
-                <!-- ADD THIS EXPORT BUTTON -->
                 <button type="button" wire:click="export" class="btn btn-sm btn-success">
-                    <span wire:loading wire:target="export">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    </span>
+                    <span wire:loading wire:target="export" class="spinner-border spinner-border-sm"></span>
                     <i class="ri-file-excel-2-line" wire:loading.remove wire:target="export"></i>
                     Export
                 </button>
 
-                <!-- ✅ ADD THIS NEW BUTTON FOR SEAT PLAN -->
                 <button type="button" wire:click="exportSeatPlan" class="btn btn-sm btn-info">
-                    <span wire:loading wire:target="exportSeatPlan">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    </span>
+                    <span wire:loading wire:target="exportSeatPlan" class="spinner-border spinner-border-sm"></span>
                     <i class="ri-file-list-2-line" wire:loading.remove wire:target="exportSeatPlan"></i>
                     Seat Plan
                 </button>
             </div>
         </div>
 
+        <!-- 4. Table -->
         <table class="table table-bordered table-hover table-striped mb-0">
             <thead>
                 <tr>
                     <th wire:click="sortBy('id')" style="cursor: pointer">#</th>
                     <th wire:click="sortBy('name')" style="cursor: pointer">Name</th>
                     <th>Class</th>
+                    <th>Session</th>
                     <th>Profile</th>
                     <th>Action</th>
                 </tr>
@@ -91,6 +110,7 @@
                     <td>{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->student->schoolClass->name ?? '-' }}</td>
+                    <td>{{ $user->student->academicSession->name ?? 'N/A' }}</td>
                     <td>
                         @if($user->student->profile_picture)
                         <img src="{{ asset('storage/'.$user->student->profile_picture) }}" width="40" class="rounded">
@@ -99,13 +119,8 @@
                         @endif
                     </td>
                     <td>
-                        <a class="btn btn-sm btn-primary" href="{{ route('admin.student.edit', $user->student->id) }}" wire:navigate>
-                            Edit
-                        </a>
-                        <button class="btn btn-sm btn-danger"
-                            wire:click="confirmDelete({{ $user->id }})">
-                            Delete
-                        </button>
+                        <a class="btn btn-sm btn-primary" href="{{ route('admin.student.edit', $user->student->id) }}" wire:navigate>Edit</a>
+                        <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $user->id }})">Delete</button>
                     </td>
                 </tr>
                 @empty
@@ -122,7 +137,7 @@
         {{ $students->links() }}
     </div>
 
-    <!-- ✅ Delete Confirmation Modal -->
+    <!-- Modal: Delete Confirmation -->
     <div class="modal fade @if($confirmingDelete) show d-block @endif" tabindex="-1" style="@if($confirmingDelete) display:block; background:rgba(0,0,0,0.5); @endif">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -130,12 +145,38 @@
                     <h5 class="modal-title">Confirm Delete</h5>
                     <button type="button" class="btn-close" wire:click="$set('confirmingDelete', false)"></button>
                 </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this student? This action cannot be undone.
-                </div>
+                <div class="modal-body">Are you sure you want to delete this student?</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" wire:click="$set('confirmingDelete', false)">Cancel</button>
                     <button type="button" class="btn btn-danger" wire:click="delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Modal: Bulk Session Update Confirmation -->
+    <div class="modal fade @if($confirmingBulkSessionUpdate) show d-block @endif" tabindex="-1" style="@if($confirmingBulkSessionUpdate) display:block; background:rgba(0,0,0,0.5); @endif">
+        <div class="modal-dialog">
+            <div class="modal-content border-warning">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title">Bulk Update Academic Session</h5>
+                    <button type="button" class="btn-close" wire:click="$set('confirmingBulkSessionUpdate', false)"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You are about to change the academic session for <strong>ALL</strong> students matching your current search/filters.</p>
+                    <div class="alert alert-light border">
+                        <strong>Filters applied:</strong><br>
+                        Class: {{ $filter_class_id ? 'Filtered' : 'All' }}<br>
+                        Search: {{ $search ?: 'None' }}
+                    </div>
+                    <p class="text-danger fw-bold">This action cannot be undone. Do you want to proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="$set('confirmingBulkSessionUpdate', false)">Cancel</button>
+                    <button type="button" class="btn btn-warning" wire:click="updateFilteredSessions">
+                        <span wire:loading wire:target="updateFilteredSessions" class="spinner-border spinner-border-sm"></span>
+                        Yes, Update All Students
+                    </button>
                 </div>
             </div>
         </div>
