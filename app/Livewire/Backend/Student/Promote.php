@@ -6,80 +6,45 @@ use App\Models\Department;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\AcademicSession;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Collection;
 
 class Promote extends Component
 {
-    // Properties bound to the view's dropdowns
-    public $from_class_id;
-    public $to_class_id;
+    public $from_class_id = null;
+    public $to_class_id = null;
+    public $to_session_id = null;
 
-    // Properties to hold the full Eloquent models of the selected classes
-    public ?SchoolClass $fromClassModel = null;
-    public ?SchoolClass $toClassModel = null;
-
-    // Data properties
-    public Collection $students;
     public $selected_students = [];
     public $new_roll_numbers = [];
     public $new_department_ids = [];
     public $selectAll = false;
 
-    // Constants based on your model's data
     const HIGHEST_CLASS_NUMERIC_NAME = 10;
     const DEPT_SELECTION_FROM_NUMERIC_NAME = 8;
     const DEPT_SELECTION_TO_NUMERIC_NAME = 9;
 
-
     public function mount()
     {
-        $this->students = new Collection();
+        $currentSession = AcademicSession::where('is_active', true)->first();
+        $this->to_session_id = $currentSession ? $currentSession->id : null;
     }
 
-    /**
-     * Livewire hook that runs automatically when 'from_class_id' changes.
-     * It fetches the full model details and loads the students.
-     */
-    public function updatedFromClassId($value)
+    public function updatedFromClassId()
     {
-        $this->fromClassModel = SchoolClass::find($value);
-        $this->fetchStudents();
-    }
-
-    /**
-     * Livewire hook that runs automatically when 'to_class_id' changes.
-     * It fetches the full model details.
-     */
-    public function updatedToClassId($value)
-    {
-        if ($value && $value !== 'passed_out') {
-            $this->toClassModel = SchoolClass::find($value);
-        } else {
-            $this->toClassModel = null;
-        }
+        $this->reset(['selected_students', 'new_roll_numbers', 'new_department_ids', 'selectAll', 'to_class_id']);
     }
 
     public function updatedSelectAll($value)
     {
-        $this->selected_students = $value
-            ? $this->students->pluck('id')->map(fn($id) => (string) $id)->toArray()
-            : [];
-    }
-
-    public function fetchStudents()
-    {
-        if ($this->from_class_id) {
-            $this->students = User::with('student.schoolClass')
-                ->whereHas('student', fn($q) => $q->where('school_class_id', $this->from_class_id)->where('is_passed_out', false))
-                ->orderBy('name', 'asc')
-                ->get();
+        if ($value && $this->from_class_id) {
+            $this->selected_students = User::whereHas('student', function ($q) {
+                $q->where('school_class_id', $this->from_class_id)->where('is_passed_out', false);
+            })->pluck('id')->map(fn($id) => (string) $id)->toArray();
         } else {
-            $this->students = new Collection();
+            $this->selected_students = [];
         }
-        // Reset dependent selections
-        $this->reset(['selected_students', 'new_roll_numbers', 'new_department_ids', 'selectAll', 'to_class_id', 'toClassModel']);
     }
 
     public function promoteSelectedStudents()
@@ -87,18 +52,22 @@ class Promote extends Component
         $this->validate([
             'from_class_id' => 'required',
             'to_class_id' => 'required',
+            'to_session_id' => 'required_unless:to_class_id,passed_out',
             'selected_students' => 'required|array|min:1',
         ]);
 
-        // Validation logic using the correct model properties
-        $isDepartmentSelectionRequired = optional($this->fromClassModel)->numeric_name == self::DEPT_SELECTION_FROM_NUMERIC_NAME
-            && optional($this->toClassModel)->numeric_name == self::DEPT_SELECTION_TO_NUMERIC_NAME;
+        $fromClass = SchoolClass::find($this->from_class_id);
+        $toClass = ($this->to_class_id !== 'passed_out') ? SchoolClass::find($this->to_class_id) : null;
 
-        if ($isDepartmentSelectionRequired) {
-            foreach ($this->selected_students as $student_id) {
-                if (empty($this->new_department_ids[$student_id])) {
-                    $this->dispatch('notify', 'Error: You must select a department for every selected student.');
-                    return; // Stop the process
+        // Dept logic
+        $isDeptRequired = optional($fromClass)->numeric_name == self::DEPT_SELECTION_FROM_NUMERIC_NAME
+            && optional($toClass)->numeric_name == self::DEPT_SELECTION_TO_NUMERIC_NAME;
+
+        if ($isDeptRequired) {
+            foreach ($this->selected_students as $userId) {
+                if (empty($this->new_department_ids[$userId])) {
+                    $this->dispatch('notify', type: 'error', message: 'You must select a department for every selected student.');
+                    return;
                 }
             }
         }
@@ -106,67 +75,79 @@ class Promote extends Component
         DB::beginTransaction();
         try {
             if ($this->to_class_id === 'passed_out') {
-                $this->handlePassedOutStudents();
+                Student::whereIn('user_id', $this->selected_students)->update(['is_passed_out' => true, 'roll_number' => null]);
             } else {
-                $this->handleRegularPromotion($isDepartmentSelectionRequired);
+                foreach ($this->selected_students as $userId) {
+                    $student = Student::where('user_id', $userId)->first();
+                    if ($student) {
+
+                        // ✅ AUTO-ROLL LOGIC START
+                        $finalRoll = $student->roll_number;
+
+                        // 1. Check if user typed a manual roll
+                        if (!empty($this->new_roll_numbers[$userId])) {
+                            $finalRoll = $this->new_roll_numbers[$userId];
+                        } else {
+                            // 2. Automatic Prefix logic (e.g., 9001 -> 10001)
+                            $oldPrefix = (string) $fromClass->numeric_name;
+                            $newPrefix = (string) $toClass->numeric_name;
+                            $currentRoll = (string) $student->roll_number;
+
+                            // If current roll starts with current class numeric name (e.g. starts with "9")
+                            if (str_starts_with($currentRoll, $oldPrefix)) {
+                                // Strip the old prefix and prepend the new one
+                                $suffix = substr($currentRoll, strlen($oldPrefix));
+                                $finalRoll = $newPrefix . $suffix;
+                            }
+                        }
+                        // ✅ AUTO-ROLL LOGIC END
+
+                        $student->update([
+                            'school_class_id'     => $this->to_class_id,
+                            'academic_session_id' => $this->to_session_id,
+                            'roll_number'         => $finalRoll,
+                            'department_id'       => $isDeptRequired ? $this->new_department_ids[$userId] : $student->department_id,
+                        ]);
+                    }
+                }
             }
+
             DB::commit();
-            $this->dispatch('notify', 'Action completed successfully!');
-            $this->reset();
-            $this->mount();
+            $this->dispatch('notify', type: 'success', message: 'Promotion completed successfully!');
+            $this->reset(['selected_students', 'new_roll_numbers', 'new_department_ids', 'selectAll', 'to_class_id']);
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->dispatch('notify', 'An error occurred: ' . $e->getMessage());
-        }
-    }
-
-    private function handlePassedOutStudents()
-    {
-        Student::whereIn('user_id', $this->selected_students)->update([
-            'is_passed_out' => true,
-            'school_class_id' => null,
-            'roll_number' => null,
-            'department_id' => null,
-        ]);
-    }
-
-    private function handleRegularPromotion(bool $isDepartmentSelectionRequired)
-    {
-        $this->validate(['to_class_id' => 'exists:school_classes,id']);
-        foreach ($this->selected_students as $student_user_id) {
-            $student = Student::where('user_id', $student_user_id)->first();
-            if ($student) {
-                $update_data = [
-                    'school_class_id' => $this->to_class_id,
-                    'roll_number' => $this->new_roll_numbers[$student_user_id] ?? $student->roll_number,
-                ];
-                if ($isDepartmentSelectionRequired) {
-                    $update_data['department_id'] = $this->new_department_ids[$student_user_id];
-                }
-                $student->update($update_data);
-            }
+            $this->dispatch('notify', type: 'error', message: 'Error: ' . $e->getMessage());
         }
     }
 
     public function render()
     {
         $allClasses = SchoolClass::orderBy('numeric_name', 'asc')->get();
-        $baseDestinations = $allClasses->where('id', '!=', $this->from_class_id);
+        $fromClassModel = $this->from_class_id ? $allClasses->firstWhere('id', $this->from_class_id) : null;
+        $toClassModel = ($this->to_class_id && $this->to_class_id !== 'passed_out') ? $allClasses->firstWhere('id', $this->to_class_id) : null;
 
-        // Convert to a simple array to prevent any blade errors
-        $promotionDestinations = $baseDestinations
+        $students = $this->from_class_id
+            ? User::with('student')->whereHas('student', function ($q) {
+                $q->where('school_class_id', $this->from_class_id)->where('is_passed_out', false);
+            })->orderBy('id', 'asc')->get() : collect();
+
+        $promotionDestinations = $allClasses->where('id', '!=', $this->from_class_id)
             ->map(fn($class) => ['id' => $class->id, 'name' => $class->name])
             ->values()->toArray();
 
-        // Add "Passed Out" option if the highest class is selected, using the correct property
-        if (optional($this->fromClassModel)->numeric_name == self::HIGHEST_CLASS_NUMERIC_NAME) {
+        if (optional($fromClassModel)->numeric_name == self::HIGHEST_CLASS_NUMERIC_NAME) {
             $promotionDestinations[] = ['id' => 'passed_out', 'name' => 'Passed Out (Graduate)'];
         }
 
         return view('livewire.backend.student.promote', [
+            'students' => $students,
             'allClasses' => $allClasses,
+            'fromClassModel' => $fromClassModel,
+            'toClassModel' => $toClassModel,
             'promotionDestinations' => $promotionDestinations,
             'allDepartments' => Department::all(),
+            'academicSessions' => AcademicSession::orderBy('start_date', 'desc')->get(),
         ]);
     }
 }

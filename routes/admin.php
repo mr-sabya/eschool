@@ -65,6 +65,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // student management
     Route::get('students', [App\Http\Controllers\Backend\StudentController::class, 'index'])->name('student.index');
+
+    // passed out students
+    Route::get('students/passed-out', [App\Http\Controllers\Backend\StudentController::class, 'passedOut'])->name('student.passed-out');
+
     Route::get('students/create', [App\Http\Controllers\Backend\StudentController::class, 'create'])->name('student.create');
     Route::get('students/edit/{id}', [App\Http\Controllers\Backend\StudentController::class, 'edit'])->name('student.edit');
 

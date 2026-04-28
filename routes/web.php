@@ -45,6 +45,9 @@ Route::get('/staff', [App\Http\Controllers\Frontend\WebsiteController::class, 's
 // former-headmaster
 Route::get('/former-headmaster', [App\Http\Controllers\Frontend\WebsiteController::class, 'formerHeadmaster'])->name('former-headmaster.index');
 
+// notice details
+Route::get('/notice/{id}', [App\Http\Controllers\Frontend\NoticeController::class, 'details'])->name('notice.details');
+
 // profile
 // auth middleware
 Route::middleware(['auth'])->group(function () {

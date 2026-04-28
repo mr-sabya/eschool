@@ -6,41 +6,31 @@
 
                 <div class="hero-slider">
                     <div class="slider">
+
+                        @forelse($banners as $banner)
+                        {{-- Dynamic Banners from Database --}}
                         <div class="item">
                             <!-- Post Image Code Start-->
-
-                            <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
-                                class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
+                            <img width="1000" height="300"
+                                src="{{ asset('storage/' . $banner->image) }}"
+                                class="attachment-post-thumbnail size-post-thumbnail wp-post-image"
+                                alt="{{ $banner->title }}" />
                             <!-- Post Image Code Close-->
-                            <h4 class="centered">মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, যশোর
-                                মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, যশোর
-                            </h4>
 
+                            @if($banner->title)
+                            <h4 class="centered">{{ $banner->title }}</h4>
+                            @endif
                         </div>
+                        @empty
+                        {{-- Fallback: Keep one image if no banner exists in DB --}}
                         <div class="item">
-                            <!-- Post Image Code Start-->
-
-                            <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
-                                class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
-                            <!-- Post Image Code Close-->
-                            <h4 class="centered">হোমপেজ ফটোগ্যালারী তিন</h4>
+                            <img width="1000" height="300"
+                                src="{{ url('assets/frontend/images/web.jpg') }}"
+                                class="attachment-post-thumbnail size-post-thumbnail wp-post-image"
+                                alt="Default Banner" />
+                            <h4 class="centered">Welcome to our Website</h4>
                         </div>
-                        <div class="item">
-                            <!-- Post Image Code Start-->
-
-                            <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
-                                class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
-                            <!-- Post Image Code Close-->
-                            <h4 class="centered">হোমপেজ ফটোগ্যালারী দুই</h4>
-                        </div>
-                        <div class="item">
-                            <!-- Post Image Code Start-->
-
-                            <img width="1000" height="300" src="{{ url('assets/frontend/images/web.jpg') }}"
-                                class="attachment-post-thumbnail size-post-thumbnail wp-post-image" alt="" />
-                            <!-- Post Image Code Close-->
-                            <h4 class="centered">হোমপেজ ফটোগ্যালারী এক</h4>
-                        </div>
+                        @endforelse
 
                     </div>
 
@@ -50,6 +40,5 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>

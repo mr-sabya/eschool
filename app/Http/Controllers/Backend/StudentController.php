@@ -76,4 +76,10 @@ class StudentController extends Controller
     {
         return view('backend.tool.student-id-card');
     }
+
+    // passed out students
+    public function passedOut()
+    {
+        return view('backend.student.passed-out-index');
+    }
 }

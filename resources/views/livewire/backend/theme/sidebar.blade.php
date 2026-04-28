@@ -95,6 +95,9 @@
                         <li>
                             <a href="{{ route('admin.student.promot') }}" class="{{ Route::is('admin.student.promot') ? 'active' : '' }}" wire:navigate>Promote Students</a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.student.passed-out') }}" class="{{ Route::is('admin.student.passed-out') ? 'active' : '' }}" wire:navigate>Graduated Students</a>
+                        </li>
                     </ul>
                 </li>
                 @endif

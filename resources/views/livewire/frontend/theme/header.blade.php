@@ -7,10 +7,9 @@
                     <div class="notice-board">
                         <marquee direction="left" scrollamount="4px" onmouseover="this.stop()"
                             onmouseout="this.start()">
-                            <i class="fa fa-stop-circle"></i> <a href="#">এই
-                                স্কুলের ডিজাইনটি ক্রয় করতে যোগাযোগ করুন : ০১৬৪৬৮২৪৫৫১</a>
-                            <i class="fa fa-stop-circle"></i> <a href="#">আমাদের
-                                শিক্ষা প্রতিষ্ঠানে আপনাদের স্বাগতম।</a>
+                            @foreach ($notices as $notice)
+                                <i class="fa fa-stop-circle"></i> <a href="{{ route('notice.details', $notice->id) }}" wire:navigate>{{ $notice->title }}</a>
+                            @endforeach
                         </marquee>
                     </div>
                 </div>

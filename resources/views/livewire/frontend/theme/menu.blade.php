@@ -2,7 +2,7 @@
      <div class="container">
          <div class="menu-container">
              <div class="logo">
-                 <a href="#">
+                 <a href="{{ route('home') }}" wire:navigate>
                      <div class="brand">
                          <div class="image">
                              <img src="{{ url('assets/frontend/images/kcgs-logo.png') }}" alt="">

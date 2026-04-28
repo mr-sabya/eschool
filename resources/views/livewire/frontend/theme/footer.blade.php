@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="col-lg-4 col-md-4 col-sm-4 root_02">
-                    Design & Developed BY <a href='#' target='_blank' title='Mobile : 01732-667364'>Sabya
+                    Design & Developed BY <a href='https://sabyaroy.com/' target='_blank' title='Mobile : 01929-190241'>Sabya
                         Roy</a>
                 </div>
             </div>
